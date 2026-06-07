@@ -370,6 +370,7 @@ class Game:
         if SFX and hasattr(SFX, "get"):
             SFX["eder_charge"].stop()
             SFX["guitar_riff"].stop()
+            SFX["eder_laser_loop"].stop()
         self.shop_items = SHOP_ITEMS
         self.shop_costs = {}
         self.admin_mode = False

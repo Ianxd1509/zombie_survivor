@@ -81,6 +81,31 @@ def make_loop_sound(freq, duration, vol=0.3, noise=False, name=None):
     buf.seek(0)
     return pygame.mixer.Sound(buf)
 
+# Acorde multi-frecuencia con crossfade para loop sin clics
+def make_loop_chord_sound(freqs, duration, vol=0.3, name=None):
+    if name:
+        path = os.path.join(SFX_DIR, name + ".wav")
+        if os.path.isfile(path):
+            return pygame.mixer.Sound(path)
+    sr = 22050
+    n = int(sr * duration)
+    data = bytearray()
+    fade_len = max(1, int(n * 0.05))
+    for i in range(n):
+        t = i / sr
+        s = sum(math.sin(2 * math.pi * f * t) for f in freqs) / max(1, len(freqs))
+        s += 0.5 * math.sin(2 * math.pi * freqs[0] * 2 * t) / max(1, len(freqs))
+        fade = min(1.0, i / fade_len, (n - 1 - i) / fade_len)
+        s *= vol * 32767 * fade
+        data += struct.pack("<h", int(max(-32767, min(32767, s))))
+    buf = io.BytesIO()
+    ds = len(data)
+    buf.write(b"RIFF" + struct.pack("<I", 36 + ds) + b"WAVEfmt ")
+    buf.write(struct.pack("<IHHIIHH", 16, 1, 1, sr, sr * 2, 2, 16))
+    buf.write(b"data" + struct.pack("<I", ds) + bytes(data))
+    buf.seek(0)
+    return pygame.mixer.Sound(buf)
+
 # Diccionario con todos los efectos de sonido del juego (gestión de volumen incluida)
 SFX = {}
 if pygame.mixer.get_init():
@@ -108,8 +133,9 @@ if pygame.mixer.get_init():
             "laser": make_sound(600, 0.15, vol=0.20, name="laser"),
             "shop_open": make_sound(880, 0.10, vol=0.25, name="shop_open"),
             "guitar_riff": make_chord_sound([110, 165, 220], 0.35, vol=0.30, name="guitar_riff"),
-            "eder_charge": make_loop_sound(300, 0.3, vol=0.20, name="eder_charge"),
+            "eder_charge": make_loop_sound(400, 0.5, vol=0.35, name="eder_charge"),
             "eder_laser": make_sound(150, 2.0, vol=0.30, noise=True, name="eder_laser"),
+            "eder_laser_loop": make_loop_chord_sound([110, 165, 220], 0.5, vol=0.40, name="eder_laser_loop"),
         }
 
 # Variables globales para las pistas de música activas

@@ -2352,6 +2352,7 @@ class Player(pygame.sprite.Sprite):
 
                     if SFX and hasattr(SFX, "get"):
                         SFX["guitar_riff"].stop()
+                        SFX["eder_laser_loop"].stop()
 
             elif self.ability_charge >= self.ability_max_charge:
 
@@ -2737,7 +2738,8 @@ class Player(pygame.sprite.Sprite):
         self.shake = 8
 
         if SFX and hasattr(SFX, "get"):
-            SFX["guitar_riff"].play(loops=-1)
+            SFX["guitar_riff"].play()
+            SFX["eder_laser_loop"].play(loops=-1)
 
         if notifs:
 
