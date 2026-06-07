@@ -369,7 +369,7 @@ class Game:
         stop_shop_music()
         if SFX and hasattr(SFX, "get"):
             SFX["eder_charge"].stop()
-            SFX["eder_laser"].stop()
+            SFX["guitar_riff"].stop()
         self.shop_items = SHOP_ITEMS
         self.shop_costs = {}
         self.admin_mode = False
@@ -1451,10 +1451,21 @@ class Game:
                             e.hp -= int(e.max_hp * 0.10)
                             if e.hp <= 0:
                                 self._reward_enemy_death(e)
-                    elif domain_effect == "tornado" and hasattr(self.player, "tornado"):
-                        if self.player.tornado is None:
-                            self.player.tornado = Tornado(self.player.pos, 0, MAP_W, MAP_H)
-                        self.player.tornado.pull_radius = 150
+                    elif domain_effect == "guitar_wave":
+                        if random.random() < 0.04:
+                            for e in enemies:
+                                if self.player.pos.distance_to(e.pos) < 350:
+                                    died = e.hit(15)
+                                    e.stun_timer = max(getattr(e, "stun_timer", 0), 20)
+                                    if died:
+                                        self._reward_enemy_death(e)
+                            for _ in range(10):
+                                a = random.uniform(0, math.tau)
+                                sp = random.uniform(5, 15)
+                                self.particles.append(Particle(
+                                    self.player.pos, pygame.Vector2(math.cos(a), math.sin(a)) * sp,
+                                    (200, random.randint(80, 200), 255),
+                                    random.uniform(3, 6), random.randint(15, 30)))
                     elif domain_effect == "muro":
                         self.player.hp = min(self.player.max_hp, self.player.hp + 3)
                         if random.random() < 0.04:

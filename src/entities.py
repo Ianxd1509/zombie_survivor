@@ -1488,7 +1488,7 @@ class BillieNPC(pygame.sprite.Sprite):
         pygame.draw.rect(surf, (255, 80, 200), (hx, hy, int(bw * r_ratio), bh))
 
 
-# Tornado con partículas que atrapa enemigos (ability tornado_laser)
+# Guitar Wave que daña enemigos (ability guitar_riff)
 class Tornado:
     def __init__(self, pos, angle, map_w=MAP_W, map_h=MAP_H):
         self.pos = pygame.Vector2(pos)
@@ -2348,7 +2348,7 @@ class Player(pygame.sprite.Sprite):
                     self.ability_active = False
 
                     if SFX and hasattr(SFX, "get"):
-                        SFX["eder_laser"].stop()
+                        SFX["guitar_riff"].stop()
 
             elif self.ability_charge >= self.ability_max_charge:
 
@@ -2727,11 +2727,11 @@ class Player(pygame.sprite.Sprite):
         self.shake = 8
 
         if SFX and hasattr(SFX, "get"):
-            SFX["eder_laser"].play(loops=-1)
+            SFX["guitar_riff"].play(loops=-1)
 
         if notifs:
 
-            notifs.append(Notif("LASER ROJO!", (255, 60, 60), 45))
+            notifs.append(Notif("SOLO MORTAL!", (200, 80, 255), 45))
 
         if particles:
 
@@ -2743,9 +2743,9 @@ class Player(pygame.sprite.Sprite):
 
                 particles.append(Particle(
 
-                    self.pos, pygame.Vector2(math.cos(a), math.sin(a)) * sp,
+                        self.pos, pygame.Vector2(math.cos(a), math.sin(a)) * sp,
 
-                    (255, 80, 80), random.uniform(2, 5), random.randint(8, 18)))
+                    (200, 80, 255), random.uniform(2, 5), random.randint(8, 18)))
 
 
 
@@ -2757,20 +2757,8 @@ class Player(pygame.sprite.Sprite):
 
         self.beam_start = self.pos.copy()
 
-        # Auto-track nearest enemy while beam is active
-        nearest = None
-        nd = 950
-        if enemies:
-            for e in enemies:
-                if not hasattr(e, "pos") or not hasattr(e, "hp") or e.hp <= 0:
-                    continue
-                d = self.pos.distance_to(e.pos)
-                if d < nd:
-                    nd = d
-                    nearest = e
-        if nearest:
-            self.ult_laser_angle = math.atan2(
-                nearest.pos.y - self.pos.y, nearest.pos.x - self.pos.x)
+        # Follow mouse direction while beam is active (no aimbot)
+        self.ult_laser_angle = self.angle
 
         self.beam_end = laser_ray_end(
 
@@ -3524,9 +3512,39 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        elif ab == "tornado_laser":
+        elif ab == "guitar_riff":
 
-            pass
+            self.shake = 6
+
+            self.ability_active = True
+
+            self.ability_duration = 20
+
+            self._ability_hit_enemies(enemies, 300, 120, particles, (255, 200, 50), stun=25)
+
+            if particles:
+
+                for _ in range(25):
+
+                    a = random.uniform(0, math.tau)
+
+                    sp = random.uniform(5, 12)
+
+                    particles.append(Particle(
+
+                        self.pos, pygame.Vector2(math.cos(a), math.sin(a)) * sp,
+
+                        (200, random.randint(80, 200), 255),
+
+                        random.uniform(2, 5), random.randint(10, 22)))
+
+            if SFX and hasattr(SFX, "get"):
+
+                SFX["guitar_riff"].play()
+
+            if notifs:
+
+                notifs.append(Notif("RIFF ELÉCTRICO!", (200, 80, 255), 45))
 
 
 
@@ -3676,8 +3694,17 @@ class Mimic(pygame.sprite.Sprite):
         self.map_w = map_w
         self.map_h = map_h
         self.exploded = False
-        self.rect = pygame.Rect(0, 0, self.radius * 2, self.radius * 2)
-        self.rect.center = (int(self.pos.x), int(self.pos.y))
+        self.image = pygame.Surface((self.radius * 2,) * 2, pygame.SRCALPHA)
+        self.rect = self.image.get_rect(center=(int(self.pos.x), int(self.pos.y)))
+        self._redraw()
+
+    def _redraw(self):
+        r = self.radius
+        self.image.fill((0, 0, 0, 0))
+        color = (200, 50, 50)
+        pygame.draw.circle(self.image, (100, 20, 20), (r, r), r)
+        pygame.draw.circle(self.image, color, (r, r), r)
+        pygame.draw.circle(self.image, (255, 100, 100), (r, r), r - 2)
 
     def update(self):
         self.rect.center = (int(self.pos.x), int(self.pos.y))

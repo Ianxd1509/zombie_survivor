@@ -251,22 +251,22 @@ def draw_hud(surf, player, wave, wave_state, wave_has_boss, wave_announce, enemi
         ult_hint = z_ult_names.get(player.vicente_mode, "ULT")
         z_color = player.vicente_mode_colors[player.vicente_mode]
     else:
-        ult_hint = "LASER" if player.char_id == "eder" else "ULT"
+        ult_hint = "RIFF" if player.char_id == "eder" else "ULT"
         z_color = c
     pygame.draw.rect(surf, (0, 8, 0), (bx, y_z, bw, 10))
     if getattr(player, "ult_laser_active", False):
         from config import ULT_LASER_DURATION
         ult_ratio = player.ult_laser_timer / ULT_LASER_DURATION
         fill_w = max(2, int(bw * ult_ratio))
-        pygame.draw.rect(surf, (255, 60, 60), (bx, y_z, fill_w, 10))
+        pygame.draw.rect(surf, (200, 80, 255), (bx, y_z, fill_w, 10))
         secs_left = max(0.1, player.ult_laser_timer / max(1, ULT_LASER_DURATION))
-        ult_lbl = f"[Z] LASER {secs_left:.1f}s"
-        surf.blit(_f(12).render(ult_lbl, True, (255, 100, 100)), (bx + 4, y_z + 1))
+        ult_lbl = f"[Z] RIFF {secs_left:.1f}s"
+        surf.blit(_f(12).render(ult_lbl, True, (200, 100, 255)), (bx + 4, y_z + 1))
     elif getattr(player, "ult_charging", False) and player.char_id == "eder":
         from config import ULT_CHARGE_MAX
         fill_w = max(2, int(bw * player.ult_charge / ULT_CHARGE_MAX))
-        pygame.draw.rect(surf, (255, 120, 60), (bx, y_z, fill_w, 10))
-        surf.blit(_f(12).render("[Z] CARGANDO LASER...", True, (255, 150, 80)), (bx + 4, y_z + 1))
+        pygame.draw.rect(surf, (200, 80, 255), (bx, y_z, fill_w, 10))
+        surf.blit(_f(12).render("[Z] CARGANDO RIFF...", True, (200, 100, 255)), (bx + 4, y_z + 1))
     else:
         ready = "LISTO" if chg >= chg_max else f"{chg}/{chg_max}"
         if chg > 0:
