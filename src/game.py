@@ -1248,10 +1248,22 @@ class Game:
         # Colisión balas enemigas contra el jugador
         for eb in list(self.enemy_bullets):
             if not eb.update(grid=self.grid):
+                if getattr(eb, '_vb_bomb', False):
+                    for _ in range(8):
+                        a2 = random.uniform(0, math.tau)
+                        sp2 = random.uniform(2, 5)
+                        self.particles.append(Particle(eb.pos, pygame.Vector2(math.cos(a2), math.sin(a2)) * sp2,
+                            (255, 200, 50), random.uniform(3, 6), random.randint(10, 20)))
                 self.enemy_bullets.remove(eb)
                 continue
             if self.player.pos.distance_to(eb.pos) < self.player.radius + eb.radius:
                 self.player.take_damage(eb.damage)
+                if getattr(eb, '_vb_bomb', False):
+                    for _ in range(12):
+                        a2 = random.uniform(0, math.tau)
+                        sp2 = random.uniform(3, 7)
+                        self.particles.append(Particle(eb.pos, pygame.Vector2(math.cos(a2), math.sin(a2)) * sp2,
+                            (255, 200, 50), random.uniform(3, 6), random.randint(12, 25)))
                 self.flash_alpha = 80
                 vec = eb.pos - self.player.pos
                 if vec.length() > 0: vec.normalize_ip()
