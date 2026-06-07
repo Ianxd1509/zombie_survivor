@@ -2507,8 +2507,6 @@ class Player(pygame.sprite.Sprite):
 
             SFX["transition"].play()
 
-        self._prev_x_key = x_key
-
 
 
         # Domain update
@@ -2517,9 +2515,8 @@ class Player(pygame.sprite.Sprite):
 
             self.domain_timer -= 1
 
-            # Manual deactivation with X key press (edge-triggered)
-
-            if x_key and not self._prev_x_key:
+            # Manual deactivation with X key press (edge-triggered, skip same-frame activation)
+            if x_key and not self._prev_x_key and self.domain_timer < DOMAIN_DURATION - 1:
 
                 self.domain_active = False
 
@@ -2535,6 +2532,7 @@ class Player(pygame.sprite.Sprite):
 
                 self._on_domain_end()
 
+        self._prev_x_key = x_key
 
 
         # Ability duration & temporary buffs
