@@ -7,7 +7,7 @@ import pygame
 
 from config import ALLY_TYPES, BOMB_TYPES, CHARACTERS, CODE_SNIPPETS, DOMAIN_COOLDOWN, DOMAIN_DURATION, DOMAIN_EXPANSION, LIGHT_FLASH_DURATION, MAP_H, MAP_W, MIN_ULT_CHARGE, ORANGE, PURPLE, RED, SHOP_ITEMS, ULT_CHARGE_MAX, ULT_LASER_DURATION, WEAPON_BULLETS, YELLOW
 from src.effects import Notif, Particle
-from src.sound import SFX
+from src.sound import SFX, play_eder_domain_music, stop_eder_domain_music
 from src.sprites import draw_player
 from src.tilemap import COLS, ROWS, TILE, is_wall, world_to_tile
 
@@ -2506,7 +2506,8 @@ class Player(pygame.sprite.Sprite):
                         dcol, random.uniform(3, 6), random.randint(15, 30)))
 
             SFX["transition"].play()
-
+            if self.char_id == "eder":
+                play_eder_domain_music()
 
 
         # Domain update
@@ -3600,6 +3601,9 @@ class Player(pygame.sprite.Sprite):
 
             self.ability_damage_mult = 1.0
 
+        if self.char_id == "eder":
+            stop_eder_domain_music()
+
     def _update_display_hp(self):
         self.display_hp = self.hp
 
@@ -3631,6 +3635,9 @@ class Player(pygame.sprite.Sprite):
             amount -= absorbed
         self.hp -= amount
         self.hp = max(self.hp, 0)
+        if self.hp <= 0 and self.domain_active:
+            self.domain_active = False
+            self._on_domain_end()
         self.hit_flash = LIGHT_FLASH_DURATION
         self.invuln_timer = 10
 

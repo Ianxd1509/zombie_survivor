@@ -117,6 +117,8 @@ _bg_music = None
 _bg_track = 1  # alterna entre 1 (bg_music.wav) y 2 (bg_music2.wav)
 _menu_music = None
 _boss_music = None
+_shop_music = None
+_eder_domain_music = None
 
 # Detiene la música de fondo
 def stop_bg_music():
@@ -292,3 +294,69 @@ def update_bg_music(wave=1, intensity=0.0):
     buf.seek(0)
     _bg_music = pygame.mixer.Sound(buf)
     _bg_music.play(-1)
+
+# Reproduce el solo de guitarra de Eder durante su dominio
+def play_eder_domain_music():
+    global _eder_domain_music, _bg_music, _menu_music, _boss_music, _shop_music
+    if _eder_domain_music is not None:
+        return
+    if _bg_music:
+        _bg_music.stop(); _bg_music = None
+    if _menu_music:
+        _menu_music.stop(); _menu_music = None
+    if _boss_music:
+        _boss_music.stop(); _boss_music = None
+    if _shop_music:
+        _shop_music.stop(); _shop_music = None
+    sr = 22050
+    bpm = 150
+    beat_len = 60.0 / bpm
+    duration = beat_len * 16
+    n = int(sr * duration)
+    data = bytearray()
+    fade_len = max(1, int(n * 0.06))
+    notes = [
+        (329.63, 0.0), (392.00, 0.5), (440.00, 1.0), (493.88, 1.5),
+        (523.25, 2.0), (587.33, 2.5), (659.25, 3.0), (587.33, 3.5),
+        (523.25, 4.0), (493.88, 4.5), (440.00, 5.0), (392.00, 5.5),
+        (329.63, 6.0), (261.63, 6.5), (329.63, 7.0), (392.00, 7.5),
+        (440.00, 8.0), (493.88, 8.5), (440.00, 9.0), (392.00, 9.5),
+        (329.63, 10.0), (392.00, 10.5), (440.00, 11.0), (493.88, 11.5),
+        (587.33, 12.0), (659.25, 12.5), (587.33, 13.0), (523.25, 13.5),
+        (493.88, 14.0), (440.00, 14.5), (392.00, 15.0), (329.63, 15.5),
+    ]
+    for i in range(n):
+        t = i / sr
+        beat = t / beat_len
+        s = 0.0
+        for j in range(len(notes)):
+            freq, start = notes[j]
+            end = notes[(j + 1) % len(notes)][1] if j + 1 < len(notes) else duration / beat_len
+            if start <= beat < end:
+                local = (beat - start) / (end - start)
+                env = math.sin(math.pi * local)
+                raw = math.sin(2 * math.pi * freq * t * (1 + 0.008 * math.sin(6 * math.pi * t)))
+                raw += 0.5 * math.sin(2 * math.pi * freq * 2 * t)
+                raw += 0.3 * math.sin(2 * math.pi * freq * 3 * t)
+                sq = 1.0 if raw > 0 else -1.0
+                s += sq * 0.35 * env
+        low = math.sin(2 * math.pi * 82.41 * t) * 0.08
+        low += math.sin(2 * math.pi * 110.0 * t) * 0.06
+        s += low
+        fade = min(1.0, i / fade_len, (n - 1 - i) / fade_len)
+        s *= 32767 * fade
+        data += struct.pack("<h", int(max(-32767, min(32767, s))))
+    buf = io.BytesIO()
+    ds = len(data)
+    buf.write(b"RIFF" + struct.pack("<I", 36 + ds) + b"WAVEfmt ")
+    buf.write(struct.pack("<IHHIIHH", 16, 1, 1, sr, sr * 2, 2, 16))
+    buf.write(b"data" + struct.pack("<I", ds) + bytes(data))
+    buf.seek(0)
+    _eder_domain_music = pygame.mixer.Sound(buf)
+    _eder_domain_music.play(-1)
+
+def stop_eder_domain_music():
+    global _eder_domain_music
+    if _eder_domain_music:
+        _eder_domain_music.stop()
+        _eder_domain_music = None
