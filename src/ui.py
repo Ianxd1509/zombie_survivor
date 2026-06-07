@@ -1518,7 +1518,7 @@ class CreditsScreen:
             h = _f(15).render("ESC para volver al menu", True, (0, 80, 25))
             surf.blit(h, h.get_rect(center=(WIDTH // 2, HEIGHT - 24)))
 
-    # Reinicia el estado de los créditos
+    def reset(self):
         self.scroll_y = HEIGHT + 50
         self.finished_timer = 0
         self.timer = 0
