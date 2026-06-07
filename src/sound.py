@@ -308,6 +308,11 @@ def play_eder_domain_music():
         _boss_music.stop(); _boss_music = None
     if _shop_music:
         _shop_music.stop(); _shop_music = None
+    path = os.path.join(SFX_DIR, "eder_domain.wav")
+    if os.path.isfile(path):
+        _eder_domain_music = pygame.mixer.Sound(path)
+        _eder_domain_music.play(-1)
+        return
     sr = 22050
     bpm = 150
     beat_len = 60.0 / bpm
