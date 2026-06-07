@@ -118,7 +118,7 @@ if pygame.mixer.get_init():
             "hit": make_sound(180, 0.15, vol=0.22, name="hit"),
             "kill": make_sound(400, 0.15, vol=0.25, name="kill"),
             "pickup": make_sound(660, 0.15, vol=0.20, name="pickup"),
-            "reload": make_sound(250, 0.30, vol=0.20, name="recarga"),
+            "reload": make_sound(250, 0.30, vol=0.35, name="recarga"),
             "empty": make_sound(500, 0.04, vol=0.08, name="empty"),
             "gameover": make_sound(65, 1.5, vol=0.30, noise=True, name="gameover"),
             "death": make_sound(55, 1.2, vol=0.30, noise=True, name="death"),
