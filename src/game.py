@@ -380,11 +380,11 @@ class Game:
         self.wave_spawned = 0
 
         if map_index is not None:
-            self.map_index = map_index
-            self.map_theme = MAP_THEMES[map_index]
+            self.map_index = max(0, min(map_index, len(MAP_THEMES) - 1))
+            self.map_theme = MAP_THEMES[self.map_index]
         else:
-            map_index = self.map_index
-        self.grid = generate_grid(map_index)
+            self.map_index = max(0, min(self.map_index, len(MAP_THEMES) - 1))
+        self.grid = generate_grid(self.map_index)
         if char_id:
             self.selected_char = char_id
         spawn_pos = pygame.Vector2(MAP_W // 2, MAP_H // 2)

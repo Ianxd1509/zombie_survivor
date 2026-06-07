@@ -1664,6 +1664,9 @@ class ChochoxMinion(pygame.sprite.Sprite):
         self.map_h = map_h
         self.image = pygame.Surface((self.radius * 2,) * 2, pygame.SRCALPHA)
         self._redraw()
+        self.invuln_timer = 0
+        self.shield = 0
+        self.hit_flash = 0
         self.rect = self.image.get_rect(center=(int(self.pos.x), int(self.pos.y)))
 
     def _redraw(self):
@@ -2600,7 +2603,7 @@ class Player(pygame.sprite.Sprite):
 
             self.bomb_count = max(0, self.bomb_count - 1)
 
-            self.bomb_active_idx = max(0, min(self.bomb_active_idx, len(self.bomb_queue) - 1))
+            self.bomb_active_idx = max(0, min(self.bomb_active_idx, len(self.bomb_queue) - 1)) if self.bomb_queue else 0
 
             angle = self.angle
 
