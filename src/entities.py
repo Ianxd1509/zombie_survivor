@@ -717,7 +717,21 @@ class Enemy(pygame.sprite.Sprite):
                 return True
         return False
 
-    def _ai_separation(self, enemies, strength=0.35):
+    def _ai_separation(self, enemies, spatial_hash=None, strength=0.35):
+        if spatial_hash:
+            nearby = spatial_hash.get_nearby(self.pos, self.radius * 5)
+            sep = pygame.Vector2(0, 0)
+            for e in nearby:
+                if e is self or not hasattr(e, "pos"):
+                    continue
+                d = self.pos.distance_to(e.pos)
+                if d < 1 or d > self.radius * 5:
+                    continue
+                away = self.pos - e.pos
+                away.scale_to_length(strength * (1 - d / (self.radius * 5)))
+                sep += away
+            return sep
+        
         if not enemies:
             return pygame.Vector2(0, 0)
         sep = pygame.Vector2(0, 0)
@@ -733,7 +747,7 @@ class Enemy(pygame.sprite.Sprite):
         return sep
 
     # Actualiza IA, movimiento, ataques, fases del boss Vicente
-    def update(self, player_pos, dt=1, enemies=None, enemy_bullets=None, particles=None, grid=None):
+    def update(self, player_pos, dt=1, enemies=None, enemy_bullets=None, particles=None, grid=None, spatial_hash=None):
         if self.frozen:
             self.frozen_timer -= 1
             if self.frozen_timer <= 0:
@@ -983,7 +997,7 @@ class Enemy(pygame.sprite.Sprite):
             retreating = True
         if dist > stop_dist and dist > 0.5:
             move_spd = self.speed * self.speed_mult * aggro_speed * (1.3 if self.is_boss and self.boss_phase2 else 1.0)
-            sep = self._ai_separation(enemies, 0.4)
+            sep = self._ai_separation(enemies, spatial_hash=spatial_hash, strength=0.4)
             if grid is not None and dist < 1400 and not retreating:
                 # Basic enemies use direct chase when far; advanced ones BFS closer
                 use_direct = (self.etype in ("walker", "runner", "swarm", "bomber") and dist > 400)

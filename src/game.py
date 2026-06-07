@@ -1042,7 +1042,7 @@ class Game:
                         e2.speed_mult = max(e2.speed_mult, 1.0 + e.buff_amt * 0.5)
 
         for e in enemies_list:
-            e.update(pp, enemies=enemies_list, enemy_bullets=self.enemy_bullets, particles=self.particles, grid=self.grid)
+            e.update(pp, enemies=enemies_list, enemy_bullets=self.enemy_bullets, particles=self.particles, grid=self.grid, spatial_hash=self.spatial_hash)
             if e.hp <= 0:
                 if getattr(e, "etype", None) == "vicente_boss":
                     stop_boss_music()  # Detiene música al morir el jefe Vicente
