@@ -11,7 +11,7 @@ import pygame
 SFX_DIR = os.path.join(os.path.dirname(__file__), "..", "assets", "sounds")
 
 # Generación sintética de sonido como fallback si no existe el archivo .wav
-# El parámetro vol controla el volumen del efecto generado
+# Decaimiento natural sobre la duración completa (no se corta abruptamente)
 def make_sound(freq, duration, vol=0.3, noise=False, name=None):
     if name:
         path = os.path.join(SFX_DIR, name + ".wav")
@@ -23,7 +23,32 @@ def make_sound(freq, duration, vol=0.3, noise=False, name=None):
     for i in range(n):
         t = i / sr
         s = (random.uniform(-1, 1) if noise else math.sin(2 * math.pi * freq * t))
-        s *= vol * 32767 * max(0, 1 - t * 4 / duration) ** 1.5
+        env = (max(0, 1 - t * 2 / duration)) ** 2
+        s *= vol * 32767 * env
+        data += struct.pack("<h", int(max(-32767, min(32767, s))))
+    buf = io.BytesIO()
+    ds = len(data)
+    buf.write(b"RIFF" + struct.pack("<I", 36 + ds) + b"WAVEfmt ")
+    buf.write(struct.pack("<IHHIIHH", 16, 1, 1, sr, sr * 2, 2, 16))
+    buf.write(b"data" + struct.pack("<I", ds) + bytes(data))
+    buf.seek(0)
+    return pygame.mixer.Sound(buf)
+
+# Sonido sin decaimiento, con crossfade suave en los bordes para loop sin clics
+def make_loop_sound(freq, duration, vol=0.3, noise=False, name=None):
+    if name:
+        path = os.path.join(SFX_DIR, name + ".wav")
+        if os.path.isfile(path):
+            return pygame.mixer.Sound(path)
+    sr = 22050
+    n = int(sr * duration)
+    data = bytearray()
+    fade_len = max(1, int(n * 0.05))
+    for i in range(n):
+        t = i / sr
+        s = (random.uniform(-1, 1) if noise else math.sin(2 * math.pi * freq * t))
+        fade = min(1.0, i / fade_len, (n - 1 - i) / fade_len)
+        s *= vol * 32767 * fade
         data += struct.pack("<h", int(max(-32767, min(32767, s))))
     buf = io.BytesIO()
     ds = len(data)
@@ -38,33 +63,34 @@ SFX = {}
 if pygame.mixer.get_init():
     with contextlib.suppress(pygame.error):
         SFX = {
-            "shoot": make_sound(800, 0.07, noise=True, name="shoot"),
-            "shotgun": make_sound(150, 0.10, noise=True, name="shotgun"),
-            "hit": make_sound(180, 0.18, vol=0.20, name="hit"),
+            "shoot": make_sound(800, 0.08, vol=0.35, noise=True, name="shoot"),
+            "shotgun": make_sound(120, 0.15, vol=0.35, noise=True, name="shotgun"),
+            "hit": make_sound(180, 0.15, vol=0.22, name="hit"),
             "kill": make_sound(400, 0.15, vol=0.25, name="kill"),
-            "pickup": make_sound(650, 0.18, vol=0.20, name="pickup"),
-            "reload": make_sound(250, 0.35, vol=0.20, name="reload"),
-            "empty": make_sound(500, 0.06, vol=0.10, name="empty"),
-            "gameover": make_sound(80, 1.2, vol=0.35, name="gameover"),
-            "death": make_sound(60, 1.5, vol=0.40, name="death"),
-            "victory": make_sound(1047, 0.8, vol=0.35, name="victory"),
-            "wave": make_sound(520, 0.4, vol=0.30, name="wave"),
-            "levelup": make_sound(700, 0.3, vol=0.25, name="levelup"),
-            "boss_warn": make_sound(150, 0.6, vol=0.35, noise=True, name="boss_warn"),
-            "transition": make_sound(600, 0.15, vol=0.20, name="transition"),
-            "hover": make_sound(500, 0.06, vol=0.15, name="hover"),
-            "click": make_sound(600, 0.10, vol=0.20, name="click"),
+            "pickup": make_sound(660, 0.15, vol=0.20, name="pickup"),
+            "reload": make_sound(250, 0.30, vol=0.20, name="reload"),
+            "empty": make_sound(500, 0.04, vol=0.08, name="empty"),
+            "gameover": make_sound(65, 1.5, vol=0.30, noise=True, name="gameover"),
+            "death": make_sound(55, 1.2, vol=0.30, noise=True, name="death"),
+            "victory": make_sound(880, 0.6, vol=0.30, name="victory"),
+            "wave": make_sound(520, 0.3, vol=0.25, name="wave"),
+            "levelup": make_sound(700, 0.25, vol=0.25, name="levelup"),
+            "boss_warn": make_sound(150, 0.5, vol=0.30, noise=True, name="boss_warn"),
+            "transition": make_sound(600, 0.10, vol=0.20, name="transition"),
+            "hover": make_sound(500, 0.04, vol=0.12, name="hover"),
+            "click": make_sound(600, 0.07, vol=0.18, name="click"),
             "wave_clear": make_sound(880, 0.3, vol=0.25, name="wave_clear"),
             "bomb": make_sound(250, 0.15, vol=0.25, noise=True, name="bomb"),
-            "explosion": make_sound(80, 0.4, vol=0.35, noise=True, name="explosion"),
-            "laser": make_sound(600, 0.2, vol=0.20, name="laser"),
-            "shop_open": make_sound(880, 0.12, vol=0.25, name="shop_open"),
-            "eder_charge": make_sound(300, 0.4, vol=0.20, name="eder_charge"),
+            "explosion": make_sound(80, 0.4, vol=0.30, noise=True, name="explosion"),
+            "laser": make_sound(600, 0.15, vol=0.20, name="laser"),
+            "shop_open": make_sound(880, 0.10, vol=0.25, name="shop_open"),
+            "eder_charge": make_loop_sound(300, 0.3, vol=0.20, name="eder_charge"),
             "eder_laser": make_sound(150, 2.0, vol=0.30, noise=True, name="eder_laser"),
         }
 
 # Variables globales para las pistas de música activas
 _bg_music = None
+_bg_track = 1  # alterna entre 1 (bg_music.wav) y 2 (bg_music2.wav)
 _menu_music = None
 _boss_music = None
 
@@ -190,17 +216,21 @@ def stop_shop_music():
         _shop_music = None
     update_bg_music()
 
-# Reproduce la música de fondo según la oleada actual (se detiene sola si ya suena)
+# Reproduce la música de fondo según la oleada actual (alterna entre bg_music.wav y bg_music2.wav)
 def update_bg_music(wave=1, intensity=0.0):
-    global _bg_music
+    global _bg_music, _bg_track
     # If already playing, don't restart — let it play through
     if _bg_music is not None:
         return
-    path = os.path.join(SFX_DIR, "bg_music.wav")
+    fname = "bg_music2.wav" if _bg_track == 2 else "bg_music.wav"
+    path = os.path.join(SFX_DIR, fname)
     if os.path.isfile(path):
         _bg_music = pygame.mixer.Sound(path)
         _bg_music.play(-1)
+        _bg_track = 2 if _bg_track == 1 else 1
         return
+    # Fallback sintético
+    _bg_track = 2 if _bg_track == 1 else 1
     sr = 22050
     duration = 2.0
     n = int(sr * duration)
