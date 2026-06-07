@@ -1760,11 +1760,7 @@ class ResultScreen:
             if p["life"] <= 0:
                 self.particles.remove(p)
 
-    # Dibuja la pantalla de resultado con estadísticas y arte ASCII
-            player = self.player
-        if wave is None:
-            wave = self.wave
-
+    def draw(self, surf):
         is_win = self.kind == "win"
         main_color = GOLD if is_win else RED
         border_color = GOLD if is_win else RED
@@ -1824,10 +1820,10 @@ class ResultScreen:
         surf.blit(prompt_line, (WIDTH // 2 - 180, title_y + 8))
 
         stats = [
-            (f"BYTES: {player.bytes if player else 0}", (0, 200, 50)),
-            (f"BAJAS: {player.kills if player else 0}", (0, 200, 50)),
-            (f"NIVEL: {player.level if player else 0}", (0, 200, 50)),
-            (f"SERVIDOR: {wave}", (0, 200, 50)),
+            (f"BYTES: {self.player.bytes if self.player else 0}", (0, 200, 50)),
+            (f"BAJAS: {self.player.kills if self.player else 0}", (0, 200, 50)),
+            (f"NIVEL: {self.player.level if self.player else 0}", (0, 200, 50)),
+            (f"SERVIDOR: {self.wave}", (0, 200, 50)),
         ]
 
         y = title_y + 36
