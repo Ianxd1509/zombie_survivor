@@ -470,6 +470,7 @@ class Enemy(pygame.sprite.Sprite):
         self.tactical_target = None
         self.stuck_timer = 0
         self.ai_think_timer = random.randint(0, 15)
+        self.last_damage_time = pygame.time.get_ticks()
 
         if player_pos is not None:
             if grid is not None:
@@ -879,6 +880,7 @@ class Enemy(pygame.sprite.Sprite):
                     for offset in [-0.15, 0, 0.15]:
                         nv = pygame.Vector2(math.cos(base_angle + offset), math.sin(base_angle + offset)) * self.TYPES[self.etype]["bullet_speed"]
                         enemy_bullets.append(EnemyBullet(self.pos.copy(), nv, self.TYPES[self.etype]["bullet_dmg"]))
+                    self.last_damage_time = pygame.time.get_ticks()
             elif not can_see_player:
                 # Move to a position where we can see the player
                 perp_angle = math.atan2(player_pos[1] - self.pos.y, player_pos[0] - self.pos.x) + random.uniform(-1.0, 1.0)
@@ -903,6 +905,7 @@ class Enemy(pygame.sprite.Sprite):
                             best_target = e
                 if best_target and best_missing > 0:
                     best_target.hp = min(best_target.max_hp, best_target.hp + self.TYPES[self.etype]["heal_amount"])
+                    self.last_damage_time = pygame.time.get_ticks()
                 if particles is not None:
                     for _ in range(4):
                         a2 = random.uniform(0, math.tau)

@@ -1601,6 +1601,9 @@ class Game:
         col = pygame.sprite.spritecollide(self.player, self.enemies, False)
         if col:
             self.player.take_damage(int(max(e.damage * e.dmg_mult for e in col)))
+            now = pygame.time.get_ticks()
+            for e in col:
+                e.last_damage_time = now
             self.flash_alpha = 80
             # Vampiric modifier: enemies heal 10% on hit
             if self.wave_modifier == "vampirica":
@@ -1611,6 +1614,17 @@ class Game:
             if vec.length() > 0: vec.normalize_ip()
             self.dmg_dir_x, self.dmg_dir_y = vec.x, vec.y
             self.dmg_dir_alpha = 120
+
+        # Eliminar enemigos atascados que no dañan al jugador en 60s
+        now = pygame.time.get_ticks()
+        for e in list(self.enemies):
+            if e.hp > 0 and not e.is_boss and now - e.last_damage_time > 60000:
+                for _ in range(8):
+                    a = random.uniform(0, math.tau)
+                    sp = random.uniform(1, 4)
+                    self.particles.append(Particle(e.pos, pygame.Vector2(math.cos(a), math.sin(a)) * sp,
+                        (150, 150, 150), random.uniform(2, 4), random.randint(8, 16)))
+                e.kill()
 
         # Colisión jugador vs pickups: salud, munición
         for p in pygame.sprite.spritecollide(self.player, self.pickups, True):
