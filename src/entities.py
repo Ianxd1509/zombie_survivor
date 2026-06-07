@@ -1773,7 +1773,7 @@ class Player(pygame.sprite.Sprite):
         self.ability_active = False
         self.ability_duration = 0
         self.ability_charge = 0
-        self.ability_max_charge = 0
+        self.ability_max_charge = ULT_CHARGE_MAX
         self.ability_damage_mult = 1.0
         self.ability_damage_timer = 0
         self.ability_speed = 1.0

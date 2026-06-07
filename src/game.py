@@ -178,6 +178,7 @@ class Game:
             "combo_counter": getattr(self.player, "combo_counter", 0),
             "_last_combo_time": getattr(self.player, "_last_combo_time", 0),
             "map_index": self.map_index,
+            "ability_max_charge": self.player.ability_max_charge,
         }
         try:
             with open(SAVE_FILE, "w") as f:

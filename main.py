@@ -71,6 +71,8 @@ def _do_load_game(game, data):
             game.player._last_combo_time = v2
         elif k2 == "ability_charge" and hasattr(game.player, "ability_charge"):
             game.player.ability_charge = v2
+        elif k2 == "ability_max_charge" and hasattr(game.player, "ability_max_charge"):
+            game.player.ability_max_charge = v2
         elif k2 == "domain_charge" and hasattr(game.player, "domain_charge"):
             game.player.domain_charge = v2
         elif k2 == "domain_cd_timer" and hasattr(game.player, "domain_cd_timer"):
