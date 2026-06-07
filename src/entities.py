@@ -2307,7 +2307,7 @@ class Player(pygame.sprite.Sprite):
 
                 if SFX and hasattr(SFX, "get"):
 
-                     sname = "shotgun" if self.weapon_mode == "shotgun" else "shoot"
+                     sname = self.weapon_mode if self.weapon_mode in ("sniper", "pierce", "shotgun") else "shoot"
 
                      SFX[sname].play()
 

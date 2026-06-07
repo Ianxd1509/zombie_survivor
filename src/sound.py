@@ -112,6 +112,8 @@ if pygame.mixer.get_init():
     with contextlib.suppress(pygame.error):
         SFX = {
             "shoot": make_sound(800, 0.08, vol=0.35, noise=True, name="shoot"),
+            "sniper": make_sound(1500, 0.05, vol=0.40, noise=True, name="sniper"),
+            "pierce": make_sound(500, 0.10, vol=0.30, noise=True, name="pierce"),
             "shotgun": make_sound(120, 0.15, vol=0.35, noise=True, name="shotgun"),
             "hit": make_sound(180, 0.15, vol=0.22, name="hit"),
             "kill": make_sound(400, 0.15, vol=0.25, name="kill"),
