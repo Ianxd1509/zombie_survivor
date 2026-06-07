@@ -2757,6 +2757,21 @@ class Player(pygame.sprite.Sprite):
 
         self.beam_start = self.pos.copy()
 
+        # Auto-track nearest enemy while beam is active
+        nearest = None
+        nd = 950
+        if enemies:
+            for e in enemies:
+                if not hasattr(e, "pos") or not hasattr(e, "hp") or e.hp <= 0:
+                    continue
+                d = self.pos.distance_to(e.pos)
+                if d < nd:
+                    nd = d
+                    nearest = e
+        if nearest:
+            self.ult_laser_angle = math.atan2(
+                nearest.pos.y - self.pos.y, nearest.pos.x - self.pos.x)
+
         self.beam_end = laser_ray_end(
 
             grid, self.beam_start, self.ult_laser_angle, 950, self.map_w, self.map_h)
