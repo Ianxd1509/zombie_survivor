@@ -2714,13 +2714,9 @@ class Player(pygame.sprite.Sprite):
 
         self.ult_charging = False
 
-        max_len = 950
-
         self.beam_start = self.pos.copy()
 
-        end_pt = laser_ray_end(grid, self.beam_start, self.ult_laser_angle, max_len, self.map_w, self.map_h)
-
-        self.beam_end = end_pt
+        self.beam_end = self.beam_start
 
         self.beam_w = int(14 + 16 * charge_ratio)
 
@@ -2761,8 +2757,22 @@ class Player(pygame.sprite.Sprite):
 
         self.beam_start = self.pos.copy()
 
-        self.beam_end = laser_ray_end(
+        # Auto-aim at nearest enemy
+        nearest = None
+        nd = 950
+        if enemies:
+            for e in enemies:
+                if not hasattr(e, "pos") or not hasattr(e, "hp") or e.hp <= 0:
+                    continue
+                d = self.pos.distance_to(e.pos)
+                if d < nd:
+                    nd = d
+                    nearest = e
+        if nearest:
+            self.ult_laser_angle = math.atan2(
+                nearest.pos.y - self.pos.y, nearest.pos.x - self.pos.x)
 
+        self.beam_end = laser_ray_end(
             grid, self.beam_start, self.ult_laser_angle, 950, self.map_w, self.map_h)
 
         charge_ratio = max(0.5, self.beam_w / 30.0)
