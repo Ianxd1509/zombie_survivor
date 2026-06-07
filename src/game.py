@@ -1465,7 +1465,7 @@ class Game:
                                 self._reward_enemy_death(e)
                     elif domain_effect == "guitar_wave":
                         if random.random() < 0.04:
-                            for e in enemies:
+                            for e in list(self.enemies):
                                 if self.player.pos.distance_to(e.pos) < 350:
                                     died = e.hit(15)
                                     e.stun_timer = max(getattr(e, "stun_timer", 0), 20)
