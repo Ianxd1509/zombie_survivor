@@ -95,6 +95,7 @@ _SAVE_ALLOWLIST = {
     "shop_levels", "extra_shots", "bonus_firerate", "bonus_speed", "bonus_mag",
     "bonus_reload", "bonus_hp", "vampire", "lifesteal", "knockback", "mag", "reserve",
     "piercing", "bounce", "bonus_damage",
+    "fr_mult", "reload_mult", "dmg_mult",
     "evolution_items", "evolved", "chaos_items", "auras", "unique_items",
     "combo_counter",
     "turbo_timer", "shield_timer", "explosive_timer",

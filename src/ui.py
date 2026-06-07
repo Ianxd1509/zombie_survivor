@@ -510,7 +510,9 @@ def _shop_tooltip(surf, player, item, is_oscar, x, y, game=None):
         surf.blit(_f(11).render(f"Nivel: {lvl}/{mx}", True, GOLD), (tx, ty))
         ty += 16
         if iid == "firerate":
-            surf.blit(_f(11).render(f"FR: {player.fire_rate} -> {int(player.fire_rate*0.9)}", True, WHITE), (tx, ty))
+            before = int(player.fire_rate * player.fr_mult)
+            after = int(player.fire_rate * player.fr_mult * 0.9)
+            surf.blit(_f(11).render(f"FR: {before}ms -> {after}ms", True, WHITE), (tx, ty))
         elif iid == "dmg":
             surf.blit(_f(11).render(f"Daño: {player.damage} -> {player.damage+3}", True, WHITE), (tx, ty))
         elif iid == "hp":
@@ -572,9 +574,13 @@ def _shop_tooltip(surf, player, item, is_oscar, x, y, game=None):
             elif ptype == "dmg":
                 surf.blit(_f(11).render(f"Daño: {player.damage} -> {player.damage+3}", True, WHITE), (tx, ty+14))
             elif ptype == "firerate":
-                surf.blit(_f(11).render(f"FR: {player.fire_rate} -> {int(player.fire_rate*0.9)}", True, WHITE), (tx, ty+14))
+                before = int(player.fire_rate * player.fr_mult)
+                after = int(player.fire_rate * player.fr_mult * 0.9)
+                surf.blit(_f(11).render(f"FR: {before}ms -> {after}ms", True, WHITE), (tx, ty+14))
         elif tid.startswith("unique_"):
             surf.blit(_f(11).render("Item único permanente", True, GOLD), (tx, ty))
+        else:
+            surf.blit(_f(11).render(f"Costo: {item.get('cost','?')} bytes", True, WHITE), (tx, ty))
 
 # Draws the shop overlay with grid, tabs for Oscar, tooltip panel, and purchase flash
 def draw_shop(surf, player, sel, items, game=None):
@@ -646,7 +652,7 @@ def draw_shop(surf, player, sel, items, game=None):
 
     # Purchase flash
     flash_timer = getattr(game, "shop_flash_timer", 0) if game else 0
-    flash_idx = getattr(game, "shop_flash_idx", -1) if game else -1
+    flash_id = getattr(game, "shop_flash_id", None) if game else None
 
     for i, item in enumerate(filtered):
         bx = start_x + (i % cols) * (card_w + gap)
@@ -671,7 +677,8 @@ def draw_shop(surf, player, sel, items, game=None):
         is_sel = i == sel_in_filtered
 
         # Grab indicador compra
-        if flash_timer > 0 and flash_idx == i:
+        item_flash_id = item.get("id", item.get("type", ""))
+        if flash_timer > 0 and flash_id is not None and flash_id == item_flash_id:
             bg = (20, 60, 10) if (flash_timer // 4) % 2 == 0 else (0, 40, 5)
             draw_rrect(surf, bg, (bx, by, bw, bh))
             draw_glow(surf, GREEN, (bx + bw // 2, by + bh // 2), 60, 20)

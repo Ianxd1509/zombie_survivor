@@ -83,6 +83,7 @@ class Game:
         self.oscar_open = False
         self.shop_flash_timer = 0
         self.shop_flash_idx = -1
+        self.shop_flash_id = None
         self.shop_tab = 0
         self.spatial_hash = SpatialHash()
         self.ally_bullets = pygame.sprite.Group()
@@ -126,6 +127,9 @@ class Game:
             "bonus_mag": self.player.bonus_mag,
             "bonus_reload": self.player.bonus_reload,
             "bonus_hp": self.player.bonus_hp,
+            "fr_mult": self.player.fr_mult,
+            "reload_mult": self.player.reload_mult,
+            "dmg_mult": self.player.dmg_mult,
             "vampire": self.player.vampire,
             "piercing": self.player.piercing,
             "lifesteal": self.player.lifesteal,
@@ -356,6 +360,7 @@ class Game:
         self.oscar_open = False
         self.shop_flash_timer = 0
         self.shop_flash_idx = -1
+        self.shop_flash_id = None
         self.shop_tab = 0
         self.ally_bullets = pygame.sprite.Group()
         self.aliados = pygame.sprite.Group()
@@ -601,32 +606,29 @@ class Game:
             tid = item.get("type", "")
             # Oscar perm price scaling
             if tid.startswith("perm_"):
-                ptype = tid.replace("perm_", "")
-                oscar_key = f"oscar_{ptype}"
-                lvl = self.player.shop_levels.get(oscar_key, 0)
-                cost = int(item["cost"] * (1.35 ** lvl))
+                tid2 = tid.replace("perm_", "")
+                self.player.shop_levels[f"oscar_{tid2}"] = self.player.shop_levels.get(f"oscar_{tid2}", 0) + 1
+                cost = int(item["cost"] * (1.35 ** (self.player.shop_levels[f"oscar_{tid2}"] - 1)))
             if self.player.bytes >= cost:
                 self.player.bytes -= cost
-                # Track oscar perm purchases
-                if tid.startswith("perm_"):
-                    ptype = tid.replace("perm_", "")
-                    oscar_key = f"oscar_{ptype}"
-                    self.player.shop_levels[oscar_key] = self.player.shop_levels.get(oscar_key, 0) + 1
                 self._apply_oscar_item(item)
                 self.shop_flash_timer = 20
-                self.shop_flash_idx = idx
+                self.shop_flash_id = item.get("type", "")
                 SFX["click"].play()
             return
-        cost = self.shop_costs.get(item["id"], item["base_cost"])
+        # Vicente item handling
+        cost = item["base_cost"]
+        if item["id"] in self.shop_costs:
+            cost = self.shop_costs[item["id"]]
         if self.vendor == "vicente":
             cost = max(1, int(cost * 0.75))
         if self.player.bytes >= cost and self.player.shop_levels.get(item["id"], 0) < item["max"]:
             self.player.bytes -= cost
-            self.player.shop_levels[item["id"]] += 1
+            self.player.shop_levels[item["id"]] = self.player.shop_levels.get(item["id"], 0) + 1
             self.player.apply_upgrade(item["id"])
             self.shop_costs[item["id"]] = int(cost * 1.35)
             self.shop_flash_timer = 20
-            self.shop_flash_idx = idx
+            self.shop_flash_id = item["id"]
             SFX["click"].play()
 
     # Aplica efectos de items de Oscar: buffs, aliados, bombas, auras, fragmentos de evolución
@@ -691,7 +693,7 @@ class Game:
                 p.bonus_damage += 3
                 self.notifs.append(Notif("Daño +3 permanente!", (100, 255, 100), 90))
             elif ptype == "firerate":
-                p.bonus_firerate *= 0.9
+                p.fr_mult *= 0.9
                 self.notifs.append(Notif("Cadencia +10% permanente!", (100, 255, 100), 90))
         elif tid.startswith("aura_"):
             atype = tid.replace("aura_", "")
