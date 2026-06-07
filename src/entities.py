@@ -2338,6 +2338,9 @@ class Player(pygame.sprite.Sprite):
 
                     self.ability_active = False
 
+                    if SFX and hasattr(SFX, "get"):
+                        SFX["eder_laser"].stop()
+
             elif self.ability_charge >= self.ability_max_charge:
 
                 if z_key:
@@ -2349,7 +2352,7 @@ class Player(pygame.sprite.Sprite):
                         self.ult_charge = 0
 
                         if SFX and hasattr(SFX, "get"):
-                            SFX["eder_charge"].play()
+                            SFX["eder_charge"].play(loops=-1)
 
                     self.ult_charge = min(ULT_CHARGE_MAX, self.ult_charge + 1)
 
@@ -2359,13 +2362,22 @@ class Player(pygame.sprite.Sprite):
 
                     if self.ult_charge >= MIN_ULT_CHARGE:
 
+                        if SFX and hasattr(SFX, "get"):
+                            SFX["eder_charge"].stop()
+
                         self._fire_eder_laser(particles, notifs, grid)
+                    else:
+                        if SFX and hasattr(SFX, "get"):
+                            SFX["eder_charge"].stop()
 
                     self.ult_charging = False
 
                     self.ult_charge = 0
 
                 elif self.ult_charging and self.ult_charge >= ULT_CHARGE_MAX:
+
+                    if SFX and hasattr(SFX, "get"):
+                        SFX["eder_charge"].stop()
 
                     self._fire_eder_laser(particles, notifs, grid)
 
@@ -2710,7 +2722,7 @@ class Player(pygame.sprite.Sprite):
         self.shake = 8
 
         if SFX and hasattr(SFX, "get"):
-            SFX["eder_laser"].play()
+            SFX["eder_laser"].play(loops=-1)
 
         if notifs:
 

@@ -367,6 +367,9 @@ class Game:
         self.aliados = pygame.sprite.Group()
         self.shop_open = False
         stop_shop_music()
+        if SFX and hasattr(SFX, "get"):
+            SFX["eder_charge"].stop()
+            SFX["eder_laser"].stop()
         self.shop_items = SHOP_ITEMS
         self.shop_costs = {}
         self.admin_mode = False

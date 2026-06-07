@@ -59,7 +59,7 @@ if pygame.mixer.get_init():
             "explosion": make_sound(80, 0.4, vol=0.35, noise=True, name="explosion"),
             "laser": make_sound(600, 0.2, vol=0.20, name="laser"),
             "shop_open": make_sound(880, 0.12, vol=0.25, name="shop_open"),
-            "eder_charge": make_sound(350, 0.12, vol=0.20, name="eder_charge"),
+            "eder_charge": make_sound(300, 0.4, vol=0.20, name="eder_charge"),
             "eder_laser": make_sound(150, 2.0, vol=0.30, noise=True, name="eder_laser"),
         }
 
