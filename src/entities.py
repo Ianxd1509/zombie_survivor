@@ -3644,9 +3644,11 @@ class Mimic(pygame.sprite.Sprite):
         self.map_w = map_w
         self.map_h = map_h
         self.exploded = False
+        self.rect = pygame.Rect(0, 0, self.radius * 2, self.radius * 2)
+        self.rect.center = (int(self.pos.x), int(self.pos.y))
 
     def update(self):
-        pass
+        self.rect.center = (int(self.pos.x), int(self.pos.y))
 
     def explode(self, player, particles):
         if self.exploded:

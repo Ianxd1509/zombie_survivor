@@ -1239,7 +1239,7 @@ class Game:
                 self.enemy_bullets.remove(eb)
                 continue
             if self.player.pos.distance_to(eb.pos) < self.player.radius + eb.radius:
-                self.player.take_damage(eb.dmg)
+                self.player.take_damage(eb.damage)
                 self.flash_alpha = 80
                 vec = eb.pos - self.player.pos
                 if vec.length() > 0: vec.normalize_ip()
