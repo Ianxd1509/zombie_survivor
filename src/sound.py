@@ -16,7 +16,9 @@ def make_sound(freq, duration, vol=0.3, noise=False, name=None):
     if name:
         path = os.path.join(SFX_DIR, name + ".wav")
         if os.path.isfile(path):
-            return pygame.mixer.Sound(path)
+            snd = pygame.mixer.Sound(path)
+            snd.set_volume(vol)
+            return snd
     sr = 22050
     n = int(sr * duration)
     data = bytearray()
@@ -118,7 +120,7 @@ if pygame.mixer.get_init():
             "hit": make_sound(180, 0.15, vol=0.22, name="hit"),
             "kill": make_sound(400, 0.15, vol=0.25, name="kill"),
             "pickup": make_sound(660, 0.15, vol=0.20, name="pickup"),
-            "reload": make_sound(250, 0.30, vol=0.35, name="recarga"),
+            "reload": make_sound(250, 0.30, vol=0.60, name="recarga"),
             "empty": make_sound(500, 0.04, vol=0.08, name="empty"),
             "gameover": make_sound(65, 1.5, vol=0.30, noise=True, name="gameover"),
             "death": make_sound(55, 1.2, vol=0.30, noise=True, name="death"),
