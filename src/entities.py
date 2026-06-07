@@ -1555,13 +1555,11 @@ class BrainrotMinion(pygame.sprite.Sprite):
             return
         from src.sprites import load_image
         for i in range(3):
-            s = 24
-            img = load_image(f"enemies/brainrot_{i}.png", (s, s), f"brainrot_{i}_{s}")
+            img = load_image(f"enemies/brainrot_{i}.png", cache_key=f"brainrot_{i}_raw")
             cls._brainrot_imgs.append(img)
 
     def __init__(self, pos, player, map_w=MAP_W, map_h=MAP_H):
         super().__init__()
-        # Inicializa minion cerebral con HP 60, velocidad 2.5
         self.pos = pygame.Vector2(pos)
         self.player = player
         self.hp = 60
@@ -1583,9 +1581,20 @@ class BrainrotMinion(pygame.sprite.Sprite):
         self._load_brainrot_imgs()
         custom = self._brainrot_imgs[self._img_idx]
         if custom is not None:
-            cx = self.radius - custom.get_width() // 2
-            cy = self.radius - custom.get_height() // 2
-            self.image.blit(custom, (cx, cy))
+            r = self.radius
+            target = r * 2 - 2
+            scale = min(target / custom.get_width(), target / custom.get_height(), 1)
+            nw = max(1, int(custom.get_width() * scale))
+            nh = max(1, int(custom.get_height() * scale))
+            scaled = pygame.transform.smoothscale(custom, (nw, nh))
+            mask = pygame.Surface((nw, nh), pygame.SRCALPHA)
+            cx, cy = nw // 2, nh // 2
+            cr = min(cx, cy)
+            pygame.draw.circle(mask, (255, 255, 255, 255), (cx, cy), cr)
+            mask.blit(scaled, (0, 0), None, pygame.BLEND_RGBA_MULT)
+            dx = r - mask.get_width() // 2
+            dy = r - mask.get_height() // 2
+            self.image.blit(mask, (dx, dy))
             return
         # Fallback procedural
         r = self.radius
