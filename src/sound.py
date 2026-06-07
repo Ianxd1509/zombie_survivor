@@ -103,9 +103,16 @@ def stop_bg_music():
 
 # Reproduce la música del menú principal en bucle
 def play_menu_music():
-    global _menu_music
+    global _menu_music, _bg_music, _boss_music, _shop_music
     if _menu_music is not None:
         return
+    # Detiene cualquier otra música
+    if _bg_music:
+        _bg_music.stop(); _bg_music = None
+    if _boss_music:
+        _boss_music.stop(); _boss_music = None
+    if _shop_music:
+        _shop_music.stop(); _shop_music = None
     path = os.path.join(SFX_DIR, "menu_music.wav")
     if os.path.isfile(path):
         _menu_music = pygame.mixer.Sound(path)
@@ -140,12 +147,15 @@ def stop_menu_music():
         _menu_music.stop()
         _menu_music = None
 
-# Reproduce la música de jefe en bucle (detiene la música de fondo primero)
+# Reproduce la música de jefe en bucle (detiene cualquier otra música)
 def play_boss_music():
-    global _boss_music, _bg_music
+    global _boss_music, _bg_music, _menu_music, _shop_music
     if _bg_music:
-        _bg_music.stop()
-        _bg_music = None
+        _bg_music.stop(); _bg_music = None
+    if _menu_music:
+        _menu_music.stop(); _menu_music = None
+    if _shop_music:
+        _shop_music.stop(); _shop_music = None
     if _boss_music is not None:
         return
     path = os.path.join(SFX_DIR, "boss_music.wav")
@@ -192,16 +202,16 @@ _shop_music = None
 
 # Reproduce la música de tienda (Vicente → Shop.wav, Oscar → Hip Shop.wav)
 def play_shop_music(vendor="vicente"):
-    global _shop_music, _bg_music, _boss_music
+    global _shop_music, _bg_music, _boss_music, _menu_music
     if _shop_music is not None:
         return
-    # Pausa la música de fondo y de jefe
+    # Detiene cualquier otra música
     if _bg_music:
-        _bg_music.stop()
-        _bg_music = None
+        _bg_music.stop(); _bg_music = None
     if _boss_music:
-        _boss_music.stop()
-        _boss_music = None
+        _boss_music.stop(); _boss_music = None
+    if _menu_music:
+        _menu_music.stop(); _menu_music = None
     fname = "shop_vicente.wav" if vendor == "vicente" else "shop_oscar.wav"
     path = os.path.join(SFX_DIR, fname)
     if os.path.isfile(path):
@@ -218,10 +228,17 @@ def stop_shop_music():
 
 # Reproduce la música de fondo según la oleada actual (alterna entre bg_music.wav y bg_music2.wav)
 def update_bg_music(wave=1, intensity=0.0):
-    global _bg_music, _bg_track
+    global _bg_music, _bg_track, _menu_music, _boss_music, _shop_music
     # If already playing, don't restart — let it play through
     if _bg_music is not None:
         return
+    # Detiene cualquier otra música
+    if _menu_music:
+        _menu_music.stop(); _menu_music = None
+    if _boss_music:
+        _boss_music.stop(); _boss_music = None
+    if _shop_music:
+        _shop_music.stop(); _shop_music = None
     fname = "bg_music2.wav" if _bg_track == 2 else "bg_music.wav"
     path = os.path.join(SFX_DIR, fname)
     if os.path.isfile(path):
