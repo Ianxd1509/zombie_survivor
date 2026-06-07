@@ -591,7 +591,15 @@ class Game:
     def open_shop(self, vendor="vicente"):
         self.vendor = vendor
         if vendor == "oscar":
-            self.shop_items = list(OSCAR_ITEMS)
+            self.shop_items = [dict(item) for item in OSCAR_ITEMS]
+            for item in self.shop_items:
+                item["_base"] = item["cost"]
+                tid = item.get("type", "")
+                if tid.startswith("perm_"):
+                    ptype = tid.replace("perm_", "")
+                    lvl = self.player.shop_levels.get(f"oscar_{ptype}", 0)
+                    if lvl > 0:
+                        item["cost"] = int(item["_base"] * (1.35 ** lvl))
         else:
             self.shop_items = [dict(item) for item in SHOP_ITEMS]
             for item in self.shop_items:
@@ -606,14 +614,16 @@ class Game:
         item = items[idx]
         is_oscar = "id" not in item
         if is_oscar:
-            cost = item["cost"]
             tid = item.get("type", "")
-            # Oscar perm price scaling
-            if tid.startswith("perm_"):
-                tid2 = tid.replace("perm_", "")
-                self.player.shop_levels[f"oscar_{tid2}"] = self.player.shop_levels.get(f"oscar_{tid2}", 0) + 1
-                cost = int(item["cost"] * (1.35 ** (self.player.shop_levels[f"oscar_{tid2}"] - 1)))
+            cost = item.get("cost", 0)
             if self.player.bytes >= cost:
+                if tid.startswith("perm_"):
+                    tid2 = tid.replace("perm_", "")
+                    old_lvl = self.player.shop_levels.get(f"oscar_{tid2}", 0)
+                    base = item.get("_base", cost)
+                    cost = int(base * (1.35 ** old_lvl))
+                    self.player.shop_levels[f"oscar_{tid2}"] = old_lvl + 1
+                    item["cost"] = int(base * (1.35 ** (old_lvl + 1)))
                 self.player.bytes -= cost
                 self._apply_oscar_item(item)
                 self.shop_flash_timer = 20
@@ -624,8 +634,6 @@ class Game:
         cost = item["base_cost"]
         if item["id"] in self.shop_costs:
             cost = self.shop_costs[item["id"]]
-        if self.vendor == "vicente":
-            cost = max(1, int(cost * 0.75))
         if self.player.bytes >= cost and self.player.shop_levels.get(item["id"], 0) < item["max"]:
             self.player.bytes -= cost
             self.player.shop_levels[item["id"]] = self.player.shop_levels.get(item["id"], 0) + 1
