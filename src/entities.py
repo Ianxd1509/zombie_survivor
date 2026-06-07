@@ -2454,6 +2454,14 @@ class Player(pygame.sprite.Sprite):
 
             self.domain_cd_timer = DOMAIN_COOLDOWN
 
+            if self.char_id == "vicente":
+
+                self.domain_effect = ["python_import", "python_compile", "python_debug"][self.vicente_mode]
+
+            else:
+
+                self.domain_effect = DOMAIN_EXPANSION.get(self.char_id, {}).get("effect", "")
+
             if notifs is not None:
 
                 if self.char_id == "vicente":
@@ -3138,27 +3146,39 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        elif ab == "tornado_laser":
+        elif ab == "guitar_riff":
+
+            self.shake = 6
 
             self.ability_active = True
 
-            self.ability_duration = 120
+            self.ability_duration = 20
 
-            beam = LaserBeam(self.pos.copy(), self.angle, self.map_w, self.map_h)
+            self._ability_hit_enemies(enemies, 300, 120, particles, (255, 200, 50), stun=25)
 
-            self.lasers.append(beam)
+            if particles:
 
-            if all_sprites is not None:
+                for _ in range(25):
 
-                all_sprites.add(beam)
+                    a = random.uniform(0, math.tau)
 
-            if self.tornado is None:
+                    sp = random.uniform(5, 12)
 
-                self.tornado = Tornado(self.pos.copy(), self.angle, self.map_w, self.map_h)
+                    particles.append(Particle(
+
+                        self.pos, pygame.Vector2(math.cos(a), math.sin(a)) * sp,
+
+                        (200, random.randint(80, 200), 255),
+
+                        random.uniform(2, 5), random.randint(10, 22)))
+
+            if SFX and hasattr(SFX, "get"):
+
+                SFX["guitar_riff"].play()
 
             if notifs:
 
-                notifs.append(Notif("TORNADO LASER!", (255, 80, 80), 30))
+                notifs.append(Notif("RIFF ELÉCTRICO!", (200, 80, 255), 45))
 
 
 
@@ -3507,44 +3527,9 @@ class Player(pygame.sprite.Sprite):
                             (100, 200, 255), random.uniform(3, 7), random.randint(15, 40)))
 
                 if notifs:
-
                     notifs.append(Notif(f"LIMPIADOR! {killed} enemigos eliminados!", (100, 200, 255), 80))
 
 
-
-        elif ab == "guitar_riff":
-
-            self.shake = 6
-
-            self.ability_active = True
-
-            self.ability_duration = 20
-
-            self._ability_hit_enemies(enemies, 300, 120, particles, (255, 200, 50), stun=25)
-
-            if particles:
-
-                for _ in range(25):
-
-                    a = random.uniform(0, math.tau)
-
-                    sp = random.uniform(5, 12)
-
-                    particles.append(Particle(
-
-                        self.pos, pygame.Vector2(math.cos(a), math.sin(a)) * sp,
-
-                        (200, random.randint(80, 200), 255),
-
-                        random.uniform(2, 5), random.randint(10, 22)))
-
-            if SFX and hasattr(SFX, "get"):
-
-                SFX["guitar_riff"].play()
-
-            if notifs:
-
-                notifs.append(Notif("RIFF ELÉCTRICO!", (200, 80, 255), 45))
 
 
 
