@@ -1,0 +1,45 @@
+COMO PONER TU PROPIA MUSICA Y SONIDOS
+========================================
+
+1. CARPETA
+   Crea/usa la carpeta: assets/sounds/
+   (ya existe si el juego se ha ejecutado al menos una vez)
+
+2. MUSICA DE MENU
+   Archivo: assets/sounds/menu_music.wav
+   - Suena en: menu principal, seleccion de personaje/mapa, controles, creditos
+   - Se reproduce en loop
+   - Si no existe el archivo, el juego genera una cancion sintetica automatica
+
+3. MUSICA DE JUEGO (dentro de la partida)
+   Archivo: assets/sounds/bg_music.wav
+   - Suena SOLO mientras juegas (estado play/shop_prep)
+   - Se detiene al pausar, morir, o volver al menu
+   - Si no existe el archivo, el juego genera musica sintetica que varia segun la wave
+
+4. MUSICA DEL JEFE VICENTE (wave 30)
+   Archivo: assets/sounds/boss_music.wav
+   - Suena cuando aparece Vicente (jefe final) en la wave 30
+   - Reemplaza automaticamente la musica de juego (bg_music) mientras dura la pelea
+   - Se detiene al derrotar a Vicente
+   - Si no existe el archivo, el juego genera musica epica sintetica con bajos y percusion
+
+5. FORMATO RECOMENDADO
+   - WAV mono
+   - 22050 Hz de sample rate
+   - 16-bit por muestra
+   - Cualquier duracion (se reproduce en loop)
+
+5. COMO FUNCIONA
+   El juego siempre busca primero el archivo .wav en assets/sounds/.
+   Si lo encuentra, lo usa directamente.
+   Si no, genera el sonido con matematicas (senoides, ruido blanco).
+   Para los SFX (disparos, explosiones, etc.) tambien busca .wav con el nombre
+   de cada efecto en la misma carpeta.
+
+6. SFX INDIVIDUALES (opcional)
+   Puedes reemplazar sonidos individuales creando archivos como:
+   - assets/sounds/shoot.wav
+   - assets/sounds/explosion.wav
+   - assets/sounds/gameover.wav
+   - etc. (los nombres estan en src/sound.py linea 37-57)

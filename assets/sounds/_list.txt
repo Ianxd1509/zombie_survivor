@@ -1,0 +1,51 @@
+== CARPETA DE SONIDOS PERSONALIZADOS ==
+
+Coloca archivos .wav (mono, 22050Hz, 16-bit) con estos nombres
+y el juego los usara automaticamente. Si no encuentra un archivo,
+genera el sonido por procedimientos.
+
+Todos los sonidos se definen en src/sound.py y se usan via `from src.sound import SFX`.
+
+== EFECTOS DE SONIDO (SFX) ==
+
+ shoot.wav       - Disparo normal (usado en entities.py:843)
+ shotgun.wav     - Disparo escopeta (NO usado actualmente, definido en sound.py:29)
+ hit.wav         - Recibir dano (entities.py:1387)
+ kill.wav        - Enemigo eliminado (usado en entities.py y game.py, ~8 veces)
+ pickup.wav      - Recoger item/powerup (game.py:853, 981)
+ reload.wav      - Recargar arma (entities.py:823)
+ empty.wav       - Cargador vacio / personaje bloqueado (entities.py:871, main.py:162,261)
+ gameover.wav    - Game over (game.py:1082)
+ death.wav       - Muerte del jugador (game.py:1081)
+ victory.wav     - Victoria wave 30 (game.py:621)
+ wave.wav        - Anuncio de nueva wave (game.py:331)
+ levelup.wav     - Subir de nivel Y activacion de habilidades Q/Z y DOMINIO X
+                   (entities.py:879=Q, 1065=Z, 1173=Dominio, 1398=subir nivel)
+ boss_warn.wav   - Alarma de jefe (game.py:333)
+ transition.wav  - Transicion entre fases (game.py:627)
+ hover.wav       - Navegar menu/tienda (main.py ~17 usos, ui.py)
+ click.wav       - Seleccionar en menu/comprar (main.py ~11 usos, entities.py:838)
+ wave_clear.wav  - Wave completada (game.py:617)
+ shop_open.wav   - Abrir tienda (main.py:211,215)
+ eder_charge.wav - Carga de Z de Eder (entities.py:2347)
+ eder_laser.wav  - Láser de Z de Eder (entities.py:2679)
+
+== MUSICA DE FONDO ==
+
+ bg_music.wav    - Loop de fondo (2+ segundos, se reproduce en bucle)
+                    Reproduce en src/sound.py:update_bg_music()
+                    Se intensifica con cada wave (game.py:323)
+                    Se inicia en main.py:45, se detiene en main.py:300
+ shop_vicente.wav- Música de tienda de Vicente (sound.py:play_shop_music)
+ shop_oscar.wav  - Música de tienda de Oscar (sound.py:play_shop_music)
+
+== NOTAS ==
+
+- Si bg_music.wav existe, ignora la generacion procedural y usa tu archivo
+  directamente. Se intensifica con las waves automaticamente.
+- Si cualquier SFX .wav existe, se carga en lugar del generado proceduralmente.
+- La generacion procedural usa 22050Hz, 16-bit, mono.
+- Dominio X usa levelup.wav (mismo sonido que subir nivel).
+- Todos los efectos visuales son generados por codigo (circulos pygame),
+  no requieren archivos de imagen. Los .png en assets/ son decorativos.
+- shotgun.wav no se usa activamente (las escopetas usan shoot.wav).

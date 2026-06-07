@@ -1,0 +1,463 @@
+============================================================
+  ZOMBIE SURVIVOR - "VIRUS"
+  Explicación del Código Fuente
+  Para: Profesor de Programación
+============================================================
+
+=====================================================
+ 1. QUE ES EL PROYECTO
+=====================================================
+
+Es un videojuego hecho en Python con la libreria Pygame.
+El jugador es un estudiante de programacion que debe
+sobrevivir a oleadas de virus/enemigos en un campus
+universitario. El juego termina cuando el jugador
+muere o cuando sobrevive a las 30 oleadas.
+
+Tema: Programacion y hacking - las balas son codigo
+Python, los enemigos son virus, y las habilidades son
+conceptos de programacion (bucle for, buffer overflow,
+import this, etc.)
+
+=====================================================
+ 2. ESTRUCTURA DEL PROYECTO
+=====================================================
+
+zombie_survivor/
+├── config.py          - Datos del juego (personajes,
+│                        items, colores, bombas, etc.)
+├── main.py            - Punto de entrada, bucle principal
+├── src/
+│   ├── camera.py      - Camara que sigue al jugador
+│   ├── effects.py     - Efectos visuales (particulas,
+│                        lluvia de matrix, numeros de daño)
+│   ├── entities.py    - TODOS los personajes, enemigos,
+│                        balas, bombas, aliados, etc.
+│   ├── game.py        - Logica principal del juego
+│                        (oleadas, colisiones, tienda)
+│   ├── sound.py       - Sonidos y musica generados
+│   ├── sprites.py     - Dibujo del personaje principal
+│   ├── tactics.py     - IA de enemigos en grupo
+│   ├── tilemap.py     - Mapa del campus universitario
+│   └── ui.py          - Menus, HUD, tienda, creditos
+
+=====================================================
+ 3. EXPLICACION DE CADA ARCHIVO
+=====================================================
+
+--- config.py ---
+Es como la "base de datos" del juego. Aqui estan:
+- Los 10 personajes jugables con sus estadisticas
+  (vida, velocidad, daño, etc.)
+- Las 7 bombas diferentes
+- Los items de la tienda
+- Los colores del juego
+- Las palabras secretas (como "import this")
+- La contraseña de administrador
+
+Si quisieras cambiar cuanto daño hace un personaje
+o cuantas balas tiene, aqui se modificaria.
+
+--- main.py ---
+Es el "cerebro" que arranca el juego. Hace 3 cosas
+en cada fotograma (60 veces por segundo):
+1. Revisa si el usuario presiono teclas o mouse
+2. Actualiza la logica del juego (movimiento,
+   enemigos, disparos)
+3. Dibuja todo en la pantalla
+
+Tambien maneja los estados del juego:
+menu -> seleccion de personaje -> jugar -> pausa
+                                              -> game over
+                                              -> victoria
+
+--- src/game.py ---
+Es el archivo mas importante. La clase Game() controla:
+- Las oleadas de enemigos (crea enemigos cada vez
+  mas dificiles)
+- Las colisiones (balas contra enemigos)
+- La tienda de Oscar y Vicente
+- Las bombas (cuando explotan, el napalm, etc.)
+- El sistema de "dominio" (poder especial con X)
+- Los power-ups en el suelo
+- Guardar y cargar partida
+- Devolver recompensas al matar enemigos (puntos,
+  bytes, items)
+
+--- src/entities.py ---
+Aqui viven todos los "seres" del juego:
+- Player (jugador): se mueve con WASD, dispara con
+  clic, tiene habilidades con Q, Z y X
+- Enemy (enemigos): 14 tipos diferentes (rapidos,
+  lentos, que disparan, que curan, jefes, etc.)
+- Bullet (balas): proyectiles con forma de codigo
+- Bomb (bombas): 7 tipos con comportamientos unicos
+- Wall (muro): pared desplegable de Randy
+- Pickup (objetos): vida, municion que recoges
+- Powerup (mejoras): turbo, escudo, etc.
+- Ally (aliados): NPCs que compras en la tienda
+- ShopTerminal: los vendedores Oscar y Vicente
+
+--- src/ui.py ---
+Todo lo que ves en pantalla:
+- Menu principal (con lluvia de codigo matrix)
+- Seleccion de personaje
+- Pantalla de pausa
+- Pantalla de game over / victoria
+- El HUD (barra de vida, puntuacion, oleada)
+- La tienda de Oscar
+- La pantalla de creditos
+- Controles
+
+--- src/tilemap.py ---
+Genera el mapa del campus universitario:
+- 128 x 128 cuadros (cada cuadro es 40x40 pixeles)
+- Edificios (A, B, cafeteria, laboratorio, biblioteca)
+- Canchas deportivas
+- Estacionamiento
+- Jardin botanico con laberinto
+- Arboles, bancas, faroles, fuente
+- Calles y caminos que conectan todo
+
+--- src/sound.py ---
+Genera los sonidos del juego usando matematicas:
+- Ondas senoidales para crear tonos
+- Ruido blanco para explosiones
+- La musica de fondo se genera en vivo
+
+--- src/effects.py ---
+Efectos visuales:
+- Particulas (circulos de colores que se mueven)
+- Numeros de daño flotantes
+- Lluvia de codigo matrix
+- Notificaciones en pantalla
+
+--- src/camera.py ---
+Mueve la "camara" para seguir al jugador por el mapa.
+Tiene suavizado (no se mueve bruscamente) y efecto
+de temblor cuando hay explosiones grandes.
+
+--- src/tactics.py ---
+Inteligencia artificial para grupos de enemigos.
+Cuando hay 3 o mas enemigos cerca, forman grupos
+y rodean al jugador desde diferentes angulos.
+
+--- src/sprites.py ---
+Dibuja al personaje principal como un circulo
+de color con la inicial del nombre adentro.
+
+=====================================================
+ 4. LOS 10 PERSONAJES
+=====================================================
+
+Cada personaje tiene habilidades unicas:
+
+1. IRVING - "Bucle For"
+   Q: APLASTAR - Golpe en area
+   Z: CICLO INFINITO - 10 rayos en circulo
+   X: DOMINIO CICLO FOR - Lluvia de daño
+
+2. SEBAS - "Rebota"
+   Q: REBOTAR - Balas rebotan 5 veces
+   Z: REBOTE CAOTICO - 10 rebotes con daño doble
+   X: DOMINIO LLUVIA DE METEOROS - Daño en area
+
+3. LEO - "Scraper"
+   Q: ROBAR - Roba bytes de enemigos
+   Z: BYTE OVERFLOW - Multiplica bytes x5
+   X: DOMINIO DESBORDAMIENTO - Genera bytes
+
+4. DIEGO - "Brainrot"
+   Q: BRAINROT - Invoca 2 esbirros
+   Z: HORDA CEREBRAL - Invoca 6 esbirros
+   X: DOMINIO CEREBRO COLECTIVO - Crea esbirros
+
+5. USIEL - "Admin Recursos"
+   Q: BOLILLO - Cura total + invulnerabilidad
+   Z: ADMIN GODMODE - Cura + daño triple
+   X: DOMINIO ADMIN TOTAL - Regeneracion
+
+6. OBED - "Billie Eilish"
+   Q: BILLIE - Invoca a Billie NPC
+   Z: BILLIE MUNDIAL - Billie + atraer enemigos
+   X: DOMINIO ESCENARIO DE BILLIE - Atrae enemigos
+
+7. EDER - "Tornado Laser"
+   Q: TORNADO LASER - Laser mas tornado
+   Z: LASER CARGADO (mantener Z)
+   X: DOMINIO OJO DEL TORNADO - Tornado gigante
+
+8. IAN - "Sobrecarga Buffer"
+   Q: BUFFER - Rayo de energia
+   Z: BUFFER CRASH - Explosion de rayo
+   X: DOMINIO DEADLOCK - Congela enemigos
+
+9. RANDY - "Firewall Humano"
+   Q: MURO - Crea una pared
+   Z: FIREWALL TOTAL - Crea 3 paredes
+   X: DOMINIO FORTALEZA FIREWALL - Paredes automaticas
+
+10. VICENTE - "Legado Python" (secreto, se desbloquea
+    al ganar el juego) [BUFFEADO]
+    Q: IMPORT SNIPPET - Invoca 3 fragmentos de codigo
+    Z: LIMPIADOR - Mata a TODOS los enemigos en pantalla
+       al instante
+    X: DOMINIO LEALTAD A PYTHON - Rayos de codigo
+    Pasiva: +30 bytes (antes +15)
+    Stats buffeados: HP 300, Speed 5.0, Daño 35,
+    Cadencia 60, Mag 70, 3 balas por disparo
+    Tienda de Vicente: 25% descuento en todos los items
+
+=====================================================
+ 5. COMO FUNCIONA EL JUEGO (PASO A PASO)
+=====================================================
+
+1. El jugador abre el juego y ve el menu principal
+   (con lluvia de codigo matrix de fondo)
+
+2. Selecciona un personaje de los 10 disponibles
+
+3. Comienza la partida en el campus universitario.
+   Hay 30 segundos de preparacion para comprar mejoras
+
+4. Cada oleada trae mas enemigos y mas fuertes:
+   - Oleada 1: ~11 enemigos basicos
+   - Oleada 30: ~98 enemigos de todo tipo
+   - Cada 5 oleadas: JEFE (muy dificil)
+   - Cada 3 oleadas: modificador especial (mas
+     enemigos, mas velocidad, etc.)
+
+5. El jugador dispara con el MOUSE, se mueve con
+   WASD y usa habilidades con Q, Z, X:
+   - Q: Habilidad especial (cooldown variable)
+   - Z: Ultimate (se carga con kills)
+   - X: Dominio (cuesta 40 kills, dura 15 segundos)
+
+6. Al matar enemigos, obtienes BYTES (dinero) y XP
+
+7. Entre oleadas, puedes comprar en la tienda:
+   - VICENTE (tecla F): mejoras permanentes
+   - OSCAR (tecla T): consumibles, bombas, aliados
+
+8. Si el jugador muere: pantalla de GAME OVER con
+   estadisticas. Presiona R para reintentar.
+
+9. En la oleada 30 aparece VICENTE como JEFE FINAL
+   con 4 fases y 4 barras de vida. Tiene ataques
+   como teletransportacion, dominio propio, invocar
+   fragmentos de codigo, escudo WinRAR, bombas RAR,
+   compresion, y un ultimo recurso al 5% de vida.
+   Es el combate mas dificil del juego.
+
+10. Si sobrevive las 30 oleadas y derrota a Vicente:
+    VICTORIA, se desbloquea el personaje secreto
+    VICENTE como personaje jugable
+
+=====================================================
+ 6. SISTEMA DE BOMBAS
+=====================================================
+
+Se lanzan con la tecla G. Hay 7 tipos:
+
+- FRAG: Explosion normal, daño 80
+- CLUSTER: Se parte en 3 bombas pequeñas
+- STICKY: Se pega al primer enemigo que toca
+- MINE: Mina terrestre, explota cuando un enemigo
+  la pisa
+- NAPALM: Crea una piscina de fuego por 4 segundos
+- FLASH: No hace daño, ciega enemigos 3 segundos
+- BOUNCING: Rebota en paredes 3 veces
+
+=====================================================
+ 7. SISTEMA DE DOMINIO (X)
+=====================================================
+
+Es el poder mas fuerte del juego:
+- Cuesta 40 kills cargarlo
+- Dura 15 segundos
+- Tarda 45 segundos en recargarse
+- Radio de efecto: 400 pixeles
+- Cada personaje tiene un dominio unico
+- Se activa/desactiva con la tecla X
+- Visual estilo Jujutsu Kaisen: pared circular con
+  runas, lineas radiales, nombre con brillo,
+  particulas orbitando y pulso animado
+
+=====================================================
+ 8. MAPA DEL CAMPUS
+=====================================================
+
+El mapa representa un campus universitario de
+5120 x 5120 pixeles con:
+
+- Edificio A (aulas)
+- Edificio B (aulas)
+- Cafeteria
+- Laboratorio de Computo
+- Biblioteca
+- Canchas deportivas
+- Plaza Civica (centro)
+- Estacionamiento
+- Jardin Botanico (con laberinto de setos)
+- Calles y banquetas
+- Arboles, faroles, bancas, fuente
+- Autos en el estacionamiento
+
+=====================================================
+ 9. ENEMIGOS (VIRUS)
+=====================================================
+
+14 tipos de enemigos:
+
+- runner: rapido pero debil
+- walker: normal
+- tank: mucho hp, lento
+- shooter: dispara a distancia
+- healer: cura a otros enemigos
+- swarm: muy debil pero viene en grupos
+- shielded: tiene escudo
+- bomber: explota al morir
+- splitter: se divide en 3 al morir
+- worm: viaja bajo tierra
+- camouflage: casi invisible
+- buffer: potencia a otros enemigos
+- elite: mini-jefe
+- boss: jefe normal (cada 5 oleadas, oleadas 5-25)
+- vicente_boss: jefe final de la oleada 30.
+  Tiene 8000 HP base, 4 fases de combate, 4 barras
+  de vida segmentadas, y multiples ataques:
+  Fase 1 (100%-75%): Dispara 4 proyectiles, escudo
+  Fase 2 (75%-50%): Dispara 6, invoca ImportSnippets,
+    teletransportacion
+  Fase 3 (50%-25%): Dominio LEALTAD A PYTHON (bullet hell),
+    Syntax Wall, carga a 3x velocidad
+  Fase 4 (25%-0%): Dominio permanente, Compress,
+    RAR Bomb, RAR Shield, Extract (invoca 3 runners),
+    Last Stand al 5% HP (se cura, 40 balas radiales,
+    6 snippets)
+
+=====================================================
+ 10. MODIFICADORES DE OLEADA
+=====================================================
+
+Cada 3 oleadas (excepto jefes) aparece un
+modificador especial:
+
+- horda: el doble de enemigos (pero con menos vida)
+- vampirica: los enemigos roban vida al golpear
+- elite: solo enemigos fuertes
+- toxica: zonas toxicas en el piso
+- veloz: enemigos 50% mas rapidos
+- blindaje: todos los enemigos tienen escudo
+- explosivo: todos explotan al morir
+
+=====================================================
+ 11. EQUIPO DE DESARROLLO
+=====================================================
+
+GEMINI
+OPEN CODE
+IRVING
+IAN
+SEBASTIAN
+DIEGO
+EDER
+VICENTE (Jefe Final)
+
+=====================================================
+ 12. TECLAS Y CONTROLES
+=====================================================
+
+MOVIMIENTO:
+- W, A, S, D ......... Moverse
+- SHIFT .............. Correr
+
+COMBATE:
+- CLICK IZQUIERDO .... Disparar
+- R ................. Recargar
+- 1, 2, 3, 4 ........ Cambiar arma
+- Q ................. Habilidad especial
+- Z ................. Ultimate
+- X ................. Dominio (activar/desactivar)
+- G ................. Lanzar bomba
+
+INTERACCION:
+- F ................. Comprar con Vicente
+- T ................. Comprar con Oscar
+- E ................. Abrir cofres/airdrop
+
+SISTEMA:
+- ESC ............... Menu/Pausa/Salir al menu
+- , (coma) .......... Modo administrador (pass: ianesmipastor)
+- R (en Game Over) .. Reintentar
+
+ERRORES:
+- Si el juego crashea, el error se guarda automaticamente
+  en crash_log.txt (con fecha, hora y traceback completo)
+
+============================================================
+  13. CAMBIOS Y OPTIMIZACIONES
+============================================================
+
+- Escopeta: ahora tiene alcance corto realista. Los
+  perdigones desaparecen tras 10 frames (~140 pixeles)
+
+- Dominio: aumentado a 400 pixeles de radio y 15
+  segundos de duracion. Cuesta 40 kills. Barrera
+  visual estilo Jujutsu Kaisen (capa oscura, anillos,
+  runas orbitando, lineas radiales, nombre con brillo)
+
+- Pausa solo con ESC 
+
+- Vicente personaje jugable BUFFEADO:
+  * HP 200->300, Speed 4->5, Daño 25->35, Cadencia
+    100->60, Mag 50->70, 2->3 balas, CD 25s->12s
+  * Q: 1->3 ImportSnippets
+  * Z: Ahora mata TODOS los enemigos en pantalla
+    (antes invocaba 5 snippets)
+  * ImportSnippet: HP 100->200, daño 35->50,
+    speed 2.5->3.5, lifetime 600->900
+  * Tienda Vicente: 25% descuento
+
+- Vicente JEFE FINAL (oleada 30):
+  * Nuevo etype "vicente_boss" con 8000 HP base,
+    radio 42, velocidad 1.8
+  * 4 fases de combate con ataques unicos
+  * 4 barras de vida segmentadas en el HUD
+  * Mecanicas: escudo azul, teletransporte,
+    dominio LEALTAD A PYTHON, Syntax Wall,
+    Compress, RAR Bomb, RAR Shield, Extract,
+    carga a 5x velocidad, Last Stand (se cura
+    al 5% HP)
+  * Inspirado en WinRAR/7-Zip (programas rusos)
+
+- Bugfix bomba napalm:
+  * Ya no quema desde donde se tira — ahora vuela
+    20 frames y detona con particulas + pool de
+    fuego por 240 frames
+  * pool_life ya no empieza en 240 en __init__
+  * Napalm no se mata al detonar para que el pool
+    siga activo
+
+- Bugfix enemigos spawneaban en areas aisladas:
+  * Nueva funcion compute_reachable() que usa BFS
+    flood-fill desde el spawn del jugador
+  * Enemigos solo spawnean en tiles alcanzables
+  * Variable ENEMY_REACHABLE en entities.py
+  * Se computa una vez al generar el grid
+
+- Optimizaciones de rendimiento:
+  * Sprite del jugador pre-renderizado (no se
+    redibuja cada frame)
+  * Niebla a media resolucion (640x360 en vez de
+    1280x720)
+  * Mas abajo en el codigo: tiles pre-renderizados,
+    particulas cacheadas, beams en superficies
+    acotadas, textos de balas pre-renderizados,
+    animacion de muerte por etapas, pathfinding
+    menos frecuente para enemigos lejanos
+
+============================================================
+  FIN DEL DOCUMENTO
+  Creado para: Explicacion de Proyecto - Programacion
+============================================================
