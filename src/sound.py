@@ -166,21 +166,29 @@ _shop_music = None
 
 # Reproduce la música de tienda (Vicente → Shop.wav, Oscar → Hip Shop.wav)
 def play_shop_music(vendor="vicente"):
-    global _shop_music, _bg_music
+    global _shop_music, _bg_music, _boss_music
     if _shop_music is not None:
         return
+    # Pausa la música de fondo y de jefe
+    if _bg_music:
+        _bg_music.stop()
+        _bg_music = None
+    if _boss_music:
+        _boss_music.stop()
+        _boss_music = None
     fname = "shop_vicente.wav" if vendor == "vicente" else "shop_oscar.wav"
     path = os.path.join(SFX_DIR, fname)
     if os.path.isfile(path):
         _shop_music = pygame.mixer.Sound(path)
         _shop_music.play(-1)
 
-# Detiene la música de tienda
+# Detiene la música de tienda y reanuda la de fondo
 def stop_shop_music():
     global _shop_music
     if _shop_music:
         _shop_music.stop()
         _shop_music = None
+    update_bg_music()
 
 # Reproduce la música de fondo según la oleada actual (se detiene sola si ya suena)
 def update_bg_music(wave=1, intensity=0.0):
