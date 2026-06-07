@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.bak
+save_data.json
+docs/stderr.txt
+docs/stdout.txt
+docs/*.log
+*.exe
+dist/
+build/
+*.spec
