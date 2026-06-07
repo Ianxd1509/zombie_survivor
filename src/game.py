@@ -952,10 +952,10 @@ class Game:
             return
         if self.admin_mode:
             self.player.invulnerable = True
-            self.player.bytes += 5
+            self.player.bytes += 50
             self.player.ability_charge = self.player.ability_max_charge
-            self.player.domain_charge = 30
-            self.player.domain_cd = 0
+            self.player.domain_charge = self.player.domain_kills_needed
+            self.player.domain_cd_timer = 0
         self._detect_zone()
 
         # Fase de preparación: espera antes del ataque, tiendas activas
