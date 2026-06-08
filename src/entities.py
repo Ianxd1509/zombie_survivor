@@ -2970,7 +2970,8 @@ class Player(pygame.sprite.Sprite):
 
 
         elif ab == "rebotar":
-
+            if notifs:
+                notifs.append(Notif("DEBUG: Rebotar Invocado", (255, 0, 0), 60))
             self.ability_active = True
 
             self.ability_duration = 420

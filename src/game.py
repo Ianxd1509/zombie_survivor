@@ -1615,6 +1615,23 @@ class Game:
             self.dmg_dir_x, self.dmg_dir_y = vec.x, vec.y
             self.dmg_dir_alpha = 120
 
+        # Bloqueo de muros (Randy)
+        for w in self.player.walls:
+            if pygame.sprite.collide_rect(self.player, w):
+                # Repeler jugador
+                vec = self.player.pos - w.pos
+                if vec.length() > 0:
+                    vec.normalize_ip()
+                    self.player.pos += vec * 5
+                    self.player.rect.center = self.player.pos
+            for e in pygame.sprite.spritecollide(w, self.enemies, False):
+                # Repeler enemigo
+                vec = e.pos - w.pos
+                if vec.length() > 0:
+                    vec.normalize_ip()
+                    e.pos += vec * 2
+                    e.rect.center = e.pos
+
         # Eliminar enemigos atascados que no dañan al jugador en 60s
         now = pygame.time.get_ticks()
         for e in list(self.enemies):
