@@ -5,6 +5,7 @@ import pygame
 
 from config import ALLY_TYPES, BLUE, BOMB_TYPES, CHARACTERS, DOMAIN_CHARGE_KILLS, EVOLUTION_ITEM_EMOJIS, FONT_SCALE, GACHA_LOOT, GOLD, GRAY, GREEN, HEIGHT, MAP_W, MAPS, PURPLE, RED, SEL, WEAPON_BULLETS, WHITE, WIDTH, YELLOW
 from src.tilemap import TILE
+from src.effects import MatrixRain
 
 # Caché de fuentes para evitar recrearlas constantemente
 _FONTS = {}
@@ -1711,6 +1712,7 @@ class ResultScreen:
     # Reinicia el estado con datos de la partida
     def reset(self, kind, player, wave):
         self.kind = kind
+        from src.effects import MatrixRain
         self.rain = MatrixRain(WIDTH, HEIGHT)
         self.timer = 0
         self.entries = {}
