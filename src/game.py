@@ -1992,8 +1992,15 @@ class Game:
             # Smile
             pygame.draw.arc(surf, (255, 80, 150), (px - 3, py - 4, 6, 5), 0, math.pi, 1)
 
-        # Eder ultimate laser (charged Z) — bounded surface
+        # Eder/Ian ultimate laser (charged Z) — bounded surface
         if self.player.alive() and getattr(self.player, "ult_laser_active", False):
+            is_ian = getattr(self.player, "char_id", "") == "ian"
+            if is_ian:
+                c2 = (200, 200, 255)
+                c1 = (255, 255, 255)
+            else:
+                c2 = (255, 120, 120)
+                c1 = (255, 40, 40)
             bcx = int(self.cam.x); bcy = int(self.cam.y)
             sx = int(self.player.beam_start.x - bcx)
             sy = int(self.player.beam_start.y - bcy)
@@ -2012,9 +2019,10 @@ class Game:
                 for i in range(6, 0, -1):
                     a = 70 - i * 10
                     w = int(bw * (1 + i * 0.35))
-                    pygame.draw.line(bsurf, (255, 40, 40, max(0, a)), (lsx, lsy), (lex, ley), w)
-                pygame.draw.line(bsurf, (255, 120, 120), (lsx, lsy), (lex, ley), bw)
-                pygame.draw.line(bsurf, (255, 255, 200), (lsx, lsy), (lex, ley), max(2, bw // 3))
+                    pygame.draw.line(bsurf, (max(0, c1[0] - i * 20), max(0, c1[1] - i * 20), max(0, c1[2] - i * 20), max(0, a)), (lsx, lsy), (lex, ley), w)
+                pygame.draw.line(bsurf, c2, (lsx, lsy), (lex, ley), bw)
+                core = (255, 255, 255) if is_ian else (255, 255, 200)
+                pygame.draw.line(bsurf, core, (lsx, lsy), (lex, ley), max(2, bw // 3))
                 surf.blit(bsurf, (min_x, min_y))
 
         # Character beam visuals (Ian buffer Q) — bounded surface

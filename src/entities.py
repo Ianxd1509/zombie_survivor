@@ -2355,7 +2355,7 @@ class Player(pygame.sprite.Sprite):
 
         z_key = keys[pygame.K_z]
 
-        if self.char_id == "eder":
+        if self.char_id in ("eder", "ian"):
 
             if self.ult_laser_active:
 
@@ -2752,12 +2752,17 @@ class Player(pygame.sprite.Sprite):
 
         self.shake = 8
 
+        is_ian = self.char_id == "ian"
+        clr = (255, 255, 255) if is_ian else (200, 80, 255)
+        snd = "ian_z" if is_ian else "eder_laser"
+        txt = "BUFFER CRASH!" if is_ian else "SOLO MORTAL!"
+
         if SFX and hasattr(SFX, "get"):
-            SFX["eder_laser"].play()
+            SFX[snd].play()
 
         if notifs:
 
-            notifs.append(Notif("SOLO MORTAL!", (200, 80, 255), 45))
+            notifs.append(Notif(txt, clr, 45))
 
         if particles:
 
@@ -2771,7 +2776,7 @@ class Player(pygame.sprite.Sprite):
 
                         self.pos, pygame.Vector2(math.cos(a), math.sin(a)) * sp,
 
-                    (200, 80, 255), random.uniform(2, 5), random.randint(8, 18)))
+                    clr, random.uniform(2, 5), random.randint(8, 18)))
 
 
 
@@ -2780,6 +2785,10 @@ class Player(pygame.sprite.Sprite):
         if not self.ult_laser_active:
 
             return
+
+        is_ian = self.char_id == "ian"
+        hit_clr = (255, 255, 255) if is_ian else (255, 60, 60)
+        spark_clr = (255, 255, 255) if is_ian else (255, random.randint(200, 255), random.randint(100, 200))
 
         self.beam_start = self.pos.copy()
 
@@ -2822,7 +2831,7 @@ class Player(pygame.sprite.Sprite):
 
                             e.pos, pygame.Vector2(0, 0),
 
-                            (255, 60, 60), random.uniform(2, 4), random.randint(4, 10), gravity=0))
+                            hit_clr, random.uniform(2, 4), random.randint(4, 10), gravity=0))
 
         # Sparks along beam
 
@@ -2844,7 +2853,7 @@ class Player(pygame.sprite.Sprite):
 
                 pygame.Vector2(math.cos(a), math.sin(a)) * sp,
 
-                (255, random.randint(200, 255), random.randint(100, 200)),
+                spark_clr,
 
                 random.uniform(1, 2), random.randint(4, 8)))
 
