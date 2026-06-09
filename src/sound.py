@@ -127,7 +127,7 @@ if pygame.mixer.get_init():
             "wave": make_sound(520, 0.3, vol=0.45, name="wave"),
             "levelup": make_sound(700, 0.25, vol=0.45, name="levelup"),
             "boss_warn": make_sound(150, 0.5, vol=0.55, noise=True, name="boss_warn"),
-            "transition": make_sound(600, 0.10, vol=0.35, name="transition"),
+            "transition": make_sound(600, 0.10, vol=0.60, name="transition"),
             "hover": make_sound(500, 0.04, vol=0.22, name="hover"),
             "click": make_sound(600, 0.07, vol=0.32, name="click"),
             "wave_clear": make_sound(880, 0.3, vol=0.45, name="wave_clear"),
@@ -161,16 +161,16 @@ if pygame.mixer.get_init():
             "vicente_z": make_sound(800, 0.4, vol=0.55, noise=True, name="vicente_z"),
 
             # Domain expansions
-            "irvin_domain": make_sound(150, 0.6, vol=0.55, noise=True, name="irvin_domain"),
-            "sebas_domain": make_sound(300, 0.5, vol=0.55, noise=True, name="sebas_domain"),
-            "leo_domain": make_sound(1000, 0.4, vol=0.50, noise=True, name="leo_domain"),
-            "diego_domain": make_chord_sound([180, 270, 360], 0.5, vol=0.55, name="diego_domain"),
-            "usiel_domain": make_chord_sound([440, 550, 660], 0.5, vol=0.55, name="usiel_domain"),
-            "obed_domain": make_chord_sound([260, 390, 520], 0.5, vol=0.55, name="obed_domain"),
-            "ian_domain": make_sound(200, 0.5, vol=0.55, noise=True, name="ian_domain"),
-            "randy_domain": make_sound(100, 0.6, vol=0.55, noise=True, name="randy_domain"),
-            "vicente_domain": make_sound(800, 0.5, vol=0.55, noise=True, name="vicente_domain"),
-            "eder_domain": make_chord_sound([220, 330, 440], 0.5, vol=0.55, name="eder_domain"),
+            "irvin_domain": make_sound(150, 0.6, vol=0.80, noise=True, name="irvin_domain"),
+            "sebas_domain": make_sound(300, 0.5, vol=0.80, noise=True, name="sebas_domain"),
+            "leo_domain": make_sound(1000, 0.4, vol=0.80, noise=True, name="leo_domain"),
+            "diego_domain": make_chord_sound([180, 270, 360], 0.5, vol=0.80, name="diego_domain"),
+            "usiel_domain": make_chord_sound([440, 550, 660], 0.5, vol=0.80, name="usiel_domain"),
+            "obed_domain": make_chord_sound([260, 390, 520], 0.5, vol=0.80, name="obed_domain"),
+            "ian_domain": make_sound(200, 0.5, vol=0.80, noise=True, name="ian_domain"),
+            "randy_domain": make_sound(100, 0.6, vol=0.80, noise=True, name="randy_domain"),
+            "vicente_domain": make_sound(800, 0.5, vol=0.80, noise=True, name="vicente_domain"),
+            "eder_domain": make_chord_sound([220, 330, 440], 0.5, vol=0.80, name="eder_domain"),
         }
 
         # Multiplicador global de volumen SFX (+30%)
