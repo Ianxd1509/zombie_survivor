@@ -139,7 +139,7 @@ if pygame.mixer.get_init():
             "guitar_riff": make_chord_sound([110, 165, 220], 0.35, vol=0.55, name="guitar_riff"),
             "eder_charge": make_loop_sound(400, 0.5, vol=0.60, name="eder_charge"),
             "eder_laser": make_sound(150, 2.0, vol=0.55, noise=True, name="eder_laser"),
-            "eder_laser_loop": make_loop_chord_sound([110, 165, 220], 0.5, vol=0.70, name="eder_laser_loop"),
+            "eder_laser_loop": make_loop_chord_sound([55, 88, 132], 0.5, vol=0.70, name="eder_laser_loop"),
             "sebas_z": make_sound(300, 0.3, vol=0.55, noise=True, name="sebas_z"),
 
             # Q abilities
