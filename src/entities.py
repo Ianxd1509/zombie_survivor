@@ -325,7 +325,7 @@ class Bomb(pygame.sprite.Sprite):
         # Sticky bomb logic: check for enemy collision
         if self.btype == "sticky" and enemies is not None:
             for e in enemies:
-                if self.pos.distance_to(e.pos) < self.radius + e.r:
+                if self.pos.distance_to(e.pos) < self.radius + e.radius:
                     self.stuck_to = e
                     self.stuck_offset = self.pos - e.pos
                     break
@@ -1385,6 +1385,7 @@ class Wall:
         self.max_hp = int(300 * hp_mult)
         self.timer = 900
         self._redraw()
+        self.rect = self.image.get_rect(center=(int(self.pos.x), int(self.pos.y)))
 
     def _redraw(self):
         r = self.radius
@@ -1400,6 +1401,7 @@ class Wall:
         edges = int(ratio * 255)
         pygame.draw.rect(s, (edges, max(0, edges - 80), 0, 180), (0, 0, r * 2, r * 2), 2, border_radius=4)
         self.image = s
+        self.rect = self.image.get_rect(center=(int(self.pos.x), int(self.pos.y)))
 
     # Recibe daño, redibuja si sigue vivo
     def hit(self, dmg):
@@ -2755,8 +2757,7 @@ class Player(pygame.sprite.Sprite):
         self.shake = 8
 
         if SFX and hasattr(SFX, "get"):
-            SFX["guitar_riff"].play()
-            SFX["eder_laser_loop"].play(loops=-1)
+            SFX["eder_laser"].play()
 
         if notifs:
 
@@ -3320,9 +3321,12 @@ class Player(pygame.sprite.Sprite):
 
             self.rebotar_timer = 300
 
-            if notifs:
+            if notifs is not None:
 
                 notifs.append(Notif("REBOTE CAÓTICO!", (255, 100, 100), 60))
+
+            if SFX and hasattr(SFX, "get"):
+                SFX["sebas_ult"].play()
 
 
 

@@ -945,7 +945,7 @@ class Game:
             self.shop_flash_timer -= 1
         if self.state not in ("play", "shop_prep"):
             return
-        if not self.player.alive():
+        if self.player.hp <= 0:
             if self.state != "over":
                 self.state = "over"
                 SFX["death"].play()
@@ -1505,8 +1505,21 @@ class Game:
                             bm = BrainrotMinion(e.pos, self.player, MAP_W, MAP_H)
                             self.all_sprites.add(bm)
                             self.brainrots.add(bm)
-                        if random.random() < 0.05:
-                            died = e.hit(10)
+                            for _ in range(4):
+                                a = random.uniform(0, math.tau)
+                                sp = random.uniform(1, 3)
+                                self.particles.append(Particle(e.pos, pygame.Vector2(math.cos(a), math.sin(a)) * sp,
+                                    (180, 50, 255), random.uniform(2, 4), random.randint(8, 16)))
+                        if random.random() < 0.08:
+                            dmg = random.randint(12, 18)
+                            died = e.hit(dmg)
+                            self.dmg_nums.append(DamageNum(e.pos, str(dmg), (180, 50, 255)))
+                            e.stun_timer = max(getattr(e, "stun_timer", 0), 10)
+                            for _ in range(3):
+                                a = random.uniform(0, math.tau)
+                                sp = random.uniform(1, 2)
+                                self.particles.append(Particle(e.pos, pygame.Vector2(math.cos(a), math.sin(a)) * sp,
+                                    (180, 50, 255), random.uniform(1.5, 3), random.randint(5, 12)))
                             if died:
                                 self._reward_enemy_death(e)
                     elif domain_effect == "billie":

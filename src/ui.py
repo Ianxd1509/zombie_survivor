@@ -1421,7 +1421,7 @@ class ControlsScreen:
 
 # Pantalla de créditos con desplazamiento vertical
 class CreditsScreen:
-    CREDITS = ["GEMINI", "OPEN CODE", "IRVING", "IAN", "SEBASTIAN", "DIEGO", "EDER"]
+    CREDITS = ["GEMINI", "OPEN CODE", "IRVING", "IAN", "SEBAS (NO HIZO NADA)", "DIEGO", "EDER"]
 
     def __init__(self):
         from src.effects import MatrixRain
