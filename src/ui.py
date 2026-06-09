@@ -340,11 +340,10 @@ def draw_hud(surf, player, wave, wave_state, wave_has_boss, wave_announce, enemi
     # Bombas equipadas
     y_bomb = y_ene + 18  # 170 or 188
     if player.bomb_queue:
-        b_idx = max(0, min(player.bomb_active_idx, len(player.bomb_queue) - 1))
-        btype = player.bomb_queue[b_idx]
+        btype = player.bomb_queue[0]
         binfo = BOMB_TYPES.get(btype, {})
         bcolor = binfo.get("color", (255, 200, 100))
-        surf.blit(_f(13).render(f"[G] BOMBA x{player.bomb_count}", True, bcolor), (bx, y_bomb))
+        surf.blit(_f(13).render(f"[G] BOMBA x{len(player.bomb_queue)}", True, bcolor), (bx, y_bomb))
         surf.blit(_f(11).render(f"{binfo.get('name', '?')} - {binfo.get('desc', '')}", True, bcolor), (bx + 2, y_bomb + 14))
         y_bomb += 30
 
@@ -472,7 +471,7 @@ def draw_hud(surf, player, wave, wave_state, wave_has_boss, wave_announce, enemi
             elif oscar_near:
                 draw_rrect(surf, (40, 30, 5), (bx3, by3, box_w, box_h))
                 draw_rrect(surf, (200, 180, 50), (bx3, by3, box_w, box_h), r=2)
-                surf.blit(_f(16).render("OSCAR  [F] comprar  [ESP] saltar", True, (200, 180, 50)), (bx3 + 8, by3 + 10))
+                surf.blit(_f(16).render("OSCAR  [T] comprar  [ESP] saltar", True, (200, 180, 50)), (bx3 + 8, by3 + 10))
 
     # Entrada de comandos del administrador
     if game and getattr(game, "admin_inputting", False):
@@ -1366,9 +1365,10 @@ class ControlsScreen:
                 ("CLICK IZQ", "Ejecutar codigo enemigo"),
                 ("R", "Recargar buffer"),
                 ("Q", "Habilidad (cooldown)"),
-                ("Z", "Ultimate (carga 20 bajas)"),
+                ("Z", "Ultimate (carga 40 bajas)"),
                 ("X", "Expansion de Dominio"),
-                ("F", "Abrir suministros/Gacha"),
+                ("F", "Tienda Vicente / Suministros"),
+                ("T", "Tienda Oscar"),
             ]),
             ("SISTEMA", [
                 ("ESC", "Pausar / Retroceder"),

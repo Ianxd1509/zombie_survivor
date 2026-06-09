@@ -690,8 +690,6 @@ class Game:
                 return
             p.bomb_owned.add(btype)
             p.bomb_queue.append(btype)
-            p.bomb_count = min(p.bomb_count + 1, MAX_BOMBS)
-            p.bomb_active_idx = len(p.bomb_queue) - 1
             self.notifs.append(Notif(f"¡{BOMB_TYPES[btype]['name']} adquirida!", (255, 200, 100), 90))
         elif tid.startswith("perm_"):
             ptype = tid.replace("perm_", "")

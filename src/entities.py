@@ -2620,10 +2620,6 @@ class Player(pygame.sprite.Sprite):
 
             btype = self.bomb_queue.pop(0)
 
-            self.bomb_count = max(0, self.bomb_count - 1)
-
-            self.bomb_active_idx = max(0, min(self.bomb_active_idx, len(self.bomb_queue) - 1)) if self.bomb_queue else 0
-
             angle = self.angle
 
             if btype == "mine":
@@ -3868,7 +3864,8 @@ class ShopTerminal:
         surf.blit(self.surf, (x - self.radius, y - self.radius))
         if near:
             font2 = pygame.font.Font(None, 14)
-            s2 = font2.render(f"[E] {self.name}", True, (255, 255, 255))
+            key_hint = "F" if self.char_id == "vicente" else "T"
+            s2 = font2.render(f"[{key_hint}] {self.name}", True, (255, 255, 255))
             surf.blit(s2, (x - s2.get_width() // 2, y - self.radius - 18))
 
 
