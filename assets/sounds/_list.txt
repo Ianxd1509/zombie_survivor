@@ -53,6 +53,18 @@ Todos los sonidos se definen en src/sound.py y se usan via `from src.sound impor
   randy_z.wav     - Z: Firewall Total (entities.py:_use_ultimate)
   vicente_z.wav   - Z: Limpiador (entities.py:_use_ultimate)
 
+== DOMINIOS X ==
+
+  irvin_domain.wav   - X: Ciclo For (entities.py:2528)
+  sebas_domain.wav   - X: Lluvia de Meteoros
+  leo_domain.wav     - X: Desbordamiento de Bytes
+  diego_domain.wav   - X: Cerebro Colectivo
+  usiel_domain.wav   - X: Administrador Total
+  obed_domain.wav    - X: Escenario de Billie
+  ian_domain.wav     - X: Deadlock
+  randy_domain.wav   - X: Fortaleza Firewall
+  vicente_domain.wav - X: Lealtad a Python
+
 == MUSICA DE FONDO ==
 
  bg_music.wav    - Loop de fondo (2+ segundos, se reproduce en bucle)

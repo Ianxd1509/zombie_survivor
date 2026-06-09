@@ -162,6 +162,17 @@ if pygame.mixer.get_init():
             "ian_z": make_sound(60, 0.5, vol=0.55, noise=True, name="ian_z"),
             "randy_z": make_sound(100, 0.5, vol=0.55, noise=True, name="randy_z"),
             "vicente_z": make_sound(800, 0.4, vol=0.55, noise=True, name="vicente_z"),
+
+            # Domain expansions
+            "irvin_domain": make_sound(150, 0.6, vol=0.55, noise=True, name="irvin_domain"),
+            "sebas_domain": make_sound(300, 0.5, vol=0.55, noise=True, name="sebas_domain"),
+            "leo_domain": make_sound(1000, 0.4, vol=0.50, noise=True, name="leo_domain"),
+            "diego_domain": make_chord_sound([180, 270, 360], 0.5, vol=0.55, name="diego_domain"),
+            "usiel_domain": make_chord_sound([440, 550, 660], 0.5, vol=0.55, name="usiel_domain"),
+            "obed_domain": make_chord_sound([260, 390, 520], 0.5, vol=0.55, name="obed_domain"),
+            "ian_domain": make_sound(200, 0.5, vol=0.55, noise=True, name="ian_domain"),
+            "randy_domain": make_sound(100, 0.6, vol=0.55, noise=True, name="randy_domain"),
+            "vicente_domain": make_sound(800, 0.5, vol=0.55, noise=True, name="vicente_domain"),
         }
 
 # Variables globales para las pistas de música activas
