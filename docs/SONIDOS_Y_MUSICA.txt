@@ -5,41 +5,57 @@ COMO PONER TU PROPIA MUSICA Y SONIDOS
    Crea/usa la carpeta: assets/sounds/
    (ya existe si el juego se ha ejecutado al menos una vez)
 
-2. MUSICA DE MENU
-   Archivo: assets/sounds/menu_music.wav
-   - Suena en: menu principal, seleccion de personaje/mapa, controles, creditos
-   - Se reproduce en loop
-   - Si no existe el archivo, el juego genera una cancion sintetica automatica
-
-3. MUSICA DE JUEGO (dentro de la partida)
+2. MUSICA DE JUEGO (dentro de la partida)
    Archivo: assets/sounds/bg_music.wav
-   - Suena SOLO mientras juegas (estado play/shop_prep)
-   - Se detiene al pausar, morir, o volver al menu
-   - Si no existe el archivo, el juego genera musica sintetica que varia segun la wave
+   - Suena mientras juegas
+   - Se intensifica con cada wave
+   - Si no existe el archivo, el juego genera musica sintetica
 
-4. MUSICA DEL JEFE VICENTE (wave 30)
-   Archivo: assets/sounds/boss_music.wav
-   - Suena cuando aparece Vicente (jefe final) en la wave 30
-   - Reemplaza automaticamente la musica de juego (bg_music) mientras dura la pelea
-   - Se detiene al derrotar a Vicente
-   - Si no existe el archivo, el juego genera musica epica sintetica con bajos y percusion
+3. MUSICA DE TIENDA
+   - shop_vicente.wav: tienda de Vicente
+   - shop_oscar.wav: tienda de Oscar
 
-5. FORMATO RECOMENDADO
+4. FORMATO RECOMENDADO
    - WAV mono
    - 22050 Hz de sample rate
    - 16-bit por muestra
-   - Cualquier duracion (se reproduce en loop)
 
 5. COMO FUNCIONA
    El juego siempre busca primero el archivo .wav en assets/sounds/.
    Si lo encuentra, lo usa directamente.
    Si no, genera el sonido con matematicas (senoides, ruido blanco).
-   Para los SFX (disparos, explosiones, etc.) tambien busca .wav con el nombre
-   de cada efecto en la misma carpeta.
 
-6. SFX INDIVIDUALES (opcional)
-   Puedes reemplazar sonidos individuales creando archivos como:
-   - assets/sounds/shoot.wav
-   - assets/sounds/explosion.wav
-   - assets/sounds/gameover.wav
-   - etc. (los nombres estan en src/sound.py linea 37-57)
+6. VOLUMEN
+   - SFX: 80% del volumen master
+   - Musica: 50% del volumen master
+   - Ajustable en src/sound.py
+
+7. EFECTOS DE SONIDO (SFX)
+   Archivos individuales .wav:
+   - shoot.wav, hit.wav, kill.wav, pickup.wav
+   - reload.wav, empty.wav, gameover.wav, death.wav
+   - victory.wav, wave.wav, levelup.wav, boss_warn.wav
+   - transition.wav, hover.wav, click.wav
+   - wave_clear.wav, shop_open.wav
+
+8. HABILIDADES Q — Sonidos personalizados por personaje
+   - irvin_q.wav, sebas_q.wav, leo_q.wav, diego_q.wav
+   - usiel_q.wav, obed_q.wav, ian_q.wav, randy_q.wav
+   - vicente_q.wav
+   - Eder usa guitar_riff.wav (compartido con Q de Eder)
+
+9. ULTIMATES Z — Sonidos personalizados por personaje
+   - irvin_z.wav, sebas_ult.wav, leo_z.wav, diego_z.wav
+   - usiel_z.wav, obed_z.wav, ian_z.wav, randy_z.wav
+   - vicente_z.wav
+   - Eder usa eder_laser.wav (laser loop) + eder_charge.wav (carga)
+
+10. DOMINIOS X — Sonidos personalizados por personaje
+    - irvin_domain.wav, sebas_domain.wav, leo_domain.wav
+    - diego_domain.wav, usiel_domain.wav, obed_domain.wav
+    - eder_domain.wav, ian_domain.wav, randy_domain.wav
+    - vicente_domain.wav
+
+11. LISTA COMPLETA DE ARCHIVOS
+    Ver assets/sounds/_list.txt para la lista detallada
+    con nombres exactos y lineas de codigo donde se usan.

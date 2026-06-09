@@ -87,7 +87,9 @@ Es el archivo mas importante. La clase Game() controla:
 --- src/entities.py ---
 Aqui viven todos los "seres" del juego:
 - Player (jugador): se mueve con WASD, dispara con
-  clic, tiene habilidades con Q, Z y X
+  clic, tiene habilidades con Q, Z y X. Incluye
+  sistema de animacion (spin: rotacion, pulse: escala)
+  y soporte para laser cargable (Eder e Ian)
 - Enemy (enemigos): 14 tipos diferentes (rapidos,
   lentos, que disparan, que curan, jefes, etc.)
 - Bullet (balas): proyectiles con forma de codigo
@@ -97,6 +99,7 @@ Aqui viven todos los "seres" del juego:
 - Powerup (mejoras): turbo, escudo, etc.
 - Ally (aliados): NPCs que compras en la tienda
 - ShopTerminal: los vendedores Oscar y Vicente
+  (dibujan [F] o [T] segun el personaje)
 
 --- src/ui.py ---
 Todo lo que ves en pantalla:
@@ -145,6 +148,10 @@ y rodean al jugador desde diferentes angulos.
 --- src/sprites.py ---
 Dibuja al personaje principal como un circulo
 de color con la inicial del nombre adentro.
+Carga imagenes PNG personalizadas de
+assets/characters/char_{id}.png con smoothscale
+para mejor calidad. El selector de personaje
+muestra la imagen con mascara circular.
 
 =====================================================
  4. LOS 10 PERSONAJES
@@ -189,7 +196,7 @@ Cada personaje tiene habilidades unicas:
 
 8. IAN - "Sobrecarga Buffer"
    Q: BUFFER - Rayo de energia
-   Z: BUFFER CRASH - Explosion de rayo
+   Z: BUFFER CRASH - Laser cargable (mantener Z, soltar para disparar, color blanco)
    X: DOMINIO DEADLOCK - Congela enemigos
 
 9. RANDY - "Firewall Humano"
@@ -198,15 +205,16 @@ Cada personaje tiene habilidades unicas:
    X: DOMINIO FORTALEZA FIREWALL - Paredes automaticas
 
 10. VICENTE - "Legado Python" (secreto, se desbloquea
-    al ganar el juego) [BUFFEADO]
-    Q: IMPORT SNIPPET - Invoca 3 fragmentos de codigo
-    Z: LIMPIADOR - Mata a TODOS los enemigos en pantalla
-       al instante
-    X: DOMINIO LEALTAD A PYTHON - Rayos de codigo
-    Pasiva: +30 bytes (antes +15)
-    Stats buffeados: HP 300, Speed 5.0, Daño 35,
-    Cadencia 60, Mag 70, 3 balas por disparo
-    Tienda de Vicente: 25% descuento en todos los items
+     al ganar el juego) [BUFFEADO]
+     Q: IMPORT SNIPPET - Invoca 3 fragmentos de codigo
+     Z: LIMPIADOR - Mata a TODOS los enemigos en pantalla
+        al instante
+     X: DOMINIO LEALTAD A PYTHON - Rayos de codigo
+     Pasiva: +30 bytes (antes +15)
+     Stats buffeados: HP 300, Speed 5.0, Daño 35,
+     Cadencia 60, Mag 70, 3 balas por disparo
+     Tienda de Vicente: 25% descuento en todos los items,
+     incluye "Municion" (+50 balas reserva, 80 bytes)
 
 =====================================================
  5. COMO FUNCIONA EL JUEGO (PASO A PASO)
@@ -377,8 +385,8 @@ COMBATE:
 - R ................. Recargar
 - 1, 2, 3, 4 ........ Cambiar arma
 - Q ................. Habilidad especial
-- Z ................. Ultimate
-- X ................. Dominio (activar/desactivar)
+- Z ................. Ultimate (se carga con 40 bajas)
+- X ................. Dominio (activar/desactivar, cuesta 40 bajas)
 - G ................. Lanzar bomba
 
 INTERACCION:
@@ -456,6 +464,50 @@ ERRORES:
     acotadas, textos de balas pre-renderizados,
     animacion de muerte por etapas, pathfinding
     menos frecuente para enemigos lejanos
+
+- SISTEMA DE ANIMACION EN HABILIDADES (v1.6):
+  * spin: rotacion 360° del sprite (Irvin Q/Z, Vicente Q)
+  * pulse: escalado 1.0->1.15 pulsante (Leo Q/Z, Diego Q/Z,
+    Uziel Q/Z, Randy Q/Z, Vicente Z)
+  * Se guarda _base_image al iniciar y se restaura al terminar
+  * Implementado en Player.__init__ y Player.update()
+
+- IMAGENES DE PERSONAJE (v1.5):
+  * load_image() usa smoothscale() en vez de scale()
+    para mejor calidad visual
+  * CharSelector.draw() muestra imagen PNG personalizada
+    de assets/characters/char_{id}.png con mascara circular
+  * draw_player() acepta no_weapon=True para NPC de tienda
+
+- SONIDOS PERSONALIZADOS (v1.5):
+  * 9 sonidos Q, 8 sonidos Z, 10 sonidos X, todos .wav
+  * Ian Z = laser cargable (sistema Eder, color blanco)
+  * Eder Z = guitar_riff + eder_laser + eder_charge
+  * Volumen: SFX +80%, Musica -50%
+  * Guard condicional en todas las llamadas SFX (~20 corregidas)
+
+- HUD Y CONTROLES:
+  * bomb_count reemplazado por len(bomb_queue) — corrige
+    el conteo de bombas en HUD
+  * Oscar usa [T], Vicente usa [F] en dialogo y overhead
+  * Pantalla de controles muestra "40 bajas" para Z y X
+  * TutorialScreen: 4 paginas navegables al iniciar partida
+  * Tips contextuales en wave 1 (3 notificaciones)
+
+- TIENDA DE VICENTE:
+  * Nuevo item "Municion": +50 balas de reserva, 80 bytes,
+    max 10 compras
+  * apply_upgrade("ammo") suma self.reserve += 50
+
+- SEBAS Y OBED:
+  * Q y Z ahora hacen daño directo con _ability_hit_enemies()
+  * Incluyen self.shake para feedback visual
+
+- USIEL -> UZIEL:
+  * Solo cambio en display name. IDs internos intactos.
+
+- BUGFIX ENEMIGOS ATASCADOS:
+  * Auto-remove tras 60 segundos sin recibir dano
 
 ============================================================
   FIN DEL DOCUMENTO
