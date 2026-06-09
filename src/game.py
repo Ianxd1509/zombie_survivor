@@ -1018,6 +1018,7 @@ class Game:
             if self.wave >= 30:
                 self.state = "win"
                 self.vicente_unlocked = True
+                stop_domain_music()
                 if SFX:
                     SFX["victory"].play()
                 self.notifs.append(Notif("VICTORIA! Has limpiado todos los servidores!", GOLD, 300))
