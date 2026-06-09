@@ -1,5 +1,43 @@
 # Changelog — zombie_survivor
 
+## [v1.7] — 2026-06-09
+
+### Bugs críticos corregidos
+- Láser de Vicente Boss ya no se mata a sí mismo al eliminar un enemigo (game.py)
+- BillieNPC ahora retorna `True` en update() — ya no se congela tras 1 frame
+- `dmg_mult` de "rebotar" (Sebas Q) ahora se resetea al terminar la duración
+- Timer de dominio de Vicente ya no se decrementa doble por frame
+- `SFX["click"]` envuelto en guard condicional (game.py)
+
+### Bugs altos corregidos
+- **Passive stats**: ahora se parsean correctamente (`"piercing+1"` → +1 piercing). 9/10 personajes ahora reciben su stat pasivo real
+- `eder_laser_loop` ahora se reproduce al disparar el láser (antes nunca sonaba)
+- Reembolsos de tienda devuelven el costo real pagado (no el costo del siguiente nivel)
+- Cámara ya no se traba si el mundo es más chico que la pantalla
+
+### Bugs medios corregidos
+- Animaciones agregadas a: rebotar Z, billie Q+Z, guitar_riff Q, buffer Q+Z
+- Volumen SFX global ×1.8 aplicado (ahora +80% real)
+- Música de tienda con fallback sintético (antes silencio si faltaba .wav)
+- Muros de Randy usan colisiones circulares en vez de rect-based
+- Healer de tactics empuja en dirección correcta (hacia el tank más cercano, no el leader)
+- Squad members con spread aleatorio al converger en pared
+- Vicente Boss excluido de la fase 2 genérica de jefe
+- `EVOLUTION_ITEMS["vicente"]` agregado (Termo)
+
+### Bugs bajos corregidos
+- Ternario sin efecto en main.py eliminado
+- `pygame.quit()` en `finally` al crashear
+- Código muerto `random.Random(7)` en tilemap.py eliminado
+- `sebas_ult` renombrado a `sebas_z` para consistencia
+- Sombra del personaje usa `base_color` en vez de verde fijo
+- Import de `draw_player` movido fuera de `CharSelector.draw()`
+
+### UI
+- Texto "SERVER {wave}" reposicionado arriba del minimapa
+
+---
+
 ## [v1.6] — 2026-06-09
 
 ### Animaciones en habilidades
