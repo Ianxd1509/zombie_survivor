@@ -395,16 +395,20 @@ def draw_hud(surf, player, wave, wave_state, wave_has_boss, wave_announce, enemi
             vb = e
             break
     if vb is not None:
-        seg_w = 72
-        gap = 4
-        total_w = seg_w * 4 + gap * 3
+        phase_ranges = [(0.85, 1.00), (0.55, 0.85), (0.25, 0.55), (0.00, 0.25)]
+        total_w = 300
         bx2 = WIDTH // 2 - total_w // 2
         ph = vb._vb_phase
         phase_colors = {1: (100, 200, 255), 2: (80, 180, 240), 3: (150, 100, 255), 4: (255, 100, 100)}
-        seg_hp = vb.max_hp / 4
         for i in range(4):
-            sx = bx2 + i * (seg_w + gap)
-            fill = max(0, min(1, (vb.hp - i * seg_hp) / seg_hp))
+            lo, hi = phase_ranges[i]
+            frac = hi - lo
+            seg_w = max(20, int(total_w * frac))
+            sx = bx2 + int(total_w * lo / 1.0)
+            lo_hp = int(vb.max_hp * lo)
+            hi_hp = int(vb.max_hp * hi)
+            seg_hp = hi_hp - lo_hp
+            fill = max(0, min(1, (vb.hp - lo_hp) / max(1, seg_hp))) if i + 1 >= ph else (1 if i + 1 < ph else 0)
             c = (60, 60, 80) if i + 1 > ph else phase_colors.get(i + 1, (100, 200, 255))
             pygame.draw.rect(surf, (20, 20, 30), (sx, y_boss, seg_w, 14))
             pygame.draw.rect(surf, c, (sx, y_boss, int(seg_w * fill), 14))
@@ -729,7 +733,7 @@ def draw_shop(surf, player, sel, items, game=None):
 class MainMenu:
     def __init__(self):
         self.sel = 0
-        self.opts = ["JUGAR", "CARGAR PARTIDA", "CONTROLES", "CREDITOS", "SALIR"]
+        self.opts = ["JUGAR", "CARGAR PARTIDA", "CONTROLES", "TUTORIAL", "CREDITOS", "SALIR"]
         from src.effects import MatrixRain
         self.rain = MatrixRain(WIDTH, HEIGHT)
         self.timer = 0
@@ -1314,6 +1318,87 @@ class CharSelector:
 
         hint = _f(14).render("<-  -> Navegar  ENTER=Seleccionar  ESC=Menu  RATON=Click", True, (0, 70, 22))
         surf.blit(hint, hint.get_rect(center=(WIDTH // 2, HEIGHT - 22)))
+
+
+# Pantalla de tutorial con instrucciones básicas para nuevos jugadores
+class TutorialScreen:
+    def __init__(self):
+        from src.effects import MatrixRain
+        self.rain = MatrixRain(WIDTH, HEIGHT)
+        self.page = 0
+        self.timer = 0
+        self.pages = [
+            [
+                ("MOVIMIENTO", "W A S D  —  Mueven el cursor por la terminal"),
+                ("DISPARO", "CLICK IZQUIERDO  —  Ejecuta codigo enemigo"),
+                ("RECARGA", "R  —  Recarga el buffer de balas"),
+                ("ARMAS", "1 2 3 4  —  Cambian el arma activa"),
+                ("", ""),
+                ("TIP", "Las balas se recargan solas al vaciar el cargador"),
+            ],
+            [
+                ("HABILIDADES", "Q  —  Habilidad especial (cooldown)"),
+                ("ULTIMATE", "Z  —  Ataque definitivo (carga 40 bajas)"),
+                ("DOMINIO", "X  —  Expansion de dominio temporal"),
+                ("BOMBAS", "G  —  Lanza la bomba equipada"),
+                ("", ""),
+                ("TIP", "Compra bombas en la tienda de Oscar [T]"),
+            ],
+            [
+                ("TIENDA VICENTE", "F  —  Mejora tus stats (cerca de Vicente)"),
+                ("TIENDA OSCAR", "T  —  Power-ups, bombas, aliados (cerca de Oscar)"),
+                ("EVOLUCION", "Consigue 3 items evo para evolucionar"),
+                ("ADMIN", "~  —  Abre la consola de administrador"),
+                ("", ""),
+                ("TIP", "Busca a Vicente [$] en el mapa para mejorar"),
+            ],
+            [
+                ("OBJETIVO", "Limpia todos los servidores!"),
+                ("OLEADAS", "Cada 5 oleadas aparece un JEFE"),
+                ("VICENTE BOSS", "Aparece desde la oleada 30"),
+                ("", ""),
+                ("", ""),
+                ("SUERTE", "root@virus:~$ ./matar_enemigos --all"),
+            ],
+        ]
+
+    def update(self):
+        self.timer += 1
+        self.rain.update()
+
+    def draw(self, surf):
+        surf.fill((0, 5, 0))
+        self.rain.draw(surf)
+        draw_scanlines(surf, 15)
+        draw_terminal_frame(surf, GREEN, 35)
+
+        glow = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        pygame.draw.circle(glow, (0, 255, 65, 8), (WIDTH // 2, 50), 200)
+        surf.blit(glow, (0, 0))
+
+        t = _f(36).render("TUTORIAL", True, GREEN)
+        for i in range(3):
+            g = _f(36 + i * 3).render("TUTORIAL", True, (0, 28 - i * 8, 0))
+            surf.blit(g, (WIDTH // 2 - g.get_width() // 2 + i, 42 + i))
+        surf.blit(t, t.get_rect(center=(WIDTH // 2, 42)))
+
+        sub = _f(15).render(f"Pagina {self.page + 1}/{len(self.pages)}", True, (0, 120, 40))
+        sub.set_alpha(150)
+        surf.blit(sub, sub.get_rect(center=(WIDTH // 2, 72)))
+
+        y = 100
+        for key, val in self.pages[self.page]:
+            if not key:
+                y += 8
+                continue
+            ks = _f(17).render(key, True, GREEN)
+            vs = _f(16).render(val, True, WHITE)
+            surf.blit(ks, (WIDTH // 2 - 280, y))
+            surf.blit(vs, (WIDTH // 2 - 50, y))
+            y += 28
+
+        nav = "<-  ->  A/D  Navegar paginas   ESC=Volver"
+        surf.blit(_f(15).render(nav, True, (0, 80, 30)), (WIDTH // 2 - 180, HEIGHT - 40))
 
 
 # Pantalla de controles con lista de teclas

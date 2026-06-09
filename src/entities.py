@@ -1061,7 +1061,7 @@ class Enemy(pygame.sprite.Sprite):
     def _update_vicente_boss(self, player_pos, enemies, enemy_bullets, particles, grid):
         hp_r = self.hp / self.max_hp
         # Phase
-        new_ph = 4 if hp_r <= 0.25 else 3 if hp_r <= 0.50 else 2 if hp_r <= 0.75 else 1
+        new_ph = 4 if hp_r <= 0.25 else 3 if hp_r <= 0.55 else 2 if hp_r <= 0.85 else 1
         if new_ph > self._vb_phase:
             self._vb_phase = new_ph
         ph = self._vb_phase

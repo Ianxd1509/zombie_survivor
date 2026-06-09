@@ -461,6 +461,10 @@ class Game:
                          "blindaje":"MOD: BLINDAJE - Enemigos con escudo extra!",
                          "explosivo":"MOD: EXPLOSIVO - Enemigos explotan al morir!"}
             self.notifs.append(Notif(mod_names.get(self.wave_modifier, ""), YELLOW, 180))
+        if n == 1:
+            self.notifs.append(Notif("WASD Moverse  CLICK Disparar  R Recargar", GREEN, 300))
+            self.notifs.append(Notif("Q Habilidad  Z Ultimate  X Dominio  G Bomba", GREEN, 300))
+            self.notifs.append(Notif("Busca a Vicente [$] para mejoras  [F] comprar", GREEN, 300))
 
     # Crea zonas de peligro tóxico en el mapa si el modificador es "toxica"
     def _start_toxica_hazards(self):

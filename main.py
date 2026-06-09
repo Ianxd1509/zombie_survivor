@@ -28,7 +28,7 @@ from config import ADMIN_PASSWORD, CHARACTERS, FPS, HEIGHT, MAPS, RED, WIDTH
 from src.effects import Notif
 from src.game import Game
 from src.sound import SFX
-from src.ui import CharSelector, ControlsScreen, CreditsScreen, MapSelector, PauseScreen, ResultScreen, draw_hud, draw_shop
+from src.ui import CharSelector, ControlsScreen, CreditsScreen, MapSelector, PauseScreen, ResultScreen, TutorialScreen, draw_hud, draw_shop
 
 
 # Restaura todos los atributos de una partida guardada
@@ -123,6 +123,7 @@ def main():
     mapsel = MapSelector()
     charsel = CharSelector()
     controls = ControlsScreen()
+    tutorial = TutorialScreen()
     credits = CreditsScreen()
     pause_screen = PauseScreen()
     result_screen = ResultScreen("over")
@@ -157,7 +158,7 @@ def main():
                     elif game.state in ("play", "shop_prep"):
                         game.state = "pause"; pause_screen.sel = 0
                     elif game.state == "pause": game.state = "play"
-                    elif game.state in {"controls", "credits"} or game.state in {"mapsel", "charsel"}: game.state = "menu"
+                    elif game.state in {"controls", "tutorial", "credits"} or game.state in {"mapsel", "charsel"}: game.state = "menu"
                     elif game.state in ("over", "win"):
                         game.state = "menu"
                     elif game.state == "menu":
@@ -279,10 +280,20 @@ def main():
                             else:
                                 game.notifs.append(Notif("No hay partida guardada", RED, 60))
                         elif menu.sel == 2: game.state = "controls"
-                        elif menu.sel == 3: game.state = "credits"; credits.reset()
+                        elif menu.sel == 3: game.state = "tutorial"; tutorial.page = 0
+                        elif menu.sel == 4: game.state = "credits"; credits.reset()
                         else:
                             game.save_game()
                             running = False
+
+                # Navegación del tutorial (páginas)
+                elif game.state == "tutorial":
+                    if k in (pygame.K_RIGHT, pygame.K_d):
+                        tutorial.page = min(tutorial.page + 1, len(tutorial.pages) - 1)
+                        SFX["hover"].play()
+                    elif k in (pygame.K_LEFT, pygame.K_a):
+                        tutorial.page = max(tutorial.page - 1, 0)
+                        SFX["hover"].play()
 
                 # Abrir/cerrar airdrop (gacha) con F
                 if k == pygame.K_f and game.state == "play" and game.gacha_open:
@@ -487,6 +498,9 @@ def main():
         if game.state == "controls":
             controls.update()
 
+        if game.state == "tutorial":
+            tutorial.update()
+
         if game.state == "credits":
             credits.update()
             if credits.done:
@@ -512,6 +526,8 @@ def main():
             charsel.draw(screen, vicente_unlocked=game.vicente_unlocked)
         elif game.state == "controls":
             controls.draw(screen)
+        elif game.state == "tutorial":
+            tutorial.draw(screen)
         elif game.state == "credits":
             credits.draw(screen)
         elif game.state in ("play", "pause", "over", "win", "shop_prep"):
