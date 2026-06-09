@@ -61,6 +61,7 @@ Todos los sonidos se definen en src/sound.py y se usan via `from src.sound impor
   diego_domain.wav   - X: Cerebro Colectivo
   usiel_domain.wav   - X: Administrador Total
   obed_domain.wav    - X: Escenario de Billie
+  eder_domain.wav    - X: Solo del Apocalipsis (también música de fondo del dominio)
   ian_domain.wav     - X: Deadlock
   randy_domain.wav   - X: Fortaleza Firewall
   vicente_domain.wav - X: Lealtad a Python
