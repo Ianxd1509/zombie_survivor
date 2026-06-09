@@ -113,34 +113,34 @@ SFX = {}
 if pygame.mixer.get_init():
     with contextlib.suppress(pygame.error):
         SFX = {
-            "shoot": make_sound(800, 0.08, vol=0.35, noise=True, name="shoot"),
-            "sniper": make_sound(1500, 0.05, vol=0.40, noise=True, name="sniper"),
-            "pierce": make_sound(500, 0.10, vol=0.30, noise=True, name="pierce"),
-            "shotgun": make_sound(120, 0.15, vol=0.35, noise=True, name="shotgun"),
-            "hit": make_sound(180, 0.15, vol=0.22, name="hit"),
-            "kill": make_sound(400, 0.15, vol=0.25, name="kill"),
-            "pickup": make_sound(660, 0.15, vol=0.20, name="pickup"),
+            "shoot": make_sound(800, 0.08, vol=0.60, noise=True, name="shoot"),
+            "sniper": make_sound(1500, 0.05, vol=0.60, noise=True, name="sniper"),
+            "pierce": make_sound(500, 0.10, vol=0.55, noise=True, name="pierce"),
+            "shotgun": make_sound(120, 0.15, vol=0.60, noise=True, name="shotgun"),
+            "hit": make_sound(180, 0.15, vol=0.40, name="hit"),
+            "kill": make_sound(400, 0.15, vol=0.45, name="kill"),
+            "pickup": make_sound(660, 0.15, vol=0.35, name="pickup"),
             "reload": make_sound(250, 0.30, vol=1.00, name="recarga"),
-            "empty": make_sound(500, 0.04, vol=0.08, name="empty"),
-            "gameover": make_sound(65, 1.5, vol=0.30, noise=True, name="gameover"),
-            "death": make_sound(55, 1.2, vol=0.30, noise=True, name="death"),
-            "victory": make_sound(880, 0.6, vol=0.30, name="victory"),
-            "wave": make_sound(520, 0.3, vol=0.25, name="wave"),
-            "levelup": make_sound(700, 0.25, vol=0.25, name="levelup"),
-            "boss_warn": make_sound(150, 0.5, vol=0.30, noise=True, name="boss_warn"),
-            "transition": make_sound(600, 0.10, vol=0.20, name="transition"),
-            "hover": make_sound(500, 0.04, vol=0.12, name="hover"),
-            "click": make_sound(600, 0.07, vol=0.18, name="click"),
-            "wave_clear": make_sound(880, 0.3, vol=0.25, name="wave_clear"),
-            "bomb": make_sound(250, 0.15, vol=0.25, noise=True, name="bomb"),
-            "explosion": make_sound(80, 0.4, vol=0.30, noise=True, name="explosion"),
-            "laser": make_sound(600, 0.15, vol=0.20, name="laser"),
-            "shop_open": make_sound(880, 0.10, vol=0.25, name="shop_open"),
-            "guitar_riff": make_chord_sound([110, 165, 220], 0.35, vol=0.30, name="guitar_riff"),
-            "eder_charge": make_loop_sound(400, 0.5, vol=0.35, name="eder_charge"),
-            "eder_laser": make_sound(150, 2.0, vol=0.30, noise=True, name="eder_laser"),
-            "eder_laser_loop": make_loop_chord_sound([110, 165, 220], 0.5, vol=0.40, name="eder_laser_loop"),
-            "sebas_ult": make_sound(300, 0.3, vol=0.30, noise=True, name="sebas_ult"),
+            "empty": make_sound(500, 0.04, vol=0.15, name="empty"),
+            "gameover": make_sound(65, 1.5, vol=0.55, noise=True, name="gameover"),
+            "death": make_sound(55, 1.2, vol=0.55, noise=True, name="death"),
+            "victory": make_sound(880, 0.6, vol=0.55, name="victory"),
+            "wave": make_sound(520, 0.3, vol=0.45, name="wave"),
+            "levelup": make_sound(700, 0.25, vol=0.45, name="levelup"),
+            "boss_warn": make_sound(150, 0.5, vol=0.55, noise=True, name="boss_warn"),
+            "transition": make_sound(600, 0.10, vol=0.35, name="transition"),
+            "hover": make_sound(500, 0.04, vol=0.22, name="hover"),
+            "click": make_sound(600, 0.07, vol=0.32, name="click"),
+            "wave_clear": make_sound(880, 0.3, vol=0.45, name="wave_clear"),
+            "bomb": make_sound(250, 0.15, vol=0.45, noise=True, name="bomb"),
+            "explosion": make_sound(80, 0.4, vol=0.55, noise=True, name="explosion"),
+            "laser": make_sound(600, 0.15, vol=0.35, name="laser"),
+            "shop_open": make_sound(880, 0.10, vol=0.45, name="shop_open"),
+            "guitar_riff": make_chord_sound([110, 165, 220], 0.35, vol=0.55, name="guitar_riff"),
+            "eder_charge": make_loop_sound(400, 0.5, vol=0.60, name="eder_charge"),
+            "eder_laser": make_sound(150, 2.0, vol=0.55, noise=True, name="eder_laser"),
+            "eder_laser_loop": make_loop_chord_sound([110, 165, 220], 0.5, vol=0.70, name="eder_laser_loop"),
+            "sebas_ult": make_sound(300, 0.3, vol=0.55, noise=True, name="sebas_ult"),
         }
 
 # Variables globales para las pistas de música activas
@@ -173,6 +173,7 @@ def play_menu_music():
     path = os.path.join(SFX_DIR, "menu_music.wav")
     if os.path.isfile(path):
         _menu_music = pygame.mixer.Sound(path)
+        _menu_music.set_volume(0.5)
         _menu_music.play(-1)
         return
     sr = 22050
@@ -195,6 +196,7 @@ def play_menu_music():
     buf.write(b"data" + struct.pack("<I", ds) + bytes(data))
     buf.seek(0)
     _menu_music = pygame.mixer.Sound(buf)
+    _menu_music.set_volume(0.5)
     _menu_music.play(-1)
 
 # Detiene la música del menú principal
@@ -218,8 +220,10 @@ def play_boss_music():
     path = os.path.join(SFX_DIR, "boss_music.wav")
     if os.path.isfile(path):
         _boss_music = pygame.mixer.Sound(path)
+        _boss_music.set_volume(0.5)
         _boss_music.play(-1)
         return
+
     sr = 22050
     duration = 4.0
     n = int(sr * duration)
@@ -245,8 +249,8 @@ def play_boss_music():
     buf.write(b"data" + struct.pack("<I", ds) + bytes(data))
     buf.seek(0)
     _boss_music = pygame.mixer.Sound(buf)
+    _boss_music.set_volume(0.5)
     _boss_music.play(-1)
-
 # Detiene la música de jefe
 def stop_boss_music():
     global _boss_music
@@ -273,6 +277,7 @@ def play_shop_music(vendor="vicente"):
     path = os.path.join(SFX_DIR, fname)
     if os.path.isfile(path):
         _shop_music = pygame.mixer.Sound(path)
+        _shop_music.set_volume(0.5)
         _shop_music.play(-1)
 
 # Detiene la música de tienda y reanuda la de fondo
@@ -300,6 +305,7 @@ def update_bg_music(wave=1, intensity=0.0):
     path = os.path.join(SFX_DIR, fname)
     if os.path.isfile(path):
         _bg_music = pygame.mixer.Sound(path)
+        _bg_music.set_volume(0.5)
         _bg_music.play(-1)
         _bg_track = 2 if _bg_track == 1 else 1
         return
@@ -324,6 +330,7 @@ def update_bg_music(wave=1, intensity=0.0):
     buf.write(b"data" + struct.pack("<I", ds) + bytes(data))
     buf.seek(0)
     _bg_music = pygame.mixer.Sound(buf)
+    _bg_music.set_volume(0.5)
     _bg_music.play(-1)
 
 # Reproduce el solo de guitarra de Eder durante su dominio
@@ -342,8 +349,10 @@ def play_eder_domain_music():
     path = os.path.join(SFX_DIR, "eder_domain.wav")
     if os.path.isfile(path):
         _eder_domain_music = pygame.mixer.Sound(path)
+        _eder_domain_music.set_volume(0.5)
         _eder_domain_music.play(-1)
         return
+
     sr = 22050
     bpm = 150
     beat_len = 60.0 / bpm
@@ -389,8 +398,8 @@ def play_eder_domain_music():
     buf.write(b"data" + struct.pack("<I", ds) + bytes(data))
     buf.seek(0)
     _eder_domain_music = pygame.mixer.Sound(buf)
+    _eder_domain_music.set_volume(0.5)
     _eder_domain_music.play(-1)
-
 def stop_eder_domain_music():
     global _eder_domain_music
     if _eder_domain_music:
