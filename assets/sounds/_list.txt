@@ -27,8 +27,6 @@ Todos los sonidos se definen en src/sound.py y se usan via `from src.sound impor
  click.wav       - Seleccionar en menu/comprar (main.py ~11 usos, entities.py:838)
  wave_clear.wav  - Wave completada (game.py:617)
  shop_open.wav   - Abrir tienda (main.py:211,215)
- eder_charge.wav - Carga de Z de Eder (entities.py:2347)
-  eder_laser.wav  - Láser de Z de Eder (entities.py:2679)
 
 == HABILIDADES Q ==
 
@@ -38,6 +36,7 @@ Todos los sonidos se definen en src/sound.py y se usan via `from src.sound impor
   diego_q.wav     - Q: Brainrot (entities.py:_use_ability)
   usiel_q.wav     - Q: Bolillo (entities.py:_use_ability)
   obed_q.wav      - Q: Billie (entities.py:_use_ability)
+  guitar_riff.wav - Q: Riff Eléctrico / Eder (entities.py:_use_ability)
   ian_q.wav       - Q: Buffer (entities.py:_use_ability)
   randy_q.wav     - Q: Muro (entities.py:_use_ability)
   vicente_q.wav   - Q: Import (entities.py:_use_ability)
@@ -45,11 +44,14 @@ Todos los sonidos se definen en src/sound.py y se usan via `from src.sound impor
 == ULTIMATES Z ==
 
   irvin_z.wav     - Z: Ciclo For (entities.py:_use_ultimate)
+  sebas_ult.wav   - Z: Rebote Caótico / Sebas (entities.py:_use_ultimate)
   leo_z.wav       - Z: Byte Overflow (entities.py:_use_ultimate)
   diego_z.wav     - Z: Horda Cerebral (entities.py:_use_ultimate)
   usiel_z.wav     - Z: Admin Godmode (entities.py:_use_ultimate)
   obed_z.wav      - Z: Billie Mundial (entities.py:_use_ultimate)
-  ian_z.wav       - Z: Buffer Crash (entities.py:_use_ultimate)
+  eder_laser.wav  - Z: Solo Mortal / láser (entities.py:_fire_eder_laser)
+  eder_charge.wav - Z: Carga del láser (entities.py:2386)
+  ian_z.wav       - Z: Buffer Crash / láser blanco (entities.py:_fire_eder_laser)
   randy_z.wav     - Z: Firewall Total (entities.py:_use_ultimate)
   vicente_z.wav   - Z: Limpiador (entities.py:_use_ultimate)
 
