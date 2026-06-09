@@ -7,7 +7,7 @@ import pygame
 
 from config import ALLY_TYPES, BOMB_TYPES, CHARACTERS, CODE_SNIPPETS, DOMAIN_COOLDOWN, DOMAIN_DURATION, DOMAIN_EXPANSION, LIGHT_FLASH_DURATION, MAP_H, MAP_W, MIN_ULT_CHARGE, ORANGE, PURPLE, RED, SHOP_ITEMS, ULT_CHARGE_MAX, ULT_LASER_DURATION, WEAPON_BULLETS, YELLOW
 from src.effects import Notif, Particle
-from src.sound import SFX, play_eder_domain_music, stop_eder_domain_music
+from src.sound import SFX, play_domain_music, stop_domain_music
 from src.sprites import draw_player
 from src.tilemap import COLS, ROWS, TILE, is_wall, world_to_tile
 
@@ -2559,8 +2559,7 @@ class Player(pygame.sprite.Sprite):
                 dom_key = f"{self.char_id}_domain"
                 if dom_key in SFX:
                     SFX[dom_key].play()
-            if self.char_id == "eder":
-                play_eder_domain_music()
+            play_domain_music(self.char_id)
 
 
         # Domain update
@@ -3799,8 +3798,7 @@ class Player(pygame.sprite.Sprite):
 
             self.ability_damage_mult = 1.0
 
-        if self.char_id == "eder":
-            stop_eder_domain_music()
+        stop_domain_music()
 
     def _update_display_hp(self):
         self.display_hp = self.hp

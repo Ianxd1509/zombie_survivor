@@ -185,7 +185,7 @@ _bg_track = 1  # alterna entre 1 (bg_music.wav) y 2 (bg_music2.wav)
 _menu_music = None
 _boss_music = None
 _shop_music = None
-_eder_domain_music = None
+_domain_music = None
 
 # Detiene la música de fondo
 def stop_bg_music():
@@ -196,7 +196,9 @@ def stop_bg_music():
 
 # Reproduce la música del menú principal en bucle
 def play_menu_music():
-    global _menu_music, _bg_music, _boss_music, _shop_music
+    global _menu_music, _bg_music, _boss_music, _shop_music, _domain_music
+    if _domain_music:
+        _domain_music.stop(); _domain_music = None
     if _menu_music is not None:
         return
     # Detiene cualquier otra música
@@ -244,7 +246,9 @@ def stop_menu_music():
 
 # Reproduce la música de jefe en bucle (detiene cualquier otra música)
 def play_boss_music():
-    global _boss_music, _bg_music, _menu_music, _shop_music
+    global _boss_music, _bg_music, _menu_music, _shop_music, _domain_music
+    if _domain_music:
+        _domain_music.stop(); _domain_music = None
     if _bg_music:
         _bg_music.stop(); _bg_music = None
     if _menu_music:
@@ -299,7 +303,9 @@ _shop_music = None
 
 # Reproduce la música de tienda (Vicente → Shop.wav, Oscar → Hip Shop.wav)
 def play_shop_music(vendor="vicente"):
-    global _shop_music, _bg_music, _boss_music, _menu_music
+    global _shop_music, _bg_music, _boss_music, _menu_music, _domain_music
+    if _domain_music:
+        _domain_music.stop(); _domain_music = None
     if _shop_music is not None:
         return
     # Detiene cualquier otra música
@@ -342,7 +348,9 @@ def stop_shop_music():
 
 # Reproduce la música de fondo según la oleada actual (alterna entre bg_music.wav y bg_music2.wav)
 def update_bg_music(wave=1, intensity=0.0):
-    global _bg_music, _bg_track, _menu_music, _boss_music, _shop_music
+    global _bg_music, _bg_track, _menu_music, _boss_music, _shop_music, _domain_music
+    if _domain_music:
+        _domain_music.stop(); _domain_music = None
     # If already playing, don't restart — let it play through
     if _bg_music is not None:
         return
@@ -385,10 +393,9 @@ def update_bg_music(wave=1, intensity=0.0):
     _bg_music.set_volume(0.5)
     _bg_music.play(-1)
 
-# Reproduce el solo de guitarra de Eder durante su dominio
-def play_eder_domain_music():
-    global _eder_domain_music, _bg_music, _menu_music, _boss_music, _shop_music
-    if _eder_domain_music is not None:
+def play_domain_music(char_id):
+    global _domain_music, _bg_music, _menu_music, _boss_music, _shop_music
+    if _domain_music is not None:
         return
     if _bg_music:
         _bg_music.stop(); _bg_music = None
@@ -398,11 +405,11 @@ def play_eder_domain_music():
         _boss_music.stop(); _boss_music = None
     if _shop_music:
         _shop_music.stop(); _shop_music = None
-    path = os.path.join(SFX_DIR, "eder_domain.wav")
+    path = os.path.join(SFX_DIR, f"{char_id}_domain.wav")
     if os.path.isfile(path):
-        _eder_domain_music = pygame.mixer.Sound(path)
-        _eder_domain_music.set_volume(0.5)
-        _eder_domain_music.play(-1)
+        _domain_music = pygame.mixer.Sound(path)
+        _domain_music.set_volume(0.5)
+        _domain_music.play(-1)
         return
 
     sr = 22050
@@ -449,11 +456,11 @@ def play_eder_domain_music():
     buf.write(struct.pack("<IHHIIHH", 16, 1, 1, sr, sr * 2, 2, 16))
     buf.write(b"data" + struct.pack("<I", ds) + bytes(data))
     buf.seek(0)
-    _eder_domain_music = pygame.mixer.Sound(buf)
-    _eder_domain_music.set_volume(0.5)
-    _eder_domain_music.play(-1)
-def stop_eder_domain_music():
-    global _eder_domain_music
-    if _eder_domain_music:
-        _eder_domain_music.stop()
-        _eder_domain_music = None
+    _domain_music = pygame.mixer.Sound(buf)
+    _domain_music.set_volume(0.5)
+    _domain_music.play(-1)
+def stop_domain_music():
+    global _domain_music
+    if _domain_music:
+        _domain_music.stop()
+        _domain_music = None
