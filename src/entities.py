@@ -2971,6 +2971,8 @@ class Player(pygame.sprite.Sprite):
 
 
         elif ab == "rebotar":
+            self.shake = 4
+            self._ability_hit_enemies(enemies, 250, 80, particles, (255, 100, 100))
             if notifs:
                 notifs.append(Notif("DEBUG: Rebotar Invocado", (255, 0, 0), 60))
             self.ability_active = True
@@ -3073,6 +3075,8 @@ class Player(pygame.sprite.Sprite):
 
         elif ab == "billie":
 
+            self.shake = 4
+            self._ability_hit_enemies(enemies, 250, 60, particles, (255, 80, 200))
             if self.billie_npc is None or (hasattr(self.billie_npc, "hp") and self.billie_npc.hp <= 0):
 
                 self.billie_npc = BillieNPC(self.pos.copy(), self.map_w, self.map_h)
@@ -3309,6 +3313,8 @@ class Player(pygame.sprite.Sprite):
 
         elif ab == "rebotar":
 
+            self.shake = 6
+            self._ability_hit_enemies(enemies, 300, 150, particles, (255, 100, 100), stun=30)
             self.ability_active = True
 
             self.ability_duration = 300
@@ -3436,6 +3442,8 @@ class Player(pygame.sprite.Sprite):
 
         elif ab == "billie":
 
+            self.shake = 6
+            self._ability_hit_enemies(enemies, 350, 100, particles, (255, 80, 200), stun=20)
             if self.billie_npc is None or (hasattr(self.billie_npc, "hp") and self.billie_npc.hp <= 0):
 
                 self.billie_npc = BillieNPC(self.pos.copy(), self.map_w, self.map_h)
