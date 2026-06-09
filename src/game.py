@@ -1639,7 +1639,7 @@ class Game:
 
         # Bloqueo de muros (Randy)
         for w in self.player.walls:
-            if self.player.pos.distance_to(w.pos) < self.player.radius + w.radius:
+            if self.player.char_id != "randy" and self.player.pos.distance_to(w.pos) < self.player.radius + w.radius:
                 # Repeler jugador
                 vec = self.player.pos - w.pos
                 if vec.length() > 0:
