@@ -3860,7 +3860,7 @@ class ShopTerminal:
     def draw(self, surf, cx=0, cy=0, near=False):
         x = self.pos.x - cx
         y = self.pos.y - cy
-        draw_player(self.surf, self.angle, False, self.radius, self.char_data, self.char_id)
+        draw_player(self.surf, self.angle, False, self.radius, self.char_data, self.char_id, no_weapon=True)
         surf.blit(self.surf, (x - self.radius, y - self.radius))
         if near:
             font2 = pygame.font.Font(None, 14)

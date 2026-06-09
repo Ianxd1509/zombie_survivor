@@ -44,7 +44,7 @@ def load_image(path, size=None, cache_key=None):
 # Dibuja el jugador en una superficie cuadrada (2*radius x 2*radius).
 # Usa imagen personalizada (char_{cid}.png) con máscara circular si existe; si no, genera un círculo procedural.
 # El arma se rota según el ángulo y se dibuja encima del cuerpo.
-def draw_player(surf, angle, flash=False, radius=17, char_data=None, char_id=""):
+def draw_player(surf, angle, flash=False, radius=17, char_data=None, char_id="", no_weapon=False):
     r = radius
     if char_data and "color" in char_data:
         col_val = char_data["color"]
@@ -91,33 +91,34 @@ def draw_player(surf, angle, flash=False, radius=17, char_data=None, char_id="")
         surf.blit(cached, (0, 0))
 
     # Arma: se dibuja como un rectángulo con rejilla y se rota según el ángulo del jugador
-    gun_key = base_color
-    gun_base = _GUN_CACHE.get(gun_key)
-    if gun_base is None:
-        gun_base = pygame.Surface((30, 16), pygame.SRCALPHA)
-        pygame.draw.rect(gun_base, (0, 60, 15), (2, 0, 26, 16), border_radius=3)
-        pygame.draw.rect(gun_base, base_color, (2, 0, 26, 16), 1, border_radius=3)
-        for i in range(3):
-            for j in range(5):
-                px = 2 + j * 5
-                py = 2 + i * 5
-                pygame.draw.rect(gun_base, (*base_color[:3], 80), (px, py, 3, 3), 1)
-        _GUN_CACHE[gun_key] = gun_base
+    if not no_weapon:
+        gun_key = base_color
+        gun_base = _GUN_CACHE.get(gun_key)
+        if gun_base is None:
+            gun_base = pygame.Surface((30, 16), pygame.SRCALPHA)
+            pygame.draw.rect(gun_base, (0, 60, 15), (2, 0, 26, 16), border_radius=3)
+            pygame.draw.rect(gun_base, base_color, (2, 0, 26, 16), 1, border_radius=3)
+            for i in range(3):
+                for j in range(5):
+                    px = 2 + j * 5
+                    py = 2 + i * 5
+                    pygame.draw.rect(gun_base, (*base_color[:3], 80), (px, py, 3, 3), 1)
+            _GUN_CACHE[gun_key] = gun_base
 
-    # Solo rota el arma cuando el ángulo cambia para ahorrar rendimiento
-    deg = math.degrees(angle)
-    global _LAST_ANGLE_KEY, _LAST_ROT_GUN, _LAST_GX, _LAST_GY
-    angle_key = (radius, round(deg))
-    if angle_key != _LAST_ANGLE_KEY:
-        rot_gun = pygame.transform.rotate(gun_base, -deg)
-        gx = r + math.cos(angle) * (r * 1.0) - rot_gun.get_width() // 2
-        gy = r + math.sin(angle) * (r * 1.0) - rot_gun.get_height() // 2
-        _LAST_ANGLE_KEY = angle_key
-        _LAST_ROT_GUN = rot_gun
-        _LAST_GX = gx
-        _LAST_GY = gy
-    else:
-        rot_gun = _LAST_ROT_GUN
-        gx = _LAST_GX
-        gy = _LAST_GY
-    surf.blit(rot_gun, (gx, gy))
+        # Solo rota el arma cuando el ángulo cambia para ahorrar rendimiento
+        deg = math.degrees(angle)
+        global _LAST_ANGLE_KEY, _LAST_ROT_GUN, _LAST_GX, _LAST_GY
+        angle_key = (radius, round(deg))
+        if angle_key != _LAST_ANGLE_KEY:
+            rot_gun = pygame.transform.rotate(gun_base, -deg)
+            gx = r + math.cos(angle) * (r * 1.0) - rot_gun.get_width() // 2
+            gy = r + math.sin(angle) * (r * 1.0) - rot_gun.get_height() // 2
+            _LAST_ANGLE_KEY = angle_key
+            _LAST_ROT_GUN = rot_gun
+            _LAST_GX = gx
+            _LAST_GY = gy
+        else:
+            rot_gun = _LAST_ROT_GUN
+            gx = _LAST_GX
+            gy = _LAST_GY
+        surf.blit(rot_gun, (gx, gy))
