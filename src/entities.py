@@ -2226,7 +2226,7 @@ class Player(pygame.sprite.Sprite):
 
                 self.reloading = False
 
-                if SFX and hasattr(SFX, "get"):
+                if SFX:
 
                     SFX["reload"].play()
 
@@ -2252,7 +2252,7 @@ class Player(pygame.sprite.Sprite):
 
                 self.weapon_mode = self.weapon_list[i]
 
-                if SFX and hasattr(SFX, "get"):
+                if SFX:
 
                     SFX["click"].play()
 
@@ -2282,7 +2282,7 @@ class Player(pygame.sprite.Sprite):
 
                     self.reload_timer = max(1, int(self.reload_time / 16.67 * self.reload_mult * 0.5))
 
-                    if SFX and hasattr(SFX, "get"):
+                    if SFX:
 
                         SFX["empty"].play()
 
@@ -2350,7 +2350,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-                if SFX and hasattr(SFX, "get"):
+                if SFX:
 
                      sname = self.weapon_mode if self.weapon_mode in ("sniper", "pierce", "shotgun") else "shoot"
 
@@ -2398,7 +2398,7 @@ class Player(pygame.sprite.Sprite):
 
                     self.ability_active = False
 
-                    if SFX and hasattr(SFX, "get"):
+                    if SFX:
                         SFX["guitar_riff"].stop()
                         SFX["eder_laser_loop"].stop()
 
@@ -2412,7 +2412,7 @@ class Player(pygame.sprite.Sprite):
 
                         self.ult_charge = 0
 
-                        if SFX and hasattr(SFX, "get"):
+                        if SFX:
                             SFX["eder_charge"].play(loops=-1)
 
                     self.ult_charge = min(ULT_CHARGE_MAX, self.ult_charge + 1)
@@ -2423,12 +2423,12 @@ class Player(pygame.sprite.Sprite):
 
                     if self.ult_charge >= MIN_ULT_CHARGE:
 
-                        if SFX and hasattr(SFX, "get"):
+                        if SFX:
                             SFX["eder_charge"].stop()
 
                         self._fire_eder_laser(particles, notifs, grid)
                     else:
-                        if SFX and hasattr(SFX, "get"):
+                        if SFX:
                             SFX["eder_charge"].stop()
 
                     self.ult_charging = False
@@ -2437,7 +2437,7 @@ class Player(pygame.sprite.Sprite):
 
                 elif self.ult_charging and self.ult_charge >= ULT_CHARGE_MAX:
 
-                    if SFX and hasattr(SFX, "get"):
+                    if SFX:
                         SFX["eder_charge"].stop()
 
                     self._fire_eder_laser(particles, notifs, grid)
@@ -2554,7 +2554,7 @@ class Player(pygame.sprite.Sprite):
 
                         dcol, random.uniform(3, 6), random.randint(15, 30)))
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["transition"].play()
                 dom_key = f"{self.char_id}_domain"
                 if dom_key in SFX:
@@ -2802,7 +2802,7 @@ class Player(pygame.sprite.Sprite):
 
         self.beam_w = int(14 + 16 * charge_ratio)
 
-        if SFX and hasattr(SFX, "get"):
+        if SFX:
 
             SFX["eder_laser_loop"].play(loops=-1)
 
@@ -2817,7 +2817,7 @@ class Player(pygame.sprite.Sprite):
         snd = "ian_z" if is_ian else "eder_laser"
         txt = "BUFFER CRASH!" if is_ian else "SOLO MORTAL!"
 
-        if SFX and hasattr(SFX, "get"):
+        if SFX:
             SFX[snd].play()
 
         if notifs:
@@ -3037,7 +3037,7 @@ class Player(pygame.sprite.Sprite):
             self.anim_timer = 30
             self.anim_total = 30
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["irvin_q"].play()
 
         elif ab == "rebotar":
@@ -3061,7 +3061,7 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("REBOTAR ACTIVO 7s", (255, 100, 100), 40))
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["sebas_q"].play()
 
         elif ab == "robar":
@@ -3096,7 +3096,7 @@ class Player(pygame.sprite.Sprite):
             self.anim_timer = 20
             self.anim_total = 20
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["leo_q"].play()
 
         elif ab == "brainrot":
@@ -3121,7 +3121,7 @@ class Player(pygame.sprite.Sprite):
             self.anim_timer = 20
             self.anim_total = 20
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["diego_q"].play()
 
         elif ab == "bolillo":
@@ -3158,7 +3158,7 @@ class Player(pygame.sprite.Sprite):
             self.anim_timer = 30
             self.anim_total = 30
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["usiel_q"].play()
 
         elif ab == "billie":
@@ -3181,7 +3181,7 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("Billie ya en escena!", (255, 80, 200), 40))
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["obed_q"].play()
 
             self.anim_type = "pulse"
@@ -3268,7 +3268,7 @@ class Player(pygame.sprite.Sprite):
             self.anim_timer = 20
             self.anim_total = 20
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["vicente_q"].play()
 
         elif ab == "guitar_riff":
@@ -3297,7 +3297,7 @@ class Player(pygame.sprite.Sprite):
 
                         random.uniform(2, 5), random.randint(10, 22)))
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
 
                 SFX["guitar_riff"].play()
 
@@ -3341,7 +3341,7 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("BUFFER OVERFLOW!", (255, 80, 180), 40))
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["ian_q"].play()
 
             self.anim_type = "pulse"
@@ -3368,7 +3368,7 @@ class Player(pygame.sprite.Sprite):
             self.anim_timer = 20
             self.anim_total = 20
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["randy_q"].play()
 
     def _use_ultimate(self, particles, notifs, enemies, all_sprites=None, grid=None):
@@ -3423,7 +3423,7 @@ class Player(pygame.sprite.Sprite):
             self.anim_timer = 60
             self.anim_total = 60
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["irvin_z"].play()
 
 
@@ -3448,7 +3448,7 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("REBOTE CAÓTICO!", (255, 100, 100), 60))
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["sebas_z"].play()
 
             self.anim_type = "pulse"
@@ -3501,7 +3501,7 @@ class Player(pygame.sprite.Sprite):
             self.anim_timer = 30
             self.anim_total = 30
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["leo_z"].play()
 
 
@@ -3536,7 +3536,7 @@ class Player(pygame.sprite.Sprite):
             self.anim_timer = 30
             self.anim_total = 30
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["diego_z"].play()
 
 
@@ -3575,7 +3575,7 @@ class Player(pygame.sprite.Sprite):
             self.anim_timer = 45
             self.anim_total = 45
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["usiel_z"].play()
 
 
@@ -3618,7 +3618,7 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("BILLIE MUNDIAL!", (255, 80, 200), 60))
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["obed_z"].play()
 
             self.anim_type = "pulse"
@@ -3712,7 +3712,7 @@ class Player(pygame.sprite.Sprite):
             self.anim_timer = 45
             self.anim_total = 45
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["vicente_z"].play()
 
 
@@ -3753,7 +3753,7 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("BUFFER CRASH!", (255, 80, 180), 60))
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["ian_z"].play()
 
             self.anim_type = "pulse"
@@ -3782,12 +3782,12 @@ class Player(pygame.sprite.Sprite):
             self.anim_timer = 30
             self.anim_total = 30
 
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["randy_z"].play()
 
 
 
-        if SFX and hasattr(SFX, "get"):
+        if SFX:
             SFX["levelup"].play()
 
 

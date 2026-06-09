@@ -296,7 +296,7 @@ class Game:
                 e2.pos = e.pos + pygame.Vector2(random.uniform(-20, 20), random.uniform(-20, 20))
                 e2.rect.center = (int(e2.pos.x), int(e2.pos.y))
                 self.all_sprites.add(e2); self.enemies.add(e2)
-        if SFX and hasattr(SFX, "get"):
+        if SFX:
             SFX["kill"].play()
         # Death animation
         e._death_surf = e.image.copy()
@@ -369,7 +369,7 @@ class Game:
         self.shop_open = False
         stop_shop_music()
         stop_domain_music()
-        if SFX and hasattr(SFX, "get"):
+        if SFX:
             SFX["eder_charge"].stop()
             SFX["guitar_riff"].stop()
             SFX["eder_laser_loop"].stop()
@@ -451,10 +451,10 @@ class Game:
             pos = self.player.pos + pygame.Vector2(random.uniform(-150, 150), random.uniform(-150, 150))
             self.particles.append(Particle(pos, pygame.Vector2(math.cos(a), math.sin(a)) * sp,
                 RED if self.wave_has_boss else GREEN, random.uniform(2, 5), random.randint(15, 30)))
-        if SFX and hasattr(SFX, "get"):
+        if SFX:
             SFX["wave"].play()
         if self.wave_has_boss:
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["boss_warn"].play()
         if self.wave_modifier != "normal" and not self.wave_has_boss:
             mod_names = {"horda":"MOD: HORDA - Enemigos mas debiles pero mas numerosos!",
@@ -638,7 +638,7 @@ class Game:
                 self._apply_oscar_item(item)
                 self.shop_flash_timer = 20
                 self.shop_flash_id = item.get("type", "")
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["click"].play()
             return
         # Vicente item handling
@@ -652,7 +652,7 @@ class Game:
             self.shop_costs[item["id"]] = int(cost * 1.35)
             self.shop_flash_timer = 20
             self.shop_flash_id = item["id"]
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["click"].play()
 
     # Aplica efectos de items de Oscar: buffs, aliados, bombas, auras, fragmentos de evolución
@@ -957,7 +957,10 @@ class Game:
         if self.player.hp <= 0:
             if self.state != "over":
                 self.state = "over"
-                if SFX and hasattr(SFX, "get"):
+                if SFX:
+                    SFX["eder_charge"].stop()
+                    SFX["guitar_riff"].stop()
+                    SFX["eder_laser_loop"].stop()
                     SFX["death"].play()
                     SFX["gameover"].play()
             return
@@ -1009,19 +1012,19 @@ class Game:
         # Fase clear: todos los enemigos eliminados, avanza a la siguiente oleada
         if self.wave_state == "clear" and len(self.enemies) == 0:
             stop_boss_music()  # Detiene música de jefe al limpiar la wave
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["wave_clear"].play()
             if self.wave >= 30:
                 self.state = "win"
                 self.vicente_unlocked = True
-                if SFX and hasattr(SFX, "get"):
+                if SFX:
                     SFX["victory"].play()
                 self.notifs.append(Notif("VICTORIA! Has limpiado todos los servidores!", GOLD, 300))
                 self.notifs.append(Notif("VICENTE desbloqueado! Nuevo personaje secreto!", (100, 200, 255), 300))
                 return
             self._start_wave(self.wave + 1)
             self.state = "shop_prep"
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["transition"].play()
             self.notifs.append(Notif("Fase de preparacion! 60s para el ataque!", GOLD, 150))
 
@@ -1317,7 +1320,7 @@ class Game:
             btype = b.btype
             pos = b.pos
             if btype == "flash":
-                if SFX and hasattr(SFX, "get"):
+                if SFX:
                     SFX["explosion"].play()
                 for e in list(self.enemies):
                     if e.pos.distance_to(pos) < b.radius:
@@ -1329,7 +1332,7 @@ class Game:
                         (255, 255, 255), random.uniform(3, 6), random.randint(10, 25)))
                 self.shockwaves.append({"pos":pos,"timer":15,"max_r":b.radius,"color":(255,255,200)})
             elif btype == "napalm":
-                if SFX and hasattr(SFX, "get"):
+                if SFX:
                     SFX["explosion"].play()
                 b.pool_life = 240
                 b.image = pygame.Surface((1, 1), pygame.SRCALPHA)
@@ -1339,7 +1342,7 @@ class Game:
                     self.particles.append(Particle(pos, pygame.Vector2(math.cos(a2), math.sin(a2)) * sp2,
                         (255, 100, 0), random.uniform(3, 5), random.randint(15, 30)))
             elif btype == "cluster":
-                if SFX and hasattr(SFX, "get"):
+                if SFX:
                     SFX["explosion"].play()
                 for _i in range(3):
                     a2 = random.uniform(0, math.tau)
@@ -1355,7 +1358,7 @@ class Game:
                         (255, 80, 200), random.uniform(2, 4), random.randint(8, 18)))
                 self.shockwaves.append({"pos":pos,"timer":12,"max_r":b.radius,"color":(255,80,200)})
             elif btype == "mine":
-                if SFX and hasattr(SFX, "get"):
+                if SFX:
                     SFX["explosion"].play()
                 for e in list(self.enemies):
                     if e.pos.distance_to(pos) < b.radius:
@@ -1370,7 +1373,7 @@ class Game:
                     self.particles.append(Particle(pos, pygame.Vector2(math.cos(a2), math.sin(a2)) * sp2,
                         (80, 200, 80), random.uniform(2, 5), random.randint(10, 25)))
             else:
-                if SFX and hasattr(SFX, "get"):
+                if SFX:
                     SFX["explosion"].play()
                 for e in list(self.enemies):
                     if e.pos.distance_to(pos) < b.radius:
@@ -1409,7 +1412,7 @@ class Game:
                 self.powerups.remove(pu)
                 continue
             if self.player.pos.distance_to(pu.pos) < self.player.radius + pu.radius + 4:
-                if SFX and hasattr(SFX, "get"):
+                if SFX:
                     SFX["pickup"].play()
                 if pu.ptype == "turbo":
                     self.player.turbo_timer = 480
@@ -1673,7 +1676,7 @@ class Game:
                 self.player.hp = min(self.player.max_hp, self.player.hp + 35)
             else:
                 self.player.reserve = min(self.player.char_data["reserve"] * 2, self.player.reserve + 45)
-            if SFX and hasattr(SFX, "get"):
+            if SFX:
                 SFX["pickup"].play()
 
         alive = []

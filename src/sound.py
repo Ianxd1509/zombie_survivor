@@ -117,7 +117,6 @@ if pygame.mixer.get_init():
             "sniper": make_sound(1500, 0.05, vol=0.60, noise=True, name="sniper"),
             "pierce": make_sound(500, 0.10, vol=0.55, noise=True, name="pierce"),
             "shotgun": make_sound(120, 0.15, vol=0.60, noise=True, name="shotgun"),
-            "hit": make_sound(180, 0.15, vol=0.40, name="hit"),
             "kill": make_sound(400, 0.15, vol=0.45, name="kill"),
             "pickup": make_sound(660, 0.15, vol=0.35, name="pickup"),
             "reload": make_sound(250, 0.30, vol=1.00, name="recarga"),
@@ -132,9 +131,7 @@ if pygame.mixer.get_init():
             "hover": make_sound(500, 0.04, vol=0.22, name="hover"),
             "click": make_sound(600, 0.07, vol=0.32, name="click"),
             "wave_clear": make_sound(880, 0.3, vol=0.45, name="wave_clear"),
-            "bomb": make_sound(250, 0.15, vol=0.45, noise=True, name="bomb"),
             "explosion": make_sound(80, 0.4, vol=0.55, noise=True, name="explosion"),
-            "laser": make_sound(600, 0.15, vol=0.35, name="laser"),
             "shop_open": make_sound(880, 0.10, vol=0.45, name="shop_open"),
             "guitar_riff": make_chord_sound([110, 165, 220], 0.35, vol=0.55, name="guitar_riff"),
             "eder_charge": make_loop_sound(400, 0.5, vol=0.60, name="eder_charge"),
@@ -173,11 +170,12 @@ if pygame.mixer.get_init():
             "ian_domain": make_sound(200, 0.5, vol=0.55, noise=True, name="ian_domain"),
             "randy_domain": make_sound(100, 0.6, vol=0.55, noise=True, name="randy_domain"),
             "vicente_domain": make_sound(800, 0.5, vol=0.55, noise=True, name="vicente_domain"),
+            "eder_domain": make_chord_sound([220, 330, 440], 0.5, vol=0.55, name="eder_domain"),
         }
 
-        # Multiplicador global de volumen SFX (+80%)
+        # Multiplicador global de volumen SFX (+30%)
         for snd in SFX.values():
-            snd.set_volume(snd.get_volume() * 1.8)
+            snd.set_volume(min(1.0, snd.get_volume() * 1.3))
 
 # Variables globales para las pistas de música activas
 _bg_music = None

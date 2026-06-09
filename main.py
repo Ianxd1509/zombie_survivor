@@ -117,7 +117,7 @@ def main():
 
     # Crea instancia del juego, menús y pantallas de UI
     game = Game()
-    from src.sound import stop_bg_music, update_bg_music, play_menu_music, stop_menu_music, play_shop_music, stop_shop_music
+    from src.sound import SFX, stop_bg_music, update_bg_music, play_menu_music, stop_menu_music, play_shop_music, stop_shop_music
     from src.ui import MainMenu
     menu = MainMenu()
     mapsel = MapSelector()
@@ -176,11 +176,13 @@ def main():
                 # Navegación del menú de pausa (continuar / salir)
                 if game.state == "pause":
                     if k in (pygame.K_UP, pygame.K_w):
-                        pause_screen.sel = (pause_screen.sel - 1) % 2; SFX["hover"].play()
+                        pause_screen.sel = (pause_screen.sel - 1) % 2
+                        if SFX: SFX["hover"].play()
                     elif k in (pygame.K_DOWN, pygame.K_s):
-                        pause_screen.sel = (pause_screen.sel + 1) % 2; SFX["hover"].play()
+                        pause_screen.sel = (pause_screen.sel + 1) % 2
+                        if SFX: SFX["hover"].play()
                     elif k == pygame.K_RETURN:
-                        SFX["click"].play()
+                        if SFX: SFX["click"].play()
                         if pause_screen.sel == 0: game.state = "play"
                         else:
                             game.save_game()
@@ -191,46 +193,52 @@ def main():
                     shop_items = game.shop_items
                     cols = 5
                     if k in (pygame.K_LEFT, pygame.K_a):
-                        shop_sel = max(0, shop_sel-1); SFX["hover"].play()
+                        shop_sel = max(0, shop_sel-1)
+                        if SFX: SFX["hover"].play()
                     elif k in (pygame.K_RIGHT, pygame.K_d):
-                        shop_sel = min(len(shop_items)-1, shop_sel+1); SFX["hover"].play()
+                        shop_sel = min(len(shop_items)-1, shop_sel+1)
+                        if SFX: SFX["hover"].play()
                     elif k in (pygame.K_UP, pygame.K_w):
-                        shop_sel = max(0, shop_sel-cols); SFX["hover"].play()
+                        shop_sel = max(0, shop_sel-cols)
+                        if SFX: SFX["hover"].play()
                     elif k in (pygame.K_DOWN, pygame.K_s):
-                        shop_sel = min(len(shop_items)-1, shop_sel+cols); SFX["hover"].play()
+                        shop_sel = min(len(shop_items)-1, shop_sel+cols)
+                        if SFX: SFX["hover"].play()
                     elif k == pygame.K_TAB:
                         if len(shop_items) > 0 and "id" not in shop_items[0]:
                             game.shop_tab = (game.shop_tab + 1) % 7
                             shop_sel = 0
-                            SFX["hover"].play()
+                            if SFX: SFX["hover"].play()
                     elif k == pygame.K_RETURN:
                         game.buy_shop_item(shop_sel)
                     elif k == pygame.K_f:
                         game.shop_open = False
                         stop_shop_music()
-                        SFX["click"].play()
+                        if SFX: SFX["click"].play()
                 elif game.state in ("shop_prep", "play"):
                     # F abre tienda de Vicente, T abre tienda de Oscar
                     if k == pygame.K_f and game.vicente_near:
                         game.open_shop("vicente")
                         shop_sel = 0
                         play_shop_music("vicente")
-                        SFX["shop_open"].play()
+                        if SFX: SFX["shop_open"].play()
                     if k == pygame.K_t and game.oscar_near:
                         game.open_shop("oscar")
                         shop_sel = 0
                         play_shop_music("oscar")
-                        SFX["shop_open"].play()
+                        if SFX: SFX["shop_open"].play()
 
                 # Selección de mapa
                 elif game.state == "mapsel":
                     maps_total = len(MAPS)
                     if k in (pygame.K_LEFT, pygame.K_a):
-                        mapsel.sel = (mapsel.sel - 1) % maps_total; SFX["hover"].play()
+                        mapsel.sel = (mapsel.sel - 1) % maps_total
+                        if SFX: SFX["hover"].play()
                     elif k in (pygame.K_RIGHT, pygame.K_d):
-                        mapsel.sel = (mapsel.sel + 1) % maps_total; SFX["hover"].play()
+                        mapsel.sel = (mapsel.sel + 1) % maps_total
+                        if SFX: SFX["hover"].play()
                     elif k == pygame.K_RETURN:
-                        SFX["click"].play()
+                        if SFX: SFX["click"].play()
                         charsel.reset_animation()
                         game.map_sel = mapsel.sel
                         game.state = "charsel"
@@ -244,20 +252,24 @@ def main():
                         chars_list.append("??")
                     total = len(chars_list)
                     if k in (pygame.K_LEFT, pygame.K_a):
-                        charsel.sel = (charsel.sel - 1) % total; SFX["hover"].play()
+                        charsel.sel = (charsel.sel - 1) % total
+                        if SFX: SFX["hover"].play()
                     elif k in (pygame.K_RIGHT, pygame.K_d):
-                        charsel.sel = (charsel.sel + 1) % total; SFX["hover"].play()
+                        charsel.sel = (charsel.sel + 1) % total
+                        if SFX: SFX["hover"].play()
                     elif k in (pygame.K_UP, pygame.K_w):
-                        charsel.sel = (charsel.sel - charsel.cols) % total; SFX["hover"].play()
+                        charsel.sel = (charsel.sel - charsel.cols) % total
+                        if SFX: SFX["hover"].play()
                     elif k in (pygame.K_DOWN, pygame.K_s):
-                        charsel.sel = (charsel.sel + charsel.cols) % total; SFX["hover"].play()
+                        charsel.sel = (charsel.sel + charsel.cols) % total
+                        if SFX: SFX["hover"].play()
                     elif k == pygame.K_RETURN:
                         cid = chars_list[charsel.sel]
                         if cid == "??":
                             game.notifs.append(Notif("VICENTE BLOQUEADO - Gana la partida para desbloquear!", (100, 100, 100), 120))
-                            SFX["empty"].play()
+                            if SFX: SFX["empty"].play()
                         else:
-                            SFX["click"].play()
+                            if SFX: SFX["click"].play()
                             game.selected_char = cid
                             game.reset(cid, map_index=game.map_sel)
                             game.state = "play"
@@ -265,11 +277,13 @@ def main():
                 # Menú principal (nueva partida, cargar, controles, créditos, salir)
                 elif game.state == "menu":
                     if k in (pygame.K_UP, pygame.K_w):
-                        menu.sel = (menu.sel - 1) % len(menu.opts); SFX["hover"].play()
+                        menu.sel = (menu.sel - 1) % len(menu.opts)
+                        if SFX: SFX["hover"].play()
                     elif k in (pygame.K_DOWN, pygame.K_s):
-                        menu.sel = (menu.sel + 1) % len(menu.opts); SFX["hover"].play()
+                        menu.sel = (menu.sel + 1) % len(menu.opts)
+                        if SFX: SFX["hover"].play()
                     elif k == pygame.K_RETURN:
-                        SFX["click"].play()
+                        if SFX: SFX["click"].play()
                         if menu.sel == 0:
                             mapsel.reset_animation()
                             game.state = "mapsel"
@@ -290,16 +304,16 @@ def main():
                 elif game.state == "tutorial":
                     if k in (pygame.K_RIGHT, pygame.K_d):
                         tutorial.page = min(tutorial.page + 1, len(tutorial.pages) - 1)
-                        SFX["hover"].play()
+                        if SFX: SFX["hover"].play()
                     elif k in (pygame.K_LEFT, pygame.K_a):
                         tutorial.page = max(tutorial.page - 1, 0)
-                        SFX["hover"].play()
+                        if SFX: SFX["hover"].play()
 
                 # Abrir/cerrar airdrop (gacha) con F
                 if k == pygame.K_f and game.state == "play" and game.gacha_open:
                     game.gacha_open = False
                 elif k == pygame.K_f and game.state == "play" and not game.gacha_open and game.open_airdrop():
-                    SFX["click"].play()
+                    if SFX: SFX["click"].play()
 
                 # R para reiniciar desde personaje tras game over / victoria
                 if game.state in ("over", "win") and k == pygame.K_r:
@@ -389,12 +403,13 @@ def main():
             if game.state == "pause" and event.type == pygame.MOUSEMOTION:
                 for i, rect in pause_screen.get_sel_rects():
                     if rect.collidepoint(mouse_pos) and pause_screen.sel != i:
-                        pause_screen.sel = i; SFX["hover"].play()
+                        pause_screen.sel = i
+                        if SFX: SFX["hover"].play()
 
             if game.state == "pause" and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 for i, rect in pause_screen.get_sel_rects():
                     if rect.collidepoint(mouse_pos):
-                        SFX["click"].play()
+                        if SFX: SFX["click"].play()
                         if i == 0: game.state = "play"
                         else:
                             game.save_game()
@@ -404,11 +419,12 @@ def main():
             if game.state == "mapsel" and event.type == pygame.MOUSEMOTION:
                 for i, rect in mapsel.get_card_rects():
                     if rect.collidepoint(mouse_pos) and mapsel.sel != i:
-                        mapsel.sel = i; SFX["hover"].play()
+                        mapsel.sel = i
+                        if SFX: SFX["hover"].play()
             if game.state == "mapsel" and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 for i, rect in mapsel.get_card_rects():
                     if rect.collidepoint(mouse_pos):
-                        SFX["click"].play()
+                        if SFX: SFX["click"].play()
                         charsel.reset_animation()
                         game.map_sel = i
                         game.state = "charsel"
@@ -417,7 +433,8 @@ def main():
             if game.state == "charsel" and event.type == pygame.MOUSEMOTION:
                 for i, rect in charsel.get_card_rects():
                     if rect.collidepoint(mouse_pos) and charsel.sel != i:
-                        charsel.sel = i; SFX["hover"].play()
+                        charsel.sel = i
+                        if SFX: SFX["hover"].play()
 
             if game.state == "charsel" and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 for i, rect in charsel.get_card_rects():
@@ -429,10 +446,10 @@ def main():
                             clist.append("??")
                         cid = clist[i]
                         if cid == "??":
-                            SFX["empty"].play()
+                            if SFX: SFX["empty"].play()
                             game.notifs.append(Notif("VICENTE BLOQUEADO - Gana la partida!", (100, 100, 100), 120))
                         else:
-                            SFX["click"].play()
+                            if SFX: SFX["click"].play()
                             game.selected_char = cid
                             game.reset(cid, map_index=game.map_sel)
                             game.state = "play"
@@ -442,13 +459,14 @@ def main():
                 for i in range(len(menu.opts)):
                     rect = pygame.Rect(WIDTH // 2 - 120, HEIGHT // 2 - 15 + i * 55, 240, 44)
                     if rect.collidepoint(mouse_pos) and menu.sel != i:
-                        menu.sel = i; SFX["hover"].play()
+                        menu.sel = i
+                        if SFX: SFX["hover"].play()
 
             if game.state == "menu" and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 for i in range(len(menu.opts)):
                     rect = pygame.Rect(WIDTH // 2 - 120, HEIGHT // 2 - 15 + i * 55, 240, 44)
                     if rect.collidepoint(mouse_pos):
-                        SFX["click"].play()
+                        if SFX: SFX["click"].play()
                         if i == 0:
                             mapsel.reset_animation()
                             game.state = "mapsel"
