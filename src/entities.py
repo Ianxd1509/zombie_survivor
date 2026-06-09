@@ -2805,8 +2805,6 @@ class Player(pygame.sprite.Sprite):
 
         if SFX and hasattr(SFX, "get"):
 
-            SFX["guitar_riff"].play(loops=-1)
-
             SFX["eder_laser_loop"].play(loops=-1)
 
         self.ability_active = True
