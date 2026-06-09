@@ -2964,7 +2964,8 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("APLASTAR!", (0, 200, 255), 40))
 
-
+            if SFX and hasattr(SFX, "get"):
+                SFX["irvin_q"].play()
 
         elif ab == "rebotar":
             self.shake = 4
@@ -2985,7 +2986,8 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("REBOTAR ACTIVO 7s", (255, 100, 100), 40))
 
-
+            if SFX and hasattr(SFX, "get"):
+                SFX["sebas_q"].play()
 
         elif ab == "robar":
 
@@ -3015,7 +3017,8 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif(f"ROBAR: +{bytes_stolen * 4} bytes", (255, 210, 55), 40))
 
-
+            if SFX and hasattr(SFX, "get"):
+                SFX["leo_q"].play()
 
         elif ab == "brainrot":
 
@@ -3035,7 +3038,8 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("BRAINROT x2!", (180, 50, 255), 40))
 
-
+            if SFX and hasattr(SFX, "get"):
+                SFX["diego_q"].play()
 
         elif ab == "bolillo":
 
@@ -3067,7 +3071,8 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("BOLILLO: FULL HEAL + DMG!", (255, 200, 50), 40))
 
-
+            if SFX and hasattr(SFX, "get"):
+                SFX["usiel_q"].play()
 
         elif ab == "billie":
 
@@ -3089,7 +3094,8 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("Billie ya en escena!", (255, 80, 200), 40))
 
-
+            if SFX and hasattr(SFX, "get"):
+                SFX["obed_q"].play()
 
         elif ab == "import_snippet":
 
@@ -3167,7 +3173,8 @@ class Player(pygame.sprite.Sprite):
 
                     notifs.append(Notif("IMPORT THIS!", (100, 200, 255), 40))
 
-
+            if SFX and hasattr(SFX, "get"):
+                SFX["vicente_q"].play()
 
         elif ab == "guitar_riff":
 
@@ -3237,7 +3244,8 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("BUFFER OVERFLOW!", (255, 80, 180), 40))
 
-
+            if SFX and hasattr(SFX, "get"):
+                SFX["ian_q"].play()
 
         elif ab == "muro":
 
@@ -3255,7 +3263,8 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("Maximo de muros alcanzado!", (80, 180, 255), 40))
 
-
+            if SFX and hasattr(SFX, "get"):
+                SFX["randy_q"].play()
 
     def _use_ultimate(self, particles, notifs, enemies, all_sprites=None, grid=None):
 
@@ -3304,6 +3313,9 @@ class Player(pygame.sprite.Sprite):
             if notifs:
 
                 notifs.append(Notif("CICLO INFINITO!", (0, 200, 255), 60))
+
+            if SFX and hasattr(SFX, "get"):
+                SFX["irvin_z"].play()
 
 
 
@@ -3374,6 +3386,9 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif(f"BYTE OVERFLOW: +{bytes_stolen} bytes!", (255, 210, 55), 60))
 
+            if SFX and hasattr(SFX, "get"):
+                SFX["leo_z"].play()
+
 
 
         elif ab == "brainrot":
@@ -3401,6 +3416,9 @@ class Player(pygame.sprite.Sprite):
             if notifs:
 
                 notifs.append(Notif("HORDA CEREBRAL!", (180, 50, 255), 60))
+
+            if SFX and hasattr(SFX, "get"):
+                SFX["diego_z"].play()
 
 
 
@@ -3433,6 +3451,9 @@ class Player(pygame.sprite.Sprite):
             if notifs:
 
                 notifs.append(Notif("ADMIN GODMODE!", (255, 200, 50), 60))
+
+            if SFX and hasattr(SFX, "get"):
+                SFX["usiel_z"].play()
 
 
 
@@ -3473,6 +3494,9 @@ class Player(pygame.sprite.Sprite):
             if notifs:
 
                 notifs.append(Notif("BILLIE MUNDIAL!", (255, 80, 200), 60))
+
+            if SFX and hasattr(SFX, "get"):
+                SFX["obed_z"].play()
 
 
 
@@ -3555,9 +3579,12 @@ class Player(pygame.sprite.Sprite):
                             pygame.Vector2(math.cos(a), math.sin(a)) * sp,
 
                             (100, 200, 255), random.uniform(3, 7), random.randint(15, 40)))
-
                 if notifs:
+
                     notifs.append(Notif(f"LIMPIADOR! {killed} enemigos eliminados!", (100, 200, 255), 80))
+
+            if SFX and hasattr(SFX, "get"):
+                SFX["vicente_z"].play()
 
 
 
@@ -3597,6 +3624,9 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("BUFFER CRASH!", (255, 80, 180), 60))
 
+            if SFX and hasattr(SFX, "get"):
+                SFX["ian_z"].play()
+
 
 
         elif ab == "muro":
@@ -3616,6 +3646,9 @@ class Player(pygame.sprite.Sprite):
             if notifs:
 
                 notifs.append(Notif("FIREWALL TOTAL!", (80, 180, 255), 60))
+
+            if SFX and hasattr(SFX, "get"):
+                SFX["randy_z"].play()
 
 
 

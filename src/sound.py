@@ -141,6 +141,27 @@ if pygame.mixer.get_init():
             "eder_laser": make_sound(150, 2.0, vol=0.55, noise=True, name="eder_laser"),
             "eder_laser_loop": make_loop_chord_sound([110, 165, 220], 0.5, vol=0.70, name="eder_laser_loop"),
             "sebas_ult": make_sound(300, 0.3, vol=0.55, noise=True, name="sebas_ult"),
+
+            # Q abilities
+            "irvin_q": make_sound(80, 0.4, vol=0.55, noise=True, name="irvin_q"),
+            "sebas_q": make_sound(400, 0.2, vol=0.50, name="sebas_q"),
+            "leo_q": make_sound(1000, 0.12, vol=0.45, name="leo_q"),
+            "diego_q": make_sound(200, 0.3, vol=0.50, noise=True, name="diego_q"),
+            "usiel_q": make_chord_sound([330, 660], 0.3, vol=0.50, name="usiel_q"),
+            "obed_q": make_sound(300, 0.25, vol=0.50, noise=True, name="obed_q"),
+            "ian_q": make_sound(500, 0.2, vol=0.50, noise=True, name="ian_q"),
+            "randy_q": make_sound(150, 0.3, vol=0.55, noise=True, name="randy_q"),
+            "vicente_q": make_sound(1200, 0.1, vol=0.45, name="vicente_q"),
+
+            # Z ultimates
+            "irvin_z": make_sound(60, 0.6, vol=0.55, noise=True, name="irvin_z"),
+            "leo_z": make_sound(1000, 0.4, vol=0.50, noise=True, name="leo_z"),
+            "diego_z": make_chord_sound([150, 225, 300], 0.5, vol=0.55, name="diego_z"),
+            "usiel_z": make_chord_sound([440, 550, 660], 0.5, vol=0.55, name="usiel_z"),
+            "obed_z": make_chord_sound([260, 390, 520], 0.4, vol=0.55, name="obed_z"),
+            "ian_z": make_sound(60, 0.5, vol=0.55, noise=True, name="ian_z"),
+            "randy_z": make_sound(100, 0.5, vol=0.55, noise=True, name="randy_z"),
+            "vicente_z": make_sound(800, 0.4, vol=0.55, noise=True, name="vicente_z"),
         }
 
 # Variables globales para las pistas de música activas
