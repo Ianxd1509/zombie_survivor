@@ -2525,10 +2525,11 @@ class Player(pygame.sprite.Sprite):
 
                         dcol, random.uniform(3, 6), random.randint(15, 30)))
 
-            SFX["transition"].play()
-            dom_key = f"{self.char_id}_domain"
-            if SFX and hasattr(SFX, "get") and dom_key in SFX:
-                SFX[dom_key].play()
+            if SFX and hasattr(SFX, "get"):
+                SFX["transition"].play()
+                dom_key = f"{self.char_id}_domain"
+                if dom_key in SFX:
+                    SFX[dom_key].play()
             if self.char_id == "eder":
                 play_eder_domain_music()
 
@@ -3664,7 +3665,8 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        SFX["levelup"].play()
+        if SFX and hasattr(SFX, "get"):
+            SFX["levelup"].play()
 
 
 

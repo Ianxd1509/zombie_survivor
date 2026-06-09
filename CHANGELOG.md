@@ -1,5 +1,29 @@
 # Changelog — zombie_survivor
 
+## [v1.5] — 2026-06-09
+
+### Sonidos personalizados para todas las habilidades
+- **Q abilities**: cada personaje tiene su propio sonido (irvin_q, sebas_q, leo_q, diego_q, usiel_q, obed_q, ian_q, randy_q, vicente_q)
+- **Z ultimates**: cada personaje tiene su propio sonido (irvin_z, leo_z, diego_z, usiel_z, obed_z, ian_z, randy_z, vicente_z + sebas_ult existente)
+- **Dominios X**: cada personaje tiene su propio sonido al activar dominio (irvin_domain, sebas_domain, leo_domain, diego_domain, usiel_domain, obed_domain, eder_domain, ian_domain, randy_domain, vicente_domain)
+- Sonidos definidos en `sound.py` con fallback procedural. Nombres de archivo documentados en `assets/sounds/_list.txt`.
+
+### Ian Z = láser cargable (como Eder)
+- Ian ahora usa el mismo sistema de carga que Eder: mantener Z para cargar, soltar para disparar
+- Láser, partículas y notificación en **blanco** (vs rojo/púrpura de Eder)
+
+### Imágenes de personaje mejoradas
+- `load_image()` ahora usa `pygame.transform.smoothscale()` en vez de `scale()` — imágenes PNG se ven más suaves
+- La pantalla de selección de personajes (`CharSelector`) muestra la imagen personalizada en vez de un círculo genérico
+
+### Fixes de SFX
+- Agregados guards `if SFX and hasattr(SFX, "get")` a todas las llamadas `SFX[...].play()` que faltaban (18 en game.py, 2 en entities.py)
+
+### Calidad de vida
+- Nuevo archivo `assets/sounds/_list.txt` con todos los nombres de archivo .wav por sección (SFX, Q, Z, X, Música)
+
+---
+
 ## [v1.4] — 2026-06-08
 
 ### HUD & UI Fixes
