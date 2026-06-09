@@ -2555,6 +2555,9 @@ class Player(pygame.sprite.Sprite):
                         dcol, random.uniform(3, 6), random.randint(15, 30)))
 
             if SFX:
+                SFX["eder_charge"].stop()
+                SFX["guitar_riff"].stop()
+                SFX["eder_laser_loop"].stop()
                 SFX["transition"].play()
                 dom_key = f"{self.char_id}_domain"
                 if dom_key in SFX:
@@ -3798,6 +3801,10 @@ class Player(pygame.sprite.Sprite):
 
             self.ability_damage_mult = 1.0
 
+        if SFX:
+            SFX["eder_charge"].stop()
+            SFX["guitar_riff"].stop()
+            SFX["eder_laser_loop"].stop()
         stop_domain_music()
 
     def _update_display_hp(self):
