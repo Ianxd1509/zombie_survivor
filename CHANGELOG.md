@@ -1,5 +1,21 @@
 # Changelog — zombie_survivor
 
+## [v1.6] — 2026-06-09
+
+### Animaciones en habilidades
+- **Irvin Q/Z**: spin (gira el sprite)
+- **Vicente Q**: spin (gira el sprite)
+- **Leo Q/Z**: pulse (escala pulsante)
+- **Diego Q/Z**: pulse
+- **Uziel Q/Z**: pulse
+- **Randy Q/Z**: pulse
+- **Vicente Z**: pulse
+
+### Tienda de Vicente
+- Nuevo item "Municion": +50 balas de reserva, 80 bytes, max 10 compras
+
+---
+
 ## [v1.5] — 2026-06-09
 
 ### Sonidos personalizados para todas las habilidades

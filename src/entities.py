@@ -1828,6 +1828,11 @@ class Player(pygame.sprite.Sprite):
         self.hit_flash = 0
         self.invuln_timer = 0
         self.shake = 0
+        self.anim_type = None
+        self.anim_timer = 0
+        self.anim_total = 0
+        self.anim_angle = 0.0
+        self.anim_scale = 1.0
         self.weapon_idx = 0
         self.weapon_mode = "auto"
         self.weapon_list = list(WEAPON_BULLETS.keys())
@@ -2572,6 +2577,30 @@ class Player(pygame.sprite.Sprite):
 
         self._tick_ability_buffs(enemies, particles)
 
+        # Tick ability animation
+        if self.anim_timer > 0:
+            self.anim_timer -= 1
+            if not hasattr(self, "_base_image"):
+                self._base_image = self.image.copy()
+            if self.anim_type == "spin":
+                self.anim_angle = (self.anim_angle + 360 / (self.anim_total * 0.4)) % 360
+                self.image = pygame.transform.rotate(self._base_image, self.anim_angle)
+                self.rect = self.image.get_rect(center=(int(self.pos.x), int(self.pos.y)))
+            elif self.anim_type == "pulse":
+                t = self.anim_timer / self.anim_total
+                self.anim_scale = 1.0 + 0.15 * abs(math.sin(t * math.pi * 3))
+                new_w = max(1, int(self.radius * 2 * self.anim_scale))
+                self.image = pygame.transform.smoothscale(self._base_image, (new_w, new_w))
+                self.rect = self.image.get_rect(center=(int(self.pos.x), int(self.pos.y)))
+        else:
+            if hasattr(self, "_base_image"):
+                self.image = self._base_image
+                del self._base_image
+                self.rect = self.image.get_rect(center=(int(self.pos.x), int(self.pos.y)))
+            self.anim_type = None
+            self.anim_angle = 0
+            self.anim_scale = 1.0
+
 
 
         # Buff timers
@@ -2981,6 +3010,10 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("APLASTAR!", (0, 200, 255), 40))
 
+            self.anim_type = "spin"
+            self.anim_timer = 30
+            self.anim_total = 30
+
             if SFX and hasattr(SFX, "get"):
                 SFX["irvin_q"].play()
 
@@ -3034,6 +3067,10 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif(f"ROBAR: +{bytes_stolen * 4} bytes", (255, 210, 55), 40))
 
+            self.anim_type = "pulse"
+            self.anim_timer = 20
+            self.anim_total = 20
+
             if SFX and hasattr(SFX, "get"):
                 SFX["leo_q"].play()
 
@@ -3054,6 +3091,10 @@ class Player(pygame.sprite.Sprite):
             if notifs:
 
                 notifs.append(Notif("BRAINROT x2!", (180, 50, 255), 40))
+
+            self.anim_type = "pulse"
+            self.anim_timer = 20
+            self.anim_total = 20
 
             if SFX and hasattr(SFX, "get"):
                 SFX["diego_q"].play()
@@ -3087,6 +3128,10 @@ class Player(pygame.sprite.Sprite):
             if notifs:
 
                 notifs.append(Notif("BOLILLO: FULL HEAL + DMG!", (255, 200, 50), 40))
+
+            self.anim_type = "pulse"
+            self.anim_timer = 30
+            self.anim_total = 30
 
             if SFX and hasattr(SFX, "get"):
                 SFX["usiel_q"].play()
@@ -3190,6 +3235,10 @@ class Player(pygame.sprite.Sprite):
 
                     notifs.append(Notif("IMPORT THIS!", (100, 200, 255), 40))
 
+            self.anim_type = "spin"
+            self.anim_timer = 20
+            self.anim_total = 20
+
             if SFX and hasattr(SFX, "get"):
                 SFX["vicente_q"].play()
 
@@ -3280,6 +3329,10 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("Maximo de muros alcanzado!", (80, 180, 255), 40))
 
+            self.anim_type = "pulse"
+            self.anim_timer = 20
+            self.anim_total = 20
+
             if SFX and hasattr(SFX, "get"):
                 SFX["randy_q"].play()
 
@@ -3330,6 +3383,10 @@ class Player(pygame.sprite.Sprite):
             if notifs:
 
                 notifs.append(Notif("CICLO INFINITO!", (0, 200, 255), 60))
+
+            self.anim_type = "spin"
+            self.anim_timer = 60
+            self.anim_total = 60
 
             if SFX and hasattr(SFX, "get"):
                 SFX["irvin_z"].play()
@@ -3403,6 +3460,10 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif(f"BYTE OVERFLOW: +{bytes_stolen} bytes!", (255, 210, 55), 60))
 
+            self.anim_type = "pulse"
+            self.anim_timer = 30
+            self.anim_total = 30
+
             if SFX and hasattr(SFX, "get"):
                 SFX["leo_z"].play()
 
@@ -3433,6 +3494,10 @@ class Player(pygame.sprite.Sprite):
             if notifs:
 
                 notifs.append(Notif("HORDA CEREBRAL!", (180, 50, 255), 60))
+
+            self.anim_type = "pulse"
+            self.anim_timer = 30
+            self.anim_total = 30
 
             if SFX and hasattr(SFX, "get"):
                 SFX["diego_z"].play()
@@ -3468,6 +3533,10 @@ class Player(pygame.sprite.Sprite):
             if notifs:
 
                 notifs.append(Notif("ADMIN GODMODE!", (255, 200, 50), 60))
+
+            self.anim_type = "pulse"
+            self.anim_timer = 45
+            self.anim_total = 45
 
             if SFX and hasattr(SFX, "get"):
                 SFX["usiel_z"].play()
@@ -3600,6 +3669,10 @@ class Player(pygame.sprite.Sprite):
 
                     notifs.append(Notif(f"LIMPIADOR! {killed} enemigos eliminados!", (100, 200, 255), 80))
 
+            self.anim_type = "pulse"
+            self.anim_timer = 45
+            self.anim_total = 45
+
             if SFX and hasattr(SFX, "get"):
                 SFX["vicente_z"].play()
 
@@ -3663,6 +3736,10 @@ class Player(pygame.sprite.Sprite):
             if notifs:
 
                 notifs.append(Notif("FIREWALL TOTAL!", (80, 180, 255), 60))
+
+            self.anim_type = "pulse"
+            self.anim_timer = 30
+            self.anim_total = 30
 
             if SFX and hasattr(SFX, "get"):
                 SFX["randy_z"].play()
