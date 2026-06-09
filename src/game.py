@@ -10,7 +10,7 @@ from config import AIRDROP_CHANCE_PER_FRAME, AIRDROP_OPEN_RADIUS, BLACK, CHAOS_I
 from src.camera import Camera
 from src.effects import CodeSnippet, DamageNum, Decal, Notif, Particle
 from src.entities import AirdropCrate, Ally, BillieNPC, Bomb, BrainrotMinion, Bullet, Enemy, Hazard, ImportSnippet, Mimic, Pickup, Player, Powerup, ShopTerminal, Tornado, Wall
-from src.sound import SFX, play_boss_music, stop_boss_music, stop_shop_music
+from src.sound import SFX, play_boss_music, stop_boss_music, stop_shop_music, stop_eder_domain_music
 from src.tactics import SquadManager
 from src.tilemap import COLS, MAP_THEMES, ROWS, TILE, compute_reachable, generate_grid, is_wall
 
@@ -368,6 +368,7 @@ class Game:
         self.aliados = pygame.sprite.Group()
         self.shop_open = False
         stop_shop_music()
+        stop_eder_domain_music()
         if SFX and hasattr(SFX, "get"):
             SFX["eder_charge"].stop()
             SFX["guitar_riff"].stop()
