@@ -459,6 +459,9 @@ def play_domain_music(char_id):
     _domain_music.play(-1)
 def stop_domain_music():
     global _domain_music
-    if _domain_music:
-        _domain_music.stop()
+    if _domain_music is not None:
+        try:
+            _domain_music.fadeout(200)
+        except Exception:
+            pass
         _domain_music = None
