@@ -33,7 +33,7 @@ def load_image(path, size=None, cache_key=None):
     try:
         img = pygame.image.load(full).convert_alpha()
         if size:
-            img = pygame.transform.scale(img, size)
+            img = pygame.transform.smoothscale(img, size)
         _IMG_CACHE[key] = img
         return img
     except Exception:

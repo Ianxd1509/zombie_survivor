@@ -1248,11 +1248,12 @@ class CharSelector:
                 draw_glow(surf, col, (cx, by + 38), 30, 60)
 
             ring_r = 24 + int(math.sin(now * 0.003 + i) * 3)
+            from src.sprites import draw_player
+            char_surf = pygame.Surface((40, 40), pygame.SRCALPHA)
+            draw_player(char_surf, 0, False, 20, c, cid, no_weapon=True)
+            surf.blit(char_surf, (cx - 20, by + 38 - 20))
             if is_sel:
-                pygame.draw.circle(surf, (*col, 60), (cx, by + 38), ring_r, 2)
-
-            pygame.draw.circle(surf, col, (cx, by + 38), 20)
-            pygame.draw.circle(surf, SEL if is_sel else (0, 50, 15), (cx, by + 38), 20, 2)
+                pygame.draw.circle(surf, (*col, 60), (cx, by + 38), 24, 2)
 
             name_s = _f(18).render(c["name"], True, SEL if is_sel else (0, 120, 40))
             surf.blit(name_s, (cx - name_s.get_width() // 2, by + 65))
