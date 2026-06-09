@@ -2001,6 +2001,10 @@ class Player(pygame.sprite.Sprite):
 
             self.knockback += 0.2
 
+        elif upgrade_id == "ammo":
+
+            self.reserve += 50
+
 
 
     def _ability_ready(self):

@@ -81,6 +81,7 @@ SHOP_ITEMS = [
     {"name":"Perforar","desc":"Balas penetrantes","cost":200,"base_cost":200,"id":"piercing","max":5},
     {"name":"Vampirismo","desc":"+5% robo de vida","cost":180,"base_cost":180,"id":"lifesteal","max":8},
     {"name":"Impacto","desc":"+20% retroceso","cost":100,"base_cost":100,"id":"knockback","max":5},
+    {"name":"Municion","desc":"+50 balas de reserva","cost":80,"base_cost":80,"id":"ammo","max":10},
 ]
 
 CODE_BULLETS = [
