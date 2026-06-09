@@ -313,7 +313,7 @@ def main():
                 # Admin: tecla "," abre campo de contraseña
                 if k == pygame.K_COMMA and game.state in ("play", "shop_prep"):
                     game.admin_inputting = not game.admin_inputting
-                    game.admin_input = "" if game.admin_inputting else ""
+
                 if game.admin_inputting:
                     if k == pygame.K_RETURN:
                         if game.admin_input.strip() == ADMIN_PASSWORD:
@@ -559,3 +559,5 @@ if __name__ == "__main__":
     except Exception:
         _log_crash(*sys.exc_info())
         raise
+    finally:
+        pygame.quit()

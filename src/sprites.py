@@ -78,7 +78,7 @@ def draw_player(surf, angle, flash=False, radius=17, char_data=None, char_id="",
                 c = [min(255, x + 100) for x in base_color]
             else:
                 c = list(base_color)
-            pygame.draw.circle(cached, (0, 255, 65, 30), (r + 2, r + 2), r)
+            pygame.draw.circle(cached, (*base_color, 30), (r + 2, r + 2), r)
             pygame.draw.circle(cached, (*c, 200), (r, r), r)
             pygame.draw.circle(cached, (max(0, c[0]-30), max(0, c[1]-30), max(0, c[2]-30)), (r, r), r-4)
             pygame.draw.circle(cached, (0, 255, 65), (r, r), r, 2)

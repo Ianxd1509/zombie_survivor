@@ -360,7 +360,6 @@ def _generate_campus():
         for c in (58, 64, 70):
             if g[r][c] == 14: g[r][c] = 27
 
-    random.Random(7)
     for dr in range(-1, 2):
         for dc in range(-1, 2): g[39 + dr][45 + dc] = 20
     for dr in range(-1, 2): g[39 + dr][44] = 0; g[39 + dr][46] = 0

@@ -631,6 +631,7 @@ class Game:
                     base = item.get("_base", cost)
                     cost = int(base * (1.35 ** old_lvl))
                     self.player.shop_levels[f"oscar_{tid2}"] = old_lvl + 1
+                    item["_paid"] = cost
                     item["cost"] = int(base * (1.35 ** (old_lvl + 1)))
                 self.player.bytes -= cost
                 self._apply_oscar_item(item)
@@ -650,7 +651,8 @@ class Game:
             self.shop_costs[item["id"]] = int(cost * 1.35)
             self.shop_flash_timer = 20
             self.shop_flash_id = item["id"]
-            SFX["click"].play()
+            if SFX and hasattr(SFX, "get"):
+                SFX["click"].play()
 
     # Aplica efectos de items de Oscar: buffs, aliados, bombas, auras, fragmentos de evolución
     def _apply_oscar_item(self, item):
@@ -679,7 +681,7 @@ class Game:
             for a in self.aliados:
                 if a.aid == aid:
                     self.notifs.append(Notif("Aliado ya activo!", RED, 60))
-                    p.bytes += item["cost"]
+                    p.bytes += item.get("_paid", item["cost"])
                     return
             spawn_pos = p.pos + pygame.Vector2(random.uniform(-60, 60), random.uniform(-60, 60))
             ally = Ally(aid, spawn_pos, p, MAP_W, MAP_H)
@@ -690,11 +692,11 @@ class Game:
             btype = tid.replace("bomb_", "")
             if btype in p.bomb_owned:
                 self.notifs.append(Notif("Bomba ya adquirida!", RED, 60))
-                p.bytes += item["cost"]
+                p.bytes += item.get("_paid", item["cost"])
                 return
             if len(p.bomb_owned) >= len(BOMB_TYPES):
                 self.notifs.append(Notif("Ya tienes todas las bombas!", RED, 60))
-                p.bytes += item["cost"]
+                p.bytes += item.get("_paid", item["cost"])
                 return
             p.bomb_owned.add(btype)
             p.bomb_queue.append(btype)
@@ -718,7 +720,7 @@ class Game:
             atype = tid.replace("aura_", "")
             if atype in p.auras:
                 self.notifs.append(Notif("Aura ya activa!", RED, 60))
-                p.bytes += item["cost"]
+                p.bytes += item.get("_paid", item["cost"])
                 return
             p.auras.append(atype)
             self.notifs.append(Notif(f"Aura de {atype} activada!", (100, 200, 255), 90))
@@ -1247,15 +1249,6 @@ class Game:
                 if died:
                     self._reward_enemy_death(e, b.damage)
 
-        # Daño de balas del jugador contra Zapiens (se le puede atacar)
-                    b.kill()
-                    for _ in range(4):
-                        a2 = random.uniform(0, math.tau)
-                        sp2 = random.uniform(1, 3)
-                        self.particles.append(Particle(b.pos, pygame.Vector2(math.cos(a2), math.sin(a2)) * sp2,
-                            (100, 200, 255), random.uniform(2, 3), random.randint(4, 10)))
-                    break
-
         # Colisión balas enemigas contra el jugador
         for eb in list(self.enemy_bullets):
             if not eb.update(grid=self.grid):
@@ -1646,20 +1639,21 @@ class Game:
 
         # Bloqueo de muros (Randy)
         for w in self.player.walls:
-            if pygame.sprite.collide_rect(self.player, w):
+            if self.player.pos.distance_to(w.pos) < self.player.radius + w.radius:
                 # Repeler jugador
                 vec = self.player.pos - w.pos
                 if vec.length() > 0:
                     vec.normalize_ip()
                     self.player.pos += vec * 5
                     self.player.rect.center = self.player.pos
-            for e in pygame.sprite.spritecollide(w, self.enemies, False):
-                # Repeler enemigo
-                vec = e.pos - w.pos
-                if vec.length() > 0:
-                    vec.normalize_ip()
-                    e.pos += vec * 2
-                    e.rect.center = e.pos
+            for e in list(self.enemies):
+                if e.pos.distance_to(w.pos) < e.radius + w.radius:
+                    # Repeler enemigo
+                    vec = e.pos - w.pos
+                    if vec.length() > 0:
+                        vec.normalize_ip()
+                        e.pos += vec * 2
+                        e.rect.center = e.pos
 
         # Eliminar enemigos atascados que no dañan al jugador en 60s
         now = pygame.time.get_ticks()

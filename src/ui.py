@@ -6,6 +6,7 @@ import pygame
 from config import ALLY_TYPES, BLUE, BOMB_TYPES, CHARACTERS, DOMAIN_CHARGE_KILLS, EVOLUTION_ITEM_EMOJIS, FONT_SCALE, GACHA_LOOT, GOLD, GRAY, GREEN, HEIGHT, MAP_W, MAPS, PURPLE, RED, SEL, WEAPON_BULLETS, WHITE, WIDTH, YELLOW
 from src.tilemap import TILE
 from src.effects import MatrixRain
+from src.sprites import draw_player
 
 # Caché de fuentes para evitar recrearlas constantemente
 _FONTS = {}
@@ -143,7 +144,7 @@ def draw_hud(surf, player, wave, wave_state, wave_has_boss, wave_announce, enemi
     surf.blit(_f(20).render(f"BYTES: {player.bytes}", True, GOLD), (10, y))
     surf.blit(_f(20).render(f"BAJAS: {player.kills}", True, GREEN), (155, y))
     surf.blit(_f(20).render(f"LV {player.level}", True, GREEN), (300, y))
-    surf.blit(_f(20).render(f"SERVER {wave}", True, GREEN), (WIDTH - 165, y))
+    surf.blit(_f(20).render(f"SERVER {wave}", True, GREEN), (WIDTH - 165, 2))
     surf.blit(_f(16).render(f"[{char['name']}]", True, c), (10, y + 22))
     if player.char_id == "vicente":
         vm = player.vicente_mode_names[player.vicente_mode]
@@ -1248,7 +1249,6 @@ class CharSelector:
                 draw_glow(surf, col, (cx, by + 38), 30, 60)
 
             ring_r = 24 + int(math.sin(now * 0.003 + i) * 3)
-            from src.sprites import draw_player
             char_surf = pygame.Surface((40, 40), pygame.SRCALPHA)
             draw_player(char_surf, 0, False, 20, c, cid, no_weapon=True)
             surf.blit(char_surf, (cx - 20, by + 38 - 20))

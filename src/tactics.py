@@ -1,4 +1,5 @@
 import math
+import random
 
 import pygame
 
@@ -75,7 +76,8 @@ class SquadManager:
                         tx += ahead_x + perp_x
                         ty += ahead_y + perp_y
                     if grid is not None and not self._tile_walkable(grid, tx, ty):
-                        tx, ty = player_pos[0], player_pos[1]
+                        tx = player_pos[0] + random.uniform(-30, 30)
+                        ty = player_pos[1] + random.uniform(-30, 30)
                     member.tactical_target = (tx, ty)
                     member.tactical_state = "flank" if formation != "swarm" else "chase"
                     if member.etype in ("shooter", "buffer"):
@@ -85,8 +87,11 @@ class SquadManager:
                         tanks = [m for m in squad if m.etype in ("tank", "shielded")]
                         if tanks:
                             nearest_tank = min(tanks, key=lambda t: t.pos.distance_to(member.pos))
-                            member.tactical_target = (nearest_tank.pos.x - dx / dist * 60,
-                                                      nearest_tank.pos.y - dy / dist * 60)
+                            tdx = player_pos[0] - nearest_tank.pos.x
+                            tdy = player_pos[1] - nearest_tank.pos.y
+                            tdist = max(math.hypot(tdx, tdy), 1)
+                            member.tactical_target = (nearest_tank.pos.x - tdx / tdist * 60,
+                                                      nearest_tank.pos.y - tdy / tdist * 60)
                             member.tactical_state = "flank"
                         else:
                             member.tactical_state = "hold"

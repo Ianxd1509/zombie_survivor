@@ -657,7 +657,7 @@ class Enemy(pygame.sprite.Sprite):
             k = (5 if not self.is_boss else 2) * kb_mult
             self.kb = pygame.Vector2(kb_dir).normalize() * k
         # Boss phase 2 at 50% HP
-        if self.is_boss and not self.boss_phase2 and self.hp <= self.max_hp * 0.5:
+        if self.is_boss and not self.boss_phase2 and self.hp <= self.max_hp * 0.5 and not hasattr(self, "_vb_phase"):
             self.boss_phase2 = True
             self.speed *= 1.3
             self.damage = int(self.damage * 1.5)
@@ -1094,7 +1094,6 @@ class Enemy(pygame.sprite.Sprite):
         self._vb_summon_timer -= 1
         self._vb_teleport_timer -= 1
         self._vb_charge_timer -= 1
-        self._vb_domain_timer -= 1
         self._vb_domain_cooldown -= 1
         self._vb_rar_timer -= 1
         self._vb_compress_timer -= 1
@@ -1486,7 +1485,7 @@ class BillieNPC(pygame.sprite.Sprite):
             self.sing_timer = 0
         self.pos.x = max(self.radius, min(self.map_w - self.radius, self.pos.x))
         self.pos.y = max(self.radius, min(self.map_h - self.radius, self.pos.y))
-        return None
+        return True
 
     # Dibuja a Billie con barra de vida
     def draw(self, surf, cx, cy):
@@ -1891,6 +1890,7 @@ class Player(pygame.sprite.Sprite):
         self._robar_buff = False
         self._ult_buff = False
         self._bolillo_buff = False
+        self._rebotar_buff = False
         self._wall_hp_mult = 1.0
         self.vicente_mode = 0
         self.vicente_mode_names = ["IMPORT", "COMPILE", "DEBUG"]
@@ -1922,35 +1922,49 @@ class Player(pygame.sprite.Sprite):
 
             if s is not None:
 
-                scale = PASSIVE_SCALE.get(s)
+                m = re.match(r"([a-z_]+)([+*])?([\d.]+)?", s)
 
-                if scale is not None and scale != 0:
+                if m:
 
-                    attr = PASSIVE_APPLY.get(s)
+                    base_name = m.group(1)
+                    op = m.group(2)
+                    val_str = m.group(3)
 
-                    if attr is not None:
+                    scale = PASSIVE_SCALE.get(base_name)
 
-                        current = getattr(self, attr, 0)
+                    if scale is not None and scale != 0:
 
-                        if s in ("firerate", "reload"):
+                        if val_str is not None and op == "*":
+                            scale = float(val_str)
+                        elif val_str is not None:
+                            parsed_val = float(val_str)
+                            scale = int(parsed_val) if parsed_val == int(parsed_val) else parsed_val
 
-                            setattr(self, attr, current * scale)
+                        attr = PASSIVE_APPLY.get(base_name)
 
-                        elif attr == "bonus_max_hp":
+                        if attr is not None:
 
-                            self.bonus_max_hp += int(scale)
+                            current = getattr(self, attr, 0)
 
-                            self.max_hp += int(scale)
+                            if base_name in ("firerate", "reload"):
 
-                            self.hp = min(self.hp + int(scale), self.max_hp)
+                                setattr(self, attr, current * scale)
 
-                        elif isinstance(current, int):
+                            elif attr == "bonus_max_hp":
 
-                            setattr(self, attr, current + int(scale))
+                                self.bonus_max_hp += int(scale)
 
-                        else:
+                                self.max_hp += int(scale)
 
-                            setattr(self, attr, current + scale)
+                                self.hp = min(self.hp + int(scale), self.max_hp)
+
+                            elif isinstance(current, int):
+
+                                setattr(self, attr, current + int(scale))
+
+                            else:
+
+                                setattr(self, attr, current + scale)
 
             return True
 
@@ -2083,6 +2097,12 @@ class Player(pygame.sprite.Sprite):
             if self._ult_buff:
 
                 self._ult_buff = False
+
+                self.dmg_mult = 1.0
+
+            if self._rebotar_buff:
+
+                self._rebotar_buff = False
 
                 self.dmg_mult = 1.0
 
@@ -2783,6 +2803,12 @@ class Player(pygame.sprite.Sprite):
 
         self.beam_w = int(14 + 16 * charge_ratio)
 
+        if SFX and hasattr(SFX, "get"):
+
+            SFX["guitar_riff"].play(loops=-1)
+
+            SFX["eder_laser_loop"].play(loops=-1)
+
         self.ability_active = True
 
         self.ability_duration = ULT_LASER_DURATION
@@ -3032,6 +3058,8 @@ class Player(pygame.sprite.Sprite):
 
             self.dmg_mult = max(self.dmg_mult or 1.0, 1.5)
 
+            self._rebotar_buff = True
+
             if notifs:
 
                 notifs.append(Notif("REBOTAR ACTIVO 7s", (255, 100, 100), 40))
@@ -3159,6 +3187,10 @@ class Player(pygame.sprite.Sprite):
             if SFX and hasattr(SFX, "get"):
                 SFX["obed_q"].play()
 
+            self.anim_type = "pulse"
+            self.anim_timer = 20
+            self.anim_total = 20
+
         elif ab == "import_snippet":
 
             if self.char_id == "vicente" and self.vicente_mode == 1:
@@ -3276,7 +3308,9 @@ class Player(pygame.sprite.Sprite):
 
                 notifs.append(Notif("RIFF ELÉCTRICO!", (200, 80, 255), 45))
 
-
+            self.anim_type = "pulse"
+            self.anim_timer = 20
+            self.anim_total = 20
 
         elif ab == "buffer":
 
@@ -3312,6 +3346,10 @@ class Player(pygame.sprite.Sprite):
 
             if SFX and hasattr(SFX, "get"):
                 SFX["ian_q"].play()
+
+            self.anim_type = "pulse"
+            self.anim_timer = 20
+            self.anim_total = 20
 
         elif ab == "muro":
 
@@ -3414,9 +3452,11 @@ class Player(pygame.sprite.Sprite):
                 notifs.append(Notif("REBOTE CAÓTICO!", (255, 100, 100), 60))
 
             if SFX and hasattr(SFX, "get"):
-                SFX["sebas_ult"].play()
+                SFX["sebas_z"].play()
 
-
+            self.anim_type = "pulse"
+            self.anim_timer = 30
+            self.anim_total = 30
 
         elif ab == "robar":
 
@@ -3584,7 +3624,9 @@ class Player(pygame.sprite.Sprite):
             if SFX and hasattr(SFX, "get"):
                 SFX["obed_z"].play()
 
-
+            self.anim_type = "pulse"
+            self.anim_timer = 30
+            self.anim_total = 30
 
         elif ab == "import_snippet":
 
@@ -3717,7 +3759,9 @@ class Player(pygame.sprite.Sprite):
             if SFX and hasattr(SFX, "get"):
                 SFX["ian_z"].play()
 
-
+            self.anim_type = "pulse"
+            self.anim_timer = 30
+            self.anim_total = 30
 
         elif ab == "muro":
 

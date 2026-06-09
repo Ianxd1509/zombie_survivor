@@ -175,6 +175,7 @@ EVOLUTION_ITEMS = {
     "eder": ["Pelota", "Red", "Silbato"],
     "ian": ["Laptop", "Mouse", "Cargador"],
     "randy": ["Chamarra", "Mochila", "Termo Metal"],
+    "vicente": ["Termo"],
 }
 EVOLUTION_ITEM_EMOJIS = {
     "Telefono": "📱", "Memoria USB": "💾", "Cable USB-C": "🔌",

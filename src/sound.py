@@ -140,7 +140,7 @@ if pygame.mixer.get_init():
             "eder_charge": make_loop_sound(400, 0.5, vol=0.60, name="eder_charge"),
             "eder_laser": make_sound(150, 2.0, vol=0.55, noise=True, name="eder_laser"),
             "eder_laser_loop": make_loop_chord_sound([110, 165, 220], 0.5, vol=0.70, name="eder_laser_loop"),
-            "sebas_ult": make_sound(300, 0.3, vol=0.55, noise=True, name="sebas_ult"),
+            "sebas_z": make_sound(300, 0.3, vol=0.55, noise=True, name="sebas_z"),
 
             # Q abilities
             "irvin_q": make_sound(80, 0.4, vol=0.55, noise=True, name="irvin_q"),
@@ -174,6 +174,10 @@ if pygame.mixer.get_init():
             "randy_domain": make_sound(100, 0.6, vol=0.55, noise=True, name="randy_domain"),
             "vicente_domain": make_sound(800, 0.5, vol=0.55, noise=True, name="vicente_domain"),
         }
+
+        # Multiplicador global de volumen SFX (+80%)
+        for snd in SFX.values():
+            snd.set_volume(snd.get_volume() * 1.8)
 
 # Variables globales para las pistas de música activas
 _bg_music = None
@@ -309,6 +313,22 @@ def play_shop_music(vendor="vicente"):
     path = os.path.join(SFX_DIR, fname)
     if os.path.isfile(path):
         _shop_music = pygame.mixer.Sound(path)
+        _shop_music.set_volume(0.5)
+        _shop_music.play(-1)
+    else:
+        # Fallback sintético
+        sr = 22050
+        dur = 8
+        n = int(sr * dur)
+        buf = bytearray(n * 2)
+        for i in range(n):
+            t = i / sr
+            phase = t * 2 * 8
+            val = int((math.sin(t * 440 * math.tau) * 0.3 +
+                       math.sin(t * 660 * math.tau) * 0.2 +
+                       math.sin(phase * math.tau) * 0.1) * 0.7 * 32767)
+            buf[i*2:i*2+2] = struct.pack("<h", max(-32768, min(32767, val)))
+        _shop_music = pygame.mixer.Sound(buffer=bytes(buf))
         _shop_music.set_volume(0.5)
         _shop_music.play(-1)
 

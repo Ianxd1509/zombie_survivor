@@ -17,8 +17,10 @@ class Camera:
 
     def follow(self, target_x, target_y, sw=800, sh=600, mouse_target=None):
         # Calcula la posición objetivo de la cámara centrada en el jugador
-        self.target_x = max(0, min(self.w - sw, target_x - sw // 2))
-        self.target_y = max(0, min(self.h - sh, target_y - sh // 2))
+        max_x = max(0, self.w - sw)
+        max_y = max(0, self.h - sh)
+        self.target_x = max(0, min(max_x, target_x - sw // 2))
+        self.target_y = max(0, min(max_y, target_y - sh // 2))
 
         # Look-ahead: la cámara se adelanta hacia donde apunta el mouse
         if mouse_target:
@@ -39,8 +41,8 @@ class Camera:
 
         self.x += (tx - self.x) * 0.08
         self.y += (ty - self.y) * 0.08
-        self.x = max(0, min(self.w - sw, self.x))
-        self.y = max(0, min(self.h - sh, self.y))
+        self.x = max(0, min(max_x, self.x))
+        self.y = max(0, min(max_y, self.y))
 
         # Efecto de shake que se desvanece progresivamente
         if self.shake_intensity > 0.3:
