@@ -957,6 +957,7 @@ class Game:
         if self.player.hp <= 0:
             if self.state != "over":
                 self.state = "over"
+                stop_domain_music()
                 if SFX:
                     SFX["eder_charge"].stop()
                     SFX["guitar_riff"].stop()
