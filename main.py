@@ -117,7 +117,7 @@ def main():
 
     # Crea instancia del juego, menús y pantallas de UI
     game = Game()
-    from src.sound import SFX, stop_bg_music, update_bg_music, play_menu_music, stop_menu_music, play_shop_music, stop_shop_music
+    from src.sound import SFX, stop_bg_music, update_bg_music, play_menu_music, stop_menu_music, play_shop_music, stop_shop_music, stop_domain_music
     from src.ui import MainMenu
     menu = MainMenu()
     mapsel = MapSelector()
@@ -183,10 +183,11 @@ def main():
                         if SFX: SFX["hover"].play()
                     elif k == pygame.K_RETURN:
                         if SFX: SFX["click"].play()
-                        if pause_screen.sel == 0: game.state = "play"
-                        else:
-                            game.save_game()
-                            game.state = "menu"
+                    if pause_screen.sel == 0: game.state = "play"
+                    else:
+                        game.save_game()
+                        stop_domain_music()
+                        game.state = "menu"
 
                 # Navegación y compra en la tienda (Vicente u Oscar)
                 if game.shop_open:
@@ -317,6 +318,7 @@ def main():
 
                 # R para reiniciar desde personaje tras game over / victoria
                 if game.state in ("over", "win") and k == pygame.K_r:
+                    stop_domain_music()
                     charsel.reset_animation()
                     game.state = "charsel"
 
@@ -496,6 +498,7 @@ def main():
                 update_bg_music(1, 0.1)
         elif game.state in ("menu", "mapsel", "charsel", "controls", "credits", "pause", "over", "win"):
             if _prev_state in ("play", "shop_prep"):
+                stop_domain_music()
                 stop_bg_music()
         _menu_states = ("menu", "mapsel", "charsel", "controls", "credits")
         if game.state in _menu_states and _prev_state not in _menu_states:
