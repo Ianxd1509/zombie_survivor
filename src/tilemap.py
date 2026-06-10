@@ -44,15 +44,15 @@ def _cross(g, r, c, v=1):
 
 
 # ── Rangos de valores de tiles ──
-# 0        = empty (black, walkable)
-# 1-9      = structural walls (block movement)
-# 10-19    = floors (walkable, colored ground)
-# 20-35    = decorative walls / furniture (block movement)
+# 0        = vacío (negro, transitable)
+# 1-9      = paredes estructurales (bloquean movimiento)
+# 10-19    = pisos (transitables, suelo coloreado)
+# 20-35    = paredes decorativas / muebles (bloquean movimiento)
 
 
 # Colores de paredes/obstáculos según el valor del tile
 WALL_COLORS = {
-    # Structural walls (block)
+    # Paredes estructurales (bloquean)
     1: (8, 30, 8),       # outer border - very dark green
     2: (20, 55, 15),     # Edificio A exterior - dark teal/green
     3: (20, 55, 15),     # Edificio B exterior
@@ -62,7 +62,7 @@ WALL_COLORS = {
     7: (45, 45, 40),     # Plaza pillars - stone gray
     8: (25, 48, 18),     # interior walls - medium green
     9: (10, 35, 8),      # trees / bushes
-    # Decorative walls (block)
+    # Paredes decorativas (bloquean)
     20: (50, 60, 65),    # fountain rim - blue-gray stone
     21: (65, 48, 28),    # bench - brown wood
     22: (35, 55, 20),    # planter / flower bed
@@ -73,7 +73,7 @@ WALL_COLORS = {
     27: (25, 45, 30),    # server rack extra - tech dark
     28: (30, 45, 25),    # classroom desk
     29: (50, 35, 20),    # cafeteria table / counter
-    # New for v2 expansion
+    # Nuevo para expansión v2
     30: (55, 55, 58),    # parking barrier - concrete gray
     31: (12, 30, 14),    # hedge wall - dark green
     32: (35, 28, 20),    # library wall - brown brick
@@ -166,7 +166,7 @@ def _generate_forest():
     _rect(g, 0, ROWS - 1, COLS - 1, COLS - 1, 1)
     _rect(g, 1, ROWS - 2, 1, COLS - 2, 16)
 
-    # River winding from top-left to bottom-right
+    # Río serpenteante desde arriba-izquierda a abajo-derecha
     river_cells = [(5, 20), (6, 22), (7, 24), (8, 26), (10, 28), (12, 30),
                    (15, 32), (18, 33), (22, 34), (26, 35), (30, 34), (34, 33),
                    (38, 32), (42, 33), (46, 35), (50, 38), (54, 42), (58, 46),
@@ -181,19 +181,19 @@ def _generate_forest():
                 if 1 < nr < ROWS - 1 and 1 < nc < COLS - 1:
                     g[nr][nc] = 17
 
-    # Clearings (large open areas)
+    # Claros (áreas abiertas grandes)
     clearings = [(20, 50, 30, 65), (35, 18, 50, 35), (55, 70, 55, 75),
                  (80, 100, 30, 50), (90, 110, 80, 100)]
     for r1, r2, c1, c2 in clearings:
         _rect(g, r1, r2, c1, c2, 10)
 
-    # Paths connecting clearings
+    # Caminos conectando claros
     path_routes = [(25, 50, 35, 50), (40, 65, 40, 65), (60, 80, 50, 55),
                    (75, 100, 30, 35), (90, 110, 30, 80)]
     for r1, r2, c1, c2 in path_routes:
         _rect(g, r1, r2, c1, c2, 11)
 
-    # Cabañas (small cabins)
+    # Cabañas (cabañas pequeñas)
     cabins = [(22, 28, 65, 72, 4), (65, 71, 20, 27, 4), (100, 106, 100, 107, 5)]
     for r1, r2, c1, c2, wv in cabins:
         _rect(g, r1, r1 + 1, c1, c2, wv)
@@ -203,7 +203,7 @@ def _generate_forest():
         _rect(g, r1 + 2, r2 - 2, c1 + 1, c2 - 1, 12)
         _door(g, r2 - 1, c1 + 2, horiz=True, w=2)
 
-    # Dense trees
+    # Árboles densos
     rng = random.Random(42)
     for _ in range(400):
         r = rng.randint(2, ROWS - 3)
@@ -211,7 +211,7 @@ def _generate_forest():
         if g[r][c] == 16:
             g[r][c] = 9
 
-    # Rocks and bushes along river
+    # Rocas y arbustos a lo largo del río
     rng2 = random.Random(17)
     for _ in range(60):
         r = rng2.randint(5, 125)
@@ -229,20 +229,20 @@ def _generate_beach():
     _rect(g, 0, ROWS - 1, 0, 0, 1)
     _rect(g, 0, ROWS - 1, COLS - 1, COLS - 1, 1)
 
-    # Ocean (left 40%)
+    # Océano (40% izquierdo)
     _rect(g, 1, ROWS - 2, 1, 50, 17)
 
-    # Sand (right 60%)
+    # Arena (60% derecho)
     _rect(g, 1, ROWS - 2, 51, COLS - 2, 10)
 
-    # Shoreline transition (sand path between ocean and sand)
+    # Transición de costa (camino de arena entre océano y arena)
     _rect(g, 1, ROWS - 2, 48, 52, 11)
 
-    # Boardwalk (wood path along back of beach)
+    # Malecón (camino de madera al fondo de la playa)
     _rect(g, 10, 14, 52, COLS - 2, 19)
     _rect(g, ROWS - 16, ROWS - 12, 52, COLS - 2, 19)
 
-    # Palm trees scattered on sand
+    # Palmeras dispersas en la arena
     rng = random.Random(42)
     for _ in range(100):
         r = rng.randint(2, ROWS - 3)
@@ -250,18 +250,18 @@ def _generate_beach():
         if g[r][c] == 10:
             g[r][c] = 9
 
-    # Pier (muelle) sticking into ocean
+    # Muelle adentrándose en el océano
     pier_row = ROWS // 2
     _rect(g, pier_row - 1, pier_row + 1, 25, 48, 19)
-    # Pier railings
+    # Barandillas del muelle
     _hwall(g, pier_row - 2, 25, 48, 21)
     _hwall(g, pier_row + 2, 25, 48, 21)
-    # Boat at end of pier
+    # Bote al final del muelle
     g[pier_row][22] = 24
     g[pier_row - 1][23] = 24
     g[pier_row + 1][23] = 24
 
-    # Palapas (round structures)
+    # Palapas (estructuras redondas)
     palapas = [(20, 80), (60, 100), (110, 70)]
     for pr, pc in palapas:
         for dr in range(-3, 4):
@@ -271,7 +271,7 @@ def _generate_beach():
                 elif max(abs(dr), abs(dc)) == 3 and 0 < pr + dr < ROWS - 1 and 0 < pc + dc < COLS - 1:
                     g[pr + dr][pc + dc] = 4
 
-    # Rocks at water edge
+    # Rocas en la orilla del agua
     for _ in range(20):
         r = rng.randint(2, ROWS - 3)
         c = rng.randint(45, 55)
@@ -438,11 +438,11 @@ def is_wall(grid, col, row):
     if row < 0 or row >= len(grid) or col < 0 or col >= len(grid[0]):
         return True
     v = grid[row][col]
-    # 1-9 and 20+ = wall; 0 and 10-19 = walkable
+    # 1-9 y 20+ = pared; 0 y 10-19 = transitable
     return (1 <= v <= 9) or (v >= 20)
 
 
-# Calcula todas las celdas alcanzables desde un origen (BFS) — usado para pathfinding
+# Calcula todas las celdas alcanzables desde un origen (BFS) — usado para búsqueda de caminos
 def compute_reachable(grid, start_col, start_row):
     if not (0 <= start_row < len(grid) and 0 <= start_col < len(grid[0])):
         return set()

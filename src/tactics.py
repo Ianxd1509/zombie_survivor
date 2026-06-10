@@ -82,7 +82,7 @@ class SquadManager:
                     member.tactical_state = "flank" if formation != "swarm" else "chase"
                     if member.etype in ("shooter", "buffer"):
                         member.tactical_state = "hold"
-                    # Healer escort: sigue al tank más cercano
+                    # Escolta de healers: sigue al tanque más cercano
                     if member.etype == "healer":
                         tanks = [m for m in squad if m.etype in ("tank", "shielded")]
                         if tanks:

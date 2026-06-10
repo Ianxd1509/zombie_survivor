@@ -6,7 +6,7 @@ pygame.init()
 pygame.mixer.init(frequency=22050, size=-16, channels=2)
 
 WIDTH, HEIGHT = 1280, 720
-FONT_SCALE = HEIGHT / 600  # ~1.2 for 720p
+FONT_SCALE = HEIGHT / 600  # ~1.2 para 720p
 FPS = 60
 MAP_W, MAP_H = 5120, 5120
 
@@ -20,7 +20,7 @@ ORANGE = (255, 140, 50)
 PURPLE = (180, 50, 255)
 GOLD = (255, 200, 50)
 GRAY = (100, 120, 100)
-SEL = (180, 150, 55)  # Muted gold for selection highlights
+SEL = (180, 150, 55)  # Dorado apagado para resaltar selección
 
 CHARACTERS = {
     "irvin": {"name":"Irvin","desc":"Bucle For - Limpieza","color":(0,200,255),"hp":120,"max_hp":120,"stamina":100,"speed":3.0,"ability":"aplastar","cd":25000,"dmg":12,"fr":140,"mag":35,"shots":2,"reserve":200,"reload":800,"spr":0.04,"passive":"piercing+1"},
@@ -35,7 +35,7 @@ CHARACTERS = {
     "vicente": {"name":"Vicente","desc":"Legado Python - Desbloqueado","color":(100,200,255),"hp":300,"max_hp":300,"stamina":150,"speed":5.0,"ability":"import_snippet","cd":12000,"dmg":35,"fr":60,"mag":70,"shots":3,"reserve":400,"reload":450,"spr":0.01,"passive":"bytes+30"},
 }
 
-# Domain Expansion settings
+# Configuración de Expansión de Dominio
 ULT_CHARGE_MAX = 40
 ULT_LASER_DURATION = 120
 MIN_ULT_CHARGE = 8
@@ -64,7 +64,7 @@ DOMAIN_EXPANSION = {
     "vicente":{"name":"LEALTAD A PYTHON",     "color":(100,200,255), "effect":"python"},
 }
 
-# Lighting settings
+# Configuración de iluminación
 PLAYER_LIGHT_RADIUS = 250
 FOG_NEAR_ALPHA = 170
 FOG_FAR_ALPHA = 120
@@ -163,7 +163,7 @@ POWERUP_TYPES = ["turbo", "shield", "byte_magnet", "explosive"]
 WAVE_MODIFIERS = ["normal", "normal", "horda", "vampirica", "elite", "toxica", "veloz", "blindaje", "explosivo"]
 SAVE_FILE = "save_data.json"
 
-# Character evolution: items needed to evolve each character
+# Evolución de personaje: objetos necesarios para evolucionar
 CHAOS_ITEMS = ["🖥️", "💿", "🔌", "📡", "⚡", "🧠", "🔥", "💎"]
 EVOLUTION_ITEMS = {
     "irvin": ["Telefono", "Memoria USB", "Cable USB-C"],
@@ -189,14 +189,14 @@ EVOLUTION_ITEM_EMOJIS = {
     "Chamarra": "🧥", "Mochila": "🎒", "Termo Metal": "🫗",
 }
 
-# Airdrop settings
+# Configuración de airdrop
 AIRDROP_CHANCE_PER_FRAME = 0.001  # ~1/1000 per frame during wave
 MAX_AIRDROPS = 2  # max active crates on map
 AIRDROP_FALL_SPEED = 2
 AIRDROP_OPEN_RADIUS = 40  # how close player must be to open
 
-# Gacha loot table: (name, type, weight)
-# type: "bytes", "buff", "evo_item"
+# Tabla de botín gacha: (nombre, tipo, peso)
+# tipo: "bytes", "buff", "evo_item"
 GACHA_LOOT = [
     ("Bytes +50", "bytes", 50),
     ("Bytes +100", "bytes", 20),
@@ -209,7 +209,7 @@ GACHA_LOOT = [
     ("Chaos Item", "chaos", 3),
 ]
 
-# Oscar shop items
+# Objetos de la tienda de Oscar
 OSCAR_ITEMS = [
     # Buffs temporales
     {"name":"Turbo 8s",  "desc":"Cadencia x2 por 8s",  "cost":300,  "type":"buff_turbo"},
@@ -251,14 +251,14 @@ OSCAR_ITEMS = [
     {"name":"Muro Reforzado (Randy)","desc":"x2 HP del muro", "cost":1500, "type":"unique_randy"},
 ]
 
-# Ally definitions
+# Definiciones de aliados
 ALLY_TYPES = {
     "irvin_sis": {"name":"Hna Irving","color":(180,200,255),"hp":200,"dmg":8,"speed":2.5,"radius":12,"fr":45,"range":250},
     "zaid":      {"name":"Zaid",      "color":(255,180,80),"hp":400,"dmg":15,"speed":2.0,"radius":18,"fr":30,"range":50},
     "usiel_sis": {"name":"Hna Uziel", "color":(200,255,180),"hp":150,"dmg":3,"speed":2.8,"radius":11,"fr":60,"range":180},
 }
 
-# Bomb types
+# Tipos de bombas
 MAX_BOMBS = 3
 BOMB_TYPES = {
     "frag":    {"name":"Frag",    "dmg":80,  "radius":120, "speed":12, "fuse":30,  "color":(255,120,50),  "desc":"Explosion estandar"},

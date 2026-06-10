@@ -125,7 +125,7 @@ def _draw_minimap(surf, game):
             ay = mm_y + int(a.pos.y * scale)
             pygame.draw.circle(surf, a.color, (ax, ay), 2)
 
-    # Camera viewport rectangle
+    # Rectángulo del viewport de la cámara
     cam_w = int(WIDTH * scale)
     cam_h = int(HEIGHT * scale)
     cam_x = int(game.cam.x * scale)
@@ -144,7 +144,7 @@ def draw_hud(surf, player, wave, wave_state, wave_has_boss, wave_announce, enemi
     surf.blit(_f(20).render(f"BYTES: {player.bytes}", True, GOLD), (10, y))
     surf.blit(_f(20).render(f"BAJAS: {player.kills}", True, GREEN), (155, y))
     surf.blit(_f(20).render(f"LV {player.level}", True, GREEN), (300, y))
-    surf.blit(_f(20).render(f"SERVER {wave}", True, GREEN), (WIDTH - 165, 2))
+    surf.blit(_f(20).render(f"SERVER {wave}", True, GREEN), (400, y))
     surf.blit(_f(16).render(f"[{char['name']}]", True, c), (10, y + 22))
     if player.char_id == "vicente":
         vm = player.vicente_mode_names[player.vicente_mode]
@@ -310,10 +310,10 @@ def draw_hud(surf, player, wave, wave_state, wave_has_boss, wave_announce, enemi
             dom_color = de.get("color", (255, 255, 255))
         dom_ratio = player.domain_timer / max(1, DOMAIN_DURATION)
         dom_secs = max(0, player.domain_timer // 60)
-        # Colored timer bar
+        # Barra de temporizador de color
         pygame.draw.rect(surf, (0, 8, 10), (bx, y_dom, bw, 4))
         pygame.draw.rect(surf, dom_color, (bx, y_dom, int(bw * dom_ratio), 4))
-        # Domain name + time
+        # Nombre del dominio + tiempo
         ds = _f(14).render(f"[DOM] {dom_name} {dom_secs}s", True, dom_color)
         ds.set_alpha(200)
         surf.blit(ds, (bx, y_dom + 6))
@@ -356,7 +356,7 @@ def draw_hud(surf, player, wave, wave_state, wave_has_boss, wave_announce, enemi
         y_aura += 14
 
     # ═══ LADO DERECHO ═══
-    # Minimap (top-right)
+    # Minimapa (arriba a la derecha)
     _draw_minimap(surf, game)
 
     # FPS debajo del minimapa
@@ -464,7 +464,7 @@ def draw_hud(surf, player, wave, wave_state, wave_has_boss, wave_announce, enemi
         s = _f(14).render("Vicente esta en el mapa! Buscalo [$] para comprar mejoras", True, (0, 140, 40))
         surf.blit(s, s.get_rect(center=(WIDTH // 2, 80)))
 
-        # NPC near prompt (single unified box)
+        # Mensaje de NPC cerca (caja unificada)
         if not shop_open:
             box_w, box_h = 280, 40
             bx3 = WIDTH // 2 - box_w // 2
@@ -497,7 +497,7 @@ def draw_hud(surf, player, wave, wave_state, wave_has_boss, wave_announce, enemi
 
 
 # Dibuja la tienda (Vicente u Oscar) con rejilla de objetos
-# Tooltip helper: renders effect comparison text for a shop item
+# Ayudante de tooltip: renderiza texto de comparación de efectos para un objeto de la tienda
 def _shop_tooltip(surf, player, item, is_oscar, x, y, game=None):
     tw = 220
     pygame.draw.rect(surf, (0, 15, 0), (x, y, tw, HEIGHT - y - 10), border_radius=4)
@@ -539,7 +539,7 @@ def _shop_tooltip(surf, player, item, is_oscar, x, y, game=None):
             surf.blit(_f(11).render(f"Retroceso: {player.knockback:.1f} -> {player.knockback+0.2:.1f}", True, WHITE), (tx, ty))
     else:
         tid = item.get("type", "")
-        # Ally preview card
+        # Tarjeta de vista previa de aliado
         if tid.startswith("ally_"):
             aid = tid.replace("ally_", "")
             if aid == "irvin": aid = "irvin_sis"
@@ -587,7 +587,7 @@ def _shop_tooltip(surf, player, item, is_oscar, x, y, game=None):
         else:
             surf.blit(_f(11).render(f"Costo: {item.get('cost','?')} bytes", True, WHITE), (tx, ty))
 
-# Draws the shop overlay with grid, tabs for Oscar, tooltip panel, and purchase flash
+# Dibuja la superposición de la tienda con cuadrícula, pestañas para Oscar, panel de tooltip y destello de compra
 def draw_shop(surf, player, sel, items, game=None):
     is_oscar = len(items) > 0 and "id" not in items[0]
     o = pygame.Surface((WIDTH, HEIGHT))
@@ -617,7 +617,7 @@ def draw_shop(surf, player, sel, items, game=None):
     vline = vendor_lines[int(pygame.time.get_ticks() / 3000) % len(vendor_lines)]
     surf.blit(_f(14).render(vline, True, title_color), (150, 75))
 
-    # Category tabs for Oscar
+    # Pestañas de categoría para Oscar
     tab_names = ["TODOS", "BUFFS", "ALIADOS", "BOMBAS", "PERMS", "AURAS", "UNIQUE"]
     tab_types = ["", "buff_", "ally_", "bomb_", "perm_", "aura_", "unique_"]
     current_tab = getattr(game, "shop_tab", 0) if game else 0
@@ -631,7 +631,7 @@ def draw_shop(surf, player, sel, items, game=None):
                 surf.blit(_f(13).render("_", True, title_color), (tab_x, 105))
             tab_x += ts.get_width() + 14
 
-    # Filter items for Oscar tabs
+    # Filtrar objetos para las pestañas de Oscar
     filtered = list(items)
     if is_oscar and current_tab > 0:
         filtered = [it for it in items if it.get("type", "").startswith(tab_types[current_tab])]
@@ -641,21 +641,21 @@ def draw_shop(surf, player, sel, items, game=None):
         surf.blit(hint, hint.get_rect(center=(WIDTH // 2, HEIGHT - 27)))
         return
 
-    # Adjust sel to stay within filtered bounds
+    # Ajustar selección para mantenerse dentro de los límites filtrados
     sel_in_filtered = sel if not is_oscar else min(sel, len(filtered) - 1)
 
-    # Unified grid with scroll to keep selected item visible
+    # Cuadrícula unificada con desplazamiento para mantener visible el objeto seleccionado
     cols = 5
     card_w, card_h = 130, 90
     gap = 10
     start_x = 30
     start_y = 120
-    # Compute scroll offset to keep selected item visible
+    # Calcular desplazamiento para mantener visible el objeto seleccionado
     sel_row = sel_in_filtered // cols
     visible_rows = (HEIGHT - start_y - 50) // (card_h + gap)
     scroll_offset = max(0, sel_row - visible_rows + 2) * (card_h + gap)
 
-    # Purchase flash
+    # Destello de compra
     flash_timer = getattr(game, "shop_flash_timer", 0) if game else 0
     flash_id = getattr(game, "shop_flash_id", None) if game else None
 
@@ -663,7 +663,7 @@ def draw_shop(surf, player, sel, items, game=None):
         bx = start_x + (i % cols) * (card_w + gap)
         by = start_y + (i // cols) * (card_h + gap) - scroll_offset
         bw, bh = card_w, card_h
-        # Skip items above or below screen
+        # Saltar objetos fuera de la pantalla
         if by + bh < start_y - 10 or by > HEIGHT - 30:
             continue
 
@@ -672,16 +672,16 @@ def draw_shop(surf, player, sel, items, game=None):
         if not is_oscar:
             can_buy = can_buy and player.shop_levels.get(item["id"], 0) < item["max"]
         else:
-            # Oscar perm items can be purchased multiple times (scaled price)
+            # Los objetos permanentes de Oscar se pueden comprar múltiples veces (precio escalado)
             tid = item.get("type", "")
             if tid.startswith("perm_"):
                 ptype = tid.replace("perm_", "")
                 oscar_lvl = player.shop_levels.get(f"oscar_{ptype}", 0) if hasattr(player, "shop_levels") else 0
-                can_buy = can_buy  # always can buy if enough bytes
+                can_buy = can_buy  # siempre se puede comprar si hay suficientes bytes
 
         is_sel = i == sel_in_filtered
 
-        # Grab indicador compra
+        # Indicador de compra
         item_flash_id = item.get("id", item.get("type", ""))
         if flash_timer > 0 and flash_id is not None and flash_id == item_flash_id:
             bg = (20, 60, 10) if (flash_timer // 4) % 2 == 0 else (0, 40, 5)
@@ -721,7 +721,7 @@ def draw_shop(surf, player, sel, items, game=None):
         elif can_buy:
             surf.blit(_f(10).render("ENTER=Comprar", True, title_color), (bx + 6, by + 68))
 
-    # Tooltip panel on the right side
+    # Panel de tooltip en el lado derecho
     if filtered:
         tt_item = filtered[sel_in_filtered]
         _shop_tooltip(surf, player, tt_item, is_oscar, WIDTH - 240, start_y - 10, game)
@@ -968,7 +968,7 @@ class MapSelector:
     # Dibuja un ícono pixel-art para cada mapa (edificio, árbol, playa)
     def _draw_map_icon(self, s, i, size):
         cx, cy = size // 2, size // 2
-        if i == 0:  # Campus - building
+        if i == 0:  # Campus - edificio
             w, h = size * 0.6, size * 0.7
             rx, ry = int(cx - w / 2), int(cy - h / 2 + 4)
             rw, rh = int(w), int(h)
@@ -977,28 +977,28 @@ class MapSelector:
             for wx in range(rx + 4, rx + rw - 3, 8):
                 pygame.draw.rect(s, (80, 200, 255), (wx, ry + 4, 4, 5))
                 pygame.draw.rect(s, (80, 200, 255), (wx, ry + 13, 4, 5))
-            # door
+            # puerta
             pygame.draw.rect(s, (40, 30, 20), (cx - 4, ry + rh - 10, 8, 10))
-        elif i == 1:  # Forest - tree
+        elif i == 1:  # Bosque - árbol
             trunk_w, trunk_h = 6, size * 0.35
             tx, ty = cx - trunk_w // 2, cy + 2
             pygame.draw.rect(s, (80, 50, 20), (tx, ty - trunk_h, trunk_w, trunk_h))
-            # canopy layers
+            # capas del follaje
             for layer in range(3):
                 ly = cy - 8 - layer * 12
                 lw = size * 0.5 - layer * 6
                 lh = 14
                 pts = [(cx, ly - lh), (cx - lw / 2, ly), (cx + lw / 2, ly)]
                 pygame.draw.polygon(s, (20, 100 + layer * 20, 10), pts)
-        else:  # Beach - sun + wave
-            # sun
+        else:  # Playa - sol + ola
+            # sol
             pygame.draw.circle(s, (255, 220, 50), (cx, cy - 8), 10)
             for a in range(0, 360, 45):
                 ra = math.radians(a)
                 sx = cx + math.cos(ra) * 14
                 sy = cy - 8 + math.sin(ra) * 14
                 pygame.draw.line(s, (255, 200, 50), (cx + math.cos(ra) * 10, cy - 8 + math.sin(ra) * 10), (sx, sy), 2)
-            # wave
+            # ola
             for wx in range(cx - 18, cx + 18, 4):
                 wy = cy + 10 + int(math.sin(wx * 0.4) * 4)
                 pygame.draw.circle(s, (50, 150, 220), (wx, wy), 3)
@@ -1020,7 +1020,7 @@ class MapSelector:
             pulse = math.sin(now * 0.003 + i) * 0.06 + 1
             cw = int(self.card_w * pulse)
 
-            # Card background
+            # Fondo de tarjeta
             card_alpha = 200 if selected else 140
             card_surf = pygame.Surface((cw, self.card_h), pygame.SRCALPHA)
             border_col = GREEN if selected else (0, 60, 20)
@@ -1028,19 +1028,19 @@ class MapSelector:
             pygame.draw.rect(card_surf, border_col, card_surf.get_rect(), 2, border_radius=8)
             surf.blit(card_surf, (bx - (cw - self.card_w) // 2, by))
 
-            # Map name
+            # Nombre del mapa
             cx = bx + self.card_w // 2
             name_color = (0, 255, 100) if selected else (0, 200, 80)
             name = _f(24).render(m["name"], True, name_color)
             surf.blit(name, (cx - name.get_width() // 2, by + 20))
 
-            # Map description
+            # Descripción del mapa
             desc_lines = self._wrap_text(m["desc"], _f(16), self.card_w - 30)
             for li, line in enumerate(desc_lines):
                 dc = _f(16).render(line, True, (0, 180, 80))
                 surf.blit(dc, (bx + 15, by + 70 + li * 22))
 
-            # Map icon
+            # Ícono del mapa
             icon_size = 80
             icon_y = by + 70 + len(desc_lines) * 22 + 10
             icon_x = bx + (self.card_w - icon_size) // 2
@@ -1050,14 +1050,14 @@ class MapSelector:
             self._draw_map_icon(icon_surf, i, icon_size)
             surf.blit(icon_surf, (icon_x, icon_y))
 
-            # Selection indicator
+            # Indicador de selección
             if selected:
                 gf = _f(42)
                 check = gf.render("\u2714", True, GREEN)
                 pulse_a = int(200 + math.sin(now * 0.005 + i) * 55)
                 check.set_alpha(pulse_a)
                 surf.blit(check, (bx + cw - 90, by + 10))
-                # Pulse glow ring
+                # Anillo de brillo pulsante
                 gr = 8 + int(math.sin(now * 0.004 + i) * 3)
                 for r in range(gr, 0, -1):
                     a = 60 // (gr - r + 1) if gr - r + 1 > 0 else 60
@@ -1065,7 +1065,7 @@ class MapSelector:
                     pygame.draw.rect(glow_surf, (*GREEN[:3], a), glow_surf.get_rect(), 2, border_radius=10)
                     surf.blit(glow_surf, (bx - (cw - self.card_w) // 2 - r, by - r))
 
-        # Particles
+        # Partículas
         for p in self.particles:
             a = int(255 * p["life"] / p["max_life"])
             s = pygame.Surface((int(p["radius"] * 2),) * 2, pygame.SRCALPHA)
@@ -1227,7 +1227,7 @@ class CharSelector:
                 pygame.draw.rect(surf, (0, 35, 10), (bx, by, card_w, card_h), 1, border_radius=6)
 
             if cid == "??":
-                # Locked character card
+                # Tarjeta de personaje bloqueado
                 cx = bx + card_w // 2
                 lock_s = _f(40).render("?", True, (60, 60, 60))
                 surf.blit(lock_s, (cx - lock_s.get_width() // 2, by + 25))
@@ -1507,7 +1507,7 @@ class ControlsScreen:
 
 # Pantalla de créditos con desplazamiento vertical
 class CreditsScreen:
-    CREDITS = ["GEMINI", "OPEN CODE", "IRVING", "IAN", "SEBAS (NO HIZO NADA)", "DIEGO", "EDER"]
+    CREDITS = ["GEMINI", "OPEN CODE (HIZO TODO)", "IRVING (NO HIZO NADA)", "IAN", "SEBAS (NO HIZO NADA)", "DIEGO", "EDER"]
 
     def __init__(self):
         from src.effects import MatrixRain
@@ -1609,6 +1609,7 @@ class CreditsScreen:
         self.scroll_y = HEIGHT + 50
         self.finished_timer = 0
         self.timer = 0
+        self.done = False
 
 
 # Pantalla de pausa con estadísticas y opciones
@@ -1645,7 +1646,7 @@ class PauseScreen:
             surf.blit(g, g.get_rect(center=(WIDTH // 2 + i, HEIGHT // 2 - 52 + i)))
         surf.blit(t, t.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50)))
 
-        # Stats panel
+        # Panel de estadísticas
         if game and hasattr(game, "player") and game.player:
             p = game.player
             stats_x = WIDTH // 2 - 200
@@ -1705,20 +1706,20 @@ def draw_gacha(surf, game):
     draw_terminal_frame(surf, GOLD, 50)
     draw_scanlines(surf, 20)
 
-    # Title
+    # Título
     t = _f(30).render("CAIDA DE SUMINISTROS - GACHA", True, GOLD)
     surf.blit(t, t.get_rect(center=(WIDTH // 2, 50)))
 
-    # Roulette slot machine
+    # Máquina tragamonedas de ruleta
     slot_w, slot_h = 300, 80
     slot_x = WIDTH // 2 - slot_w // 2
     slot_y = HEIGHT // 2 - slot_h // 2
 
-    # Slot background
+    # Fondo de la ranura
     draw_rrect(surf, (20, 15, 5), (slot_x, slot_y, slot_w, slot_h))
     pygame.draw.rect(surf, GOLD, (slot_x, slot_y, slot_w, slot_h), 2, border_radius=6)
 
-    # Spinning names
+    # Nombres girando
     spinning = game.gacha_spinning
     result = game.gacha_result
     now = pygame.time.get_ticks()
@@ -1738,7 +1739,7 @@ def draw_gacha(surf, game):
     ds = _f(32).render(display, True, color)
     surf.blit(ds, ds.get_rect(center=(WIDTH // 2, slot_y + slot_h // 2)))
 
-    # Glow while spinning
+    # Brillo mientras gira
     if spinning:
         glow_r = 100 + int(math.sin(now * 0.01) * 20)
         gs = pygame.Surface((glow_r * 2,) * 2, pygame.SRCALPHA)
@@ -1747,11 +1748,11 @@ def draw_gacha(surf, game):
         surf.blit(gs, (WIDTH // 2 - glow_r, slot_y + slot_h // 2 - glow_r))
 
     if not spinning and result:
-        # Show hint to close
+        # Mostrar mensaje para cerrar
         h = _f(16).render("PRESIONA F PARA CERRAR", True, GREEN)
         surf.blit(h, h.get_rect(center=(WIDTH // 2, slot_y + slot_h + 30)))
 
-    # Arrows on sides
+    # Flechas en los lados
     for side, dx in [("◀", -20), ("▶", slot_w + 4)]:
         s = _f(24).render(side, True, GOLD)
         surf.blit(s, (slot_x + dx, slot_y + slot_h // 2 - 12))
@@ -1790,7 +1791,7 @@ class ResultScreen:
         self.glitch_timer = 300
         self.glitch_active = False
         self.glitch = 0
-        self.entries = {}  # stat index -> current alpha
+        self.entries = {}  # índice de estadística -> alpha actual
         self.particles = []
         self.player = None
         self.wave = 0
@@ -1824,7 +1825,7 @@ class ResultScreen:
             if self.entries[i] < 255:
                 self.entries[i] = min(255, self.entries[i] + 4)
 
-        # Particles
+        # Partículas
         if self.kind == "win":
             for _ in range(3):
                 self.particles.append({
@@ -1866,7 +1867,7 @@ class ResultScreen:
             pygame.draw.circle(s, (*border_color[:3], a), (WIDTH // 2, HEIGHT // 2 - 70), r2)
             surf.blit(s, (0, 0))
 
-        # ASCII art
+        # Arte ASCII
         if is_win:
             art = [
                 "    ╔═══╗╦╔═╗╔═╗╔╦╗╔═╗╔╗╔╔╦╗",
@@ -1885,7 +1886,7 @@ class ResultScreen:
             title_str = "GAME OVER"
             prompt_txt = "root@virus:~$ ./analizar_logs.sh"
 
-        # Draw ASCII art
+        # Dibujar arte ASCII
         art_fs = 14
         art_y = 30
         for li, line in enumerate(art):
@@ -1928,7 +1929,7 @@ class ResultScreen:
         h = _f(18).render("R = Reintentar    ESC = Menu", True, WHITE)
         surf.blit(h, (WIDTH // 2 - h.get_width() // 2, y + 35))
 
-        # Particles
+        # Partículas
         for p in self.particles:
             t = p["life"] / p["max_life"]
             a = int(t * 200)

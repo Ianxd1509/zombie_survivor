@@ -53,7 +53,7 @@ def draw_player(surf, angle, flash=False, radius=17, char_data=None, char_id="",
         base_color = (0, 255, 65)
     name_char = char_data["name"][0] if char_data and char_data.get("name") else "?"
 
-    # Try loading a custom character image
+    # Intenta cargar una imagen de personaje personalizada
     cid = char_id or (char_data.get("id", "") if char_data else "")
     char_img = load_image(f"characters/char_{cid}.png", (r * 2, r * 2), f"char_{cid}_{r}")
     use_custom = char_img is not None

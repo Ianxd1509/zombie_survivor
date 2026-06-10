@@ -85,7 +85,7 @@ def _do_load_game(game, data):
             game.wave_spawned = v2
         elif k2 in _SAVE_ALLOWLIST and hasattr(game.player, k2):
             setattr(game.player, k2, v2)
-        # bonus_damage already restored via setattr in the loop above
+        # bonus_damage ya restaurado via setattr en el bucle de arriba
         pass
     if data.get("wave_state") in ("spawning", "clear"):
         game.wave_state = "prep"
@@ -183,11 +183,11 @@ def main():
                         if SFX: SFX["hover"].play()
                     elif k == pygame.K_RETURN:
                         if SFX: SFX["click"].play()
-                    if pause_screen.sel == 0: game.state = "play"
-                    else:
-                        game.save_game()
-                        stop_domain_music()
-                        game.state = "menu"
+                        if pause_screen.sel == 0: game.state = "play"
+                        else:
+                            game.save_game()
+                            stop_domain_music()
+                            game.state = "menu"
 
                 # Navegación y compra en la tienda (Vicente u Oscar)
                 if game.shop_open:
@@ -479,8 +479,9 @@ def main():
                             else:
                                 game.notifs.append(Notif("No hay partida guardada", RED, 60))
                         elif i == 2: game.state = "controls"
-                        elif i == 3: game.state = "credits"; credits.reset()
-                        else:
+                        elif i == 3: game.state = "tutorial"; tutorial.page = 0
+                        elif i == 4: game.state = "credits"; credits.reset()
+                        elif i == 5:
                             game.save_game()
                             running = False
 

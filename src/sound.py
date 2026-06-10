@@ -139,7 +139,7 @@ if pygame.mixer.get_init():
             "eder_laser_loop": make_loop_chord_sound([55, 88, 132], 0.5, vol=0.70, name="eder_laser_loop"),
             "sebas_z": make_sound(300, 0.3, vol=0.55, noise=True, name="sebas_z"),
 
-            # Q abilities
+            # Habilidades Q
             "irvin_q": make_sound(80, 0.4, vol=0.55, noise=True, name="irvin_q"),
             "sebas_q": make_sound(400, 0.2, vol=0.50, name="sebas_q"),
             "leo_q": make_sound(1000, 0.12, vol=0.45, name="leo_q"),
@@ -150,7 +150,7 @@ if pygame.mixer.get_init():
             "randy_q": make_sound(150, 0.3, vol=0.55, noise=True, name="randy_q"),
             "vicente_q": make_sound(1200, 0.1, vol=0.45, name="vicente_q"),
 
-            # Z ultimates
+            # Ultimates Z
             "irvin_z": make_sound(60, 0.6, vol=0.55, noise=True, name="irvin_z"),
             "leo_z": make_sound(1000, 0.4, vol=0.50, noise=True, name="leo_z"),
             "diego_z": make_chord_sound([150, 225, 300], 0.5, vol=0.55, name="diego_z"),
@@ -160,7 +160,7 @@ if pygame.mixer.get_init():
             "randy_z": make_sound(100, 0.5, vol=0.55, noise=True, name="randy_z"),
             "vicente_z": make_sound(800, 0.4, vol=0.55, noise=True, name="vicente_z"),
 
-            # Domain expansions
+            # Expansiones de dominio
             "irvin_domain": make_sound(150, 0.6, vol=0.80, noise=True, name="irvin_domain"),
             "sebas_domain": make_sound(300, 0.5, vol=0.80, noise=True, name="sebas_domain"),
             "leo_domain": make_sound(1000, 0.4, vol=0.80, noise=True, name="leo_domain"),
@@ -349,7 +349,7 @@ def update_bg_music(wave=1, intensity=0.0):
     global _bg_music, _bg_track, _menu_music, _boss_music, _shop_music, _domain_music
     if _domain_music:
         _domain_music.stop(); _domain_music = None
-    # If already playing, don't restart — let it play through
+    # Si ya está sonando, no reiniciar — dejar que termine
     if _bg_music is not None:
         return
     # Detiene cualquier otra música
@@ -403,7 +403,7 @@ def play_domain_music(char_id):
         _boss_music.stop(); _boss_music = None
     if _shop_music:
         _shop_music.stop(); _shop_music = None
-    path = os.path.join(SFX_DIR, f"{char_id}_domain.wav")
+    path = os.path.join(SFX_DIR, f"{char_id}_domain_music.wav")
     if os.path.isfile(path):
         _domain_music = pygame.mixer.Sound(path)
         _domain_music.set_volume(0.5)

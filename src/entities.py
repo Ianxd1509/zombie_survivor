@@ -230,7 +230,7 @@ class LaserBeam(pygame.sprite.Sprite):
             surf.blit(rot, r)
 
 
-# Granada con múltiples tipos: flash, mine, napalm, sticky, cluster, bouncing
+# Granada con múltiples tipos: flash, mina, napalm, pegajosa, racimo, rebotante
 class Bomb(pygame.sprite.Sprite):
     TYPES = BOMB_TYPES
     def __init__(self, pos, vel, btype, map_w=MAP_W, map_h=MAP_H):
@@ -253,10 +253,10 @@ class Bomb(pygame.sprite.Sprite):
         self.detonated = False
         self.sub_bombs = []
         self.pool_life = 0
-        # Mine
+        # Mina
         if btype == "mine":
             self.vel = pygame.Vector2(0, 0)
-            self.life = -1  # stays until triggered
+            self.life = -1  # permanece hasta activarse
             self.trigger_radius = 40
         self.image = pygame.Surface((12, 12), pygame.SRCALPHA)
         self._redraw()
@@ -322,7 +322,7 @@ class Bomb(pygame.sprite.Sprite):
                         self.vel.y = -self.vel.y * 0.8
                 else:
                     self._detonate_frame = 1
-        # Sticky bomb logic: check for enemy collision
+        # Lógica de bomba pegajosa: verifica colisión con enemigo
         if self.btype == "sticky" and enemies is not None:
             for e in enemies:
                 if self.pos.distance_to(e.pos) < self.radius + e.radius:
@@ -415,7 +415,7 @@ class Enemy(pygame.sprite.Sprite):
         self.boss_shield_timer = 0
         self.boss_shield_active = False
         self.boss_shoot_timer = 0
-        # Vicente boss state
+        # Estado del jefe Vicente
         self._vb_phase = 1
         self._vb_shield_active = False
         self._vb_shield_timer = 0
@@ -461,7 +461,7 @@ class Enemy(pygame.sprite.Sprite):
         self.dying = False
         self.death_timer = 0
         self._death_surf = None
-        # Smart AI
+        # IA inteligente
         self.frozen = False
         self.frozen_timer = 0
         self.dodge_timer = 0
@@ -656,7 +656,7 @@ class Enemy(pygame.sprite.Sprite):
         if kb_dir:
             k = (5 if not self.is_boss else 2) * kb_mult
             self.kb = pygame.Vector2(kb_dir).normalize() * k
-        # Boss phase 2 at 50% HP
+        # Fase 2 del jefe al 50% de HP
         if self.is_boss and not self.boss_phase2 and self.hp <= self.max_hp * 0.5 and not hasattr(self, "_vb_phase"):
             self.boss_phase2 = True
             self.speed *= 1.3
@@ -771,13 +771,13 @@ class Enemy(pygame.sprite.Sprite):
                     return
                 self.waifu_timer = 0
 
-        # Camouflage alpha (fade in when player close)
+        # Alfa de camuflaje (aparece cuando el jugador se acerca)
         if self.camo:
             dist_p = math.hypot(self.pos.x - player_pos[0], self.pos.y - player_pos[1])
             vis = max(30, min(255, int(255 * (1 - dist_p / 300))))
             self.image.set_alpha(vis)
 
-        # Worm burrow
+        # Madriguera de gusano
         if self.burrow_cd > 0:
             self.burrow_timer -= 1
             if self.burrowed:
@@ -807,12 +807,12 @@ class Enemy(pygame.sprite.Sprite):
                 self.image.set_alpha(20)
                 return
 
-        # Vicente boss: complete custom update
+        # Jefe Vicente: actualización personalizada completa
         if self.etype == "vicente_boss":
             self._update_vicente_boss(player_pos, enemies, enemy_bullets, particles, grid)
             return
 
-        # Boss shield timer
+        # Temporizador de escudo del jefe
         if self.is_boss:
             if self.boss_shield_timer > 0:
                 self.boss_shield_timer -= 1
@@ -836,7 +836,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self._ai_dodge_bullets(enemy_bullets)
 
-        # Boss charge attack
+        # Ataque de carga del jefe
         if self.is_boss and self.boss_phase2:
             if self.boss_charge_timer > 0:
                 self.boss_charge_timer -= 1
@@ -864,7 +864,7 @@ class Enemy(pygame.sprite.Sprite):
                 self.boss_charging = True
                 self.boss_charge_timer = 30
 
-            # Boss shoots in phase 2
+            # El jefe dispara en fase 2
             self.boss_shoot_timer -= 1
             if self.boss_shoot_timer <= 0 and enemy_bullets is not None:
                 self.boss_shoot_timer = 180
@@ -873,7 +873,7 @@ class Enemy(pygame.sprite.Sprite):
                     nv = pygame.Vector2(math.cos(a), math.sin(a)) * 4
                     enemy_bullets.append(EnemyBullet(self.pos.copy(), nv, 10))
 
-        # Shooter AI (burst fire) con línea de visión
+        # IA de tirador (ráfagas) con línea de visión
         if self.etype == "shooter":
             self.shooter_timer -= 1
             sd2x = player_pos[0] - self.pos.x
@@ -896,17 +896,17 @@ class Enemy(pygame.sprite.Sprite):
                         enemy_bullets.append(EnemyBullet(self.pos.copy(), nv, self.TYPES[self.etype]["bullet_dmg"]))
                     self.last_damage_time = pygame.time.get_ticks()
             elif not can_see_player:
-                # Move to a position where we can see the player
+                # Muévete a una posición donde pueda ver al jugador
                 perp_angle = math.atan2(player_pos[1] - self.pos.y, player_pos[0] - self.pos.x) + random.uniform(-1.0, 1.0)
                 self.tactical_target = self.pos + pygame.Vector2(math.cos(perp_angle), math.sin(perp_angle)) * 80
                 self.tactical_state = "flank"
 
-        # Healer AI (also buffs damage) - prioriza boss o enemigo con más HP
+        # IA de curandero (también buffea daño) - prioriza jefe o enemigo con más HP
         if self.etype == "healer" and enemies is not None:
             self.heal_timer -= 1
             if self.heal_timer <= 0:
                 self.heal_timer = self.heal_cd
-                # Find best target: prioritize boss, then highest missing HP
+                # Encuentra el mejor objetivo: prioriza jefe, luego mayor HP faltante
                 best_target = None
                 best_missing = 0
                 for e in enemies:
@@ -925,13 +925,13 @@ class Enemy(pygame.sprite.Sprite):
                         a2 = random.uniform(0, math.tau)
                         sp2 = random.uniform(1, 3)
                         particles.append(Particle(self.pos, pygame.Vector2(math.cos(a2), math.sin(a2)) * sp2, (50, 255, 100), random.uniform(2, 3), random.randint(8, 16)))
-            # Damage buff to nearby enemies
+            # Buff de daño a enemigos cercanos
             for e in enemies:
                 if e is self: continue
                 if e.pos.distance_to(self.pos) < self.TYPES[self.etype]["heal_range"]:
                     e.dmg_mult = max(e.dmg_mult, 1.25)
 
-        # Tactical dodge
+        # Esquiva táctica
         if self.dodge_timer > 0:
             self.dodge_timer -= 1
             dodge_spd = self.speed * self.speed_mult * 2
@@ -943,7 +943,7 @@ class Enemy(pygame.sprite.Sprite):
             self.rect.center = (int(self.pos.x), int(self.pos.y))
             return
 
-        # Hold position (ranged / support roles)
+        # Mantener posición (roles de rango/soporte)
         if self.tactical_state == "hold" and not self.is_boss:
             dx = player_pos[0] - self.pos.x
             dy = player_pos[1] - self.pos.y
@@ -960,7 +960,7 @@ class Enemy(pygame.sprite.Sprite):
             self.rect.center = (int(self.pos.x), int(self.pos.y))
             return
 
-        # Tactical state: flank toward target
+        # Estado táctico: flanquear hacia el objetivo
         if self.tactical_state == "flank" and self.tactical_target and not self.is_boss:
             tx, ty = self.tactical_target
             fdx = tx - self.pos.x
@@ -976,7 +976,7 @@ class Enemy(pygame.sprite.Sprite):
                 self.rect.centery = int(self.pos.y + math.sin(self.bob_phase) * 2)
                 return
 
-        # Movement toward player (skip if burrowed, stationary buffer)
+        # Movimiento hacia el jugador (saltar si está enterrado, buffer estacionario)
         if self.burrowed or self.etype == "buffer":
             self.rect.center = (int(self.pos.x), int(self.pos.y))
             return
@@ -985,13 +985,13 @@ class Enemy(pygame.sprite.Sprite):
         dy = player_pos[1] - self.pos.y
         dist = math.hypot(dx, dy)
         stop_dist = 200 if self.etype == "shooter" else 0
-        # Aggro system: patrol when far, rush when close
+        # Sistema de aggro: patrulla cuando está lejos, carga cuando está cerca
         aggro_speed = 1.0
         if dist > 800:
-            aggro_speed = 0.3  # patrol speed far away
+            aggro_speed = 0.3  # velocidad de patrulla lejos
         elif dist > 400:
-            aggro_speed = 0.6  # jog when mid-range
-        # Retreat when low HP
+            aggro_speed = 0.6  # trote a media distancia
+        # Retirada cuando tiene poca vida
         retreating = False
         if self.hp < self.max_hp * 0.3 and self.etype not in ("vicente_boss", "boss", "shooter", "buffer"):
             retreating = True
@@ -999,7 +999,7 @@ class Enemy(pygame.sprite.Sprite):
             move_spd = self.speed * self.speed_mult * aggro_speed * (1.3 if self.is_boss and self.boss_phase2 else 1.0)
             sep = self._ai_separation(enemies, spatial_hash=spatial_hash, strength=0.4)
             if grid is not None and dist < 1400 and not retreating:
-                # Basic enemies use direct chase when far; advanced ones BFS closer
+                # Enemigos básicos usan persecución directa lejos; avanzados usan BFS más cerca
                 use_direct = (self.etype in ("walker", "runner", "swarm", "bomber") and dist > 400)
                 self.ai_think_timer -= 1
                 path_interval = 18 if self.stuck_timer > 0 else (30 if dist > 800 else 20 if dist > 400 else 12)
@@ -1038,7 +1038,7 @@ class Enemy(pygame.sprite.Sprite):
                     ny = self.pos.y + (dy / dist) * move_spd + sep.y
                     self._step_move(nx, ny, grid)
             else:
-                # Direct movement (away from player if retreating)
+                # Movimiento directo (alejándose del jugador si retrocede)
                 dir_x = (-dx / dist) if retreating else (dx / dist)
                 dir_y = (-dy / dist) if retreating else (dy / dist)
                 nx = self.pos.x + dir_x * move_spd + sep.x
@@ -1060,12 +1060,12 @@ class Enemy(pygame.sprite.Sprite):
     # IA completa del jefe Vicente: 4 fases con patrones crecientes
     def _update_vicente_boss(self, player_pos, enemies, enemy_bullets, particles, grid):
         hp_r = self.hp / self.max_hp
-        # Phase
+        # Fase
         new_ph = 4 if hp_r <= 0.25 else 3 if hp_r <= 0.55 else 2 if hp_r <= 0.85 else 1
         if new_ph > self._vb_phase:
             self._vb_phase = new_ph
         ph = self._vb_phase
-        # Shield blue (phase 1-2)
+        # Escudo azul (fase 1-2)
         if ph <= 2:
             self._vb_shield_cooldown -= 1
             if self._vb_shield_active:
@@ -1076,7 +1076,7 @@ class Enemy(pygame.sprite.Sprite):
                 self._vb_shield_active = True
                 self._vb_shield_timer = 120
                 self._vb_shield_cooldown = 480
-        # Knockback
+        # Retroceso
         if self.kb.length() > 0.1:
             kp = self.pos + self.kb
             if grid is not None:
@@ -1088,7 +1088,7 @@ class Enemy(pygame.sprite.Sprite):
                 self.kb = pygame.Vector2(0, 0)
         else:
             self.kb = pygame.Vector2(0, 0)
-        # Timers
+        # Temporizadores
         self._vb_attack_timer -= 1
         self._vb_special_timer -= 1
         self._vb_summon_timer -= 1
@@ -1101,9 +1101,9 @@ class Enemy(pygame.sprite.Sprite):
         self._vb_extract_timer -= 1
         self._vb_syntax_timer -= 1
         self._vb_domain_pulse += 1
-        # Direction to player for bullet patterns
+        # Dirección al jugador para patrones de bala
         ang_to_player = math.atan2(player_pos.y - self.pos.y, player_pos.x - self.pos.x)
-        # ── Phase 1: Dispara snippets de código (patrón circular creciente) ──
+        # ── Fase 1: Dispara fragmentos de código (patrón circular creciente) ──
         if self._vb_attack_timer <= 0 and enemy_bullets is not None:
             if ph == 1:
                 n = 4
@@ -1130,7 +1130,7 @@ class Enemy(pygame.sprite.Sprite):
                 nv = pygame.Vector2(math.cos(a), math.sin(a)) * spd
                 enemy_bullets.append(EnemyBullet(self.pos.copy(), nv, 10 + ph * 2))
             self._vb_attack_timer = cd
-        # ── Phase 2+: Invoca ImportSnippets (snakes de código) ──
+        # ── Fase 2+: Invoca ImportSnippets (serpientes de código) ──
         if ph >= 2 and self._vb_summon_timer <= 0:
             n_snippets = {2: 2, 3: 3, 4: 6}.get(ph, 2)
             for _ in range(n_snippets):
@@ -1140,7 +1140,7 @@ class Enemy(pygame.sprite.Sprite):
                 if self.all_sprites_ref is not None:
                     self.all_sprites_ref.add(sn)
             self._vb_summon_timer = {2: 480, 3: 360, 4: 120}.get(ph, 480)
-        # ── Phase 2+: Teletransportación con partículas ──
+        # ── Fase 2+: Teletransportación con partículas ──
         if ph >= 2 and self._vb_teleport_timer <= 0:
             a = random.uniform(0, math.tau)
             d = random.uniform(100, 250)
@@ -1161,7 +1161,7 @@ class Enemy(pygame.sprite.Sprite):
                         sp2 = random.uniform(2, 5)
                         particles.append(Particle(self.pos, pygame.Vector2(math.cos(a2), math.sin(a2)) * sp2, (150, 220, 255), random.uniform(3, 5), random.randint(10, 20)))
             self._vb_teleport_timer = {2: 300, 3: 240, 4: 180}.get(ph, 300)
-        # ── Phase 3+: Expansión de dominio (ráfagas circulares) ──
+        # ── Fase 3+: Expansión de dominio (ráfagas circulares) ──
         if ph >= 3:
             if self._vb_domain_cooldown <= 0 and not self._vb_domain_active:
                 self._vb_domain_active = True
@@ -1185,7 +1185,7 @@ class Enemy(pygame.sprite.Sprite):
             if ph == 4:
                 if not self._vb_domain_active:
                     self._vb_domain_active = True
-        # ── Phase 3+: Muro de sintaxis (lluvia de balas horizontal/vertical) ──
+        # ── Fase 3+: Muro de sintaxis (lluvia de balas horizontal/vertical) ──
         if ph >= 3 and self._vb_syntax_timer <= 0 and enemy_bullets is not None:
             horiz = random.random() < 0.5
             n = 10
@@ -1202,7 +1202,7 @@ class Enemy(pygame.sprite.Sprite):
                     nv = pygame.Vector2(5, 0)
                 enemy_bullets.append(EnemyBullet(pygame.Vector2(bx, by), nv, 15 + ph * 3))
             self._vb_syntax_timer = 600
-        # ── Phase 4: Ataques WinRAR (compress, bomb, shield, extract, last stand) ──
+        # ── Fase 4: Ataques WinRAR (comprimir, bomba, escudo, extraer, último esfuerzo) ──
         if ph == 4:
             if self._vb_compress_timer <= 0 and enemy_bullets is not None:
                 dx = player_pos[0] - self.pos.x
@@ -1240,7 +1240,7 @@ class Enemy(pygame.sprite.Sprite):
                     if self.enemies_ref is not None:
                         self.enemies_ref.add(e2)
                 self._vb_extract_timer = 480
-            # Last stand: se cura ~8% y lanza ataque final al 5% HP
+            # Último esfuerzo: se cura ~8% y lanza ataque final al 5% de HP
             if not self._vb_last_stand and hp_r <= 0.05:
                 self._vb_last_stand = True
                 self.hp = min(self.max_hp, self.hp + int(self.max_hp * 0.08))
@@ -1261,7 +1261,7 @@ class Enemy(pygame.sprite.Sprite):
                     self._vb_snippets.append(sn)
                     if self.all_sprites_ref is not None:
                         self.all_sprites_ref.add(sn)
-        # ── Movement toward player ──
+        # ── Movimiento hacia el jugador ──
         dx = player_pos[0] - self.pos.x
         dy = player_pos[1] - self.pos.y
         dist = math.hypot(dx, dy)
@@ -1269,7 +1269,7 @@ class Enemy(pygame.sprite.Sprite):
         if ph == 2: move_spd *= 1.25
         elif ph == 3: move_spd *= 1.3
         elif ph == 4: move_spd *= 1.6
-        # Charge
+        # Carga
         if ph >= 3 and self._vb_charge_timer <= 0:
             if dist > 5:
                 self._vb_charging = True
@@ -1289,7 +1289,7 @@ class Enemy(pygame.sprite.Sprite):
                 self._vb_charge_timer = {3: 120, 4: 60}.get(ph, 90)
             self.rect.center = (int(self.pos.x), int(self.pos.y))
             return
-        # Normal movement
+        # Movimiento normal
         if dist > 5:
             sep = pygame.Vector2(0, 0)
             if enemies:
@@ -1315,14 +1315,14 @@ class Enemy(pygame.sprite.Sprite):
         if (sr, sc) == (target_row, target_col):
             return []
         import heapq
-        # A* with 8-directional movement and Manhattan heuristic
+        # A* con movimiento en 8 direcciones y heurística Manhattan
         start = (sr, sc)
         goal = (target_row, target_col)
         heap = [(0, 0, start)]
         g_cost = {start: 0}
         prev = {start: None}
         steps = 0
-        # 8 directions: cardinal + diagonal
+        # 8 direcciones: cardinal + diagonal
         dirs = [(1,0),(-1,0),(0,1),(0,-1),(1,1),(1,-1),(-1,1),(-1,-1)]
         while heap:
             steps += 1
@@ -1343,11 +1343,11 @@ class Enemy(pygame.sprite.Sprite):
                     continue
                 if is_wall(grid, nc, nr):
                     continue
-                # Diagonal movement check: both adjacent cells must be walkable
+                # Verificación de movimiento diagonal: ambas celdas adyacentes deben ser transitables
                 if dr != 0 and dc != 0:
                     if is_wall(grid, nc-dr, nr) and is_wall(grid, nc, nr-dc):
                         continue
-                move_cost = 14 if dr != 0 and dc != 0 else 10  # diagonal cost ~1.4x
+                move_cost = 14 if dr != 0 and dc != 0 else 10  # costo diagonal ~1.4x
                 ng = g_cost[cur] + move_cost
                 if (nr, nc) not in g_cost or ng < g_cost[(nr, nc)]:
                     g_cost[(nr, nc)] = ng
@@ -1583,7 +1583,7 @@ class BrainrotMinion(pygame.sprite.Sprite):
         self.hp = 60
         self.max_hp = 60
         self.speed = 2.5
-        self.radius = 12
+        self.radius = 18
         self.color = (180, 50, 255)
         self.damage = 8
         self.attack_cooldown = 0
@@ -1600,8 +1600,11 @@ class BrainrotMinion(pygame.sprite.Sprite):
         custom = self._brainrot_imgs[self._img_idx]
         if custom is not None:
             r = self.radius
-            target = r * 2 - 2
-            scale = min(target / custom.get_width(), target / custom.get_height(), 1)
+            target = r * 2
+            if self._img_idx == 2:
+                scale = target / custom.get_width()
+            else:
+                scale = min(target / custom.get_width(), target / custom.get_height(), 1)
             nw = max(1, int(custom.get_width() * scale))
             nh = max(1, int(custom.get_height() * scale))
             scaled = pygame.transform.smoothscale(custom, (nw, nh))
@@ -1614,15 +1617,15 @@ class BrainrotMinion(pygame.sprite.Sprite):
             dy = r - mask.get_height() // 2
             self.image.blit(mask, (dx, dy))
             return
-        # Fallback procedural
+        # Alternativa procedural
         r = self.radius
         pygame.draw.circle(self.image, (60, 20, 80), (r, r), r)
         pygame.draw.circle(self.image, self.color, (r, r), r - 2)
         pygame.draw.circle(self.image, (100, 30, 150), (r, r), r - 4)
-        pygame.draw.circle(self.image, RED, (r - 3, r - 3), 2)
-        pygame.draw.circle(self.image, RED, (r + 3, r - 3), 2)
-        pygame.draw.circle(self.image, (255, 255, 255), (r - 3, r - 3), 1)
-        pygame.draw.circle(self.image, (255, 255, 255), (r + 3, r - 3), 1)
+        pygame.draw.circle(self.image, RED, (r - 5, r - 4), 3)
+        pygame.draw.circle(self.image, RED, (r + 5, r - 4), 3)
+        pygame.draw.circle(self.image, (255, 255, 255), (r - 5, r - 4), 1)
+        pygame.draw.circle(self.image, (255, 255, 255), (r + 5, r - 4), 1)
 
     # Busca al enemigo más cercano, lo persigue y ataca
     def update(self, enemies, player_pos, grid=None):
@@ -2116,7 +2119,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Aiming (mouse_pos in screen coords, converted to world via cam_x, cam_y)
+        # Apuntando (mouse_pos en coordenadas de pantalla, convertido a mundo mediante cam_x, cam_y)
 
         self.angle = math.atan2(mouse_pos[1] - (self.pos.y - cam_y), mouse_pos[0] - (self.pos.x - cam_x))
 
@@ -2124,7 +2127,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Movement
+        # Movimiento
 
         move_x = 0.0
 
@@ -2200,7 +2203,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Stamina regen
+        # Regeneración de resistencia
 
         self.stamina = min(self.max_stamina, self.stamina + 0.1)
 
@@ -2208,7 +2211,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Reloading
+        # Recargando
 
         if self.reloading:
 
@@ -2240,7 +2243,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Weapon switching (edge-triggered)
+        # Cambio de arma (disparado por flanco)
 
         for i, wk in enumerate([pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4]):
 
@@ -2260,7 +2263,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Shooting (fr values are in milliseconds, convert to frames: / 16.67)
+        # Disparo (valores de fr en milisegundos, convertir a fotogramas: / 16.67)
 
         wcfg = WEAPON_BULLETS[self.weapon_mode]
 
@@ -2344,7 +2347,7 @@ class Player(pygame.sprite.Sprite):
 
                         all_sprites.add(b)
 
-                    # Set light flash timer for shooting effect
+                    # Establece temporizador de destello lumínico para el efecto de disparo
 
                     self.light_flash_timer = LIGHT_FLASH_DURATION
 
@@ -2358,7 +2361,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Q Ability (cooldown in ms via pygame ticks)
+        # Habilidad Q (enfriamiento en ms mediante ticks de pygame)
 
         q_key = keys[pygame.K_q]
 
@@ -2376,7 +2379,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Z Ultimate
+        # Z Definitiva
 
         self.charge_kills = self.ability_charge
 
@@ -2460,7 +2463,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # C: Vicente mode switch (edge-triggered)
+        # C: Cambio de modo de Vicente (disparado por flanco)
 
         c_key = keys[pygame.K_c]
 
@@ -2480,7 +2483,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # X Domain Expansion
+        # X Expansión de dominio
 
         if self.domain_cd_timer > 0:
 
@@ -2565,13 +2568,13 @@ class Player(pygame.sprite.Sprite):
             play_domain_music(self.char_id)
 
 
-        # Domain update
+        # Actualización de dominio
 
         if self.domain_active:
 
             self.domain_timer -= 1
 
-            # Manual deactivation with X key press (edge-triggered, skip same-frame activation)
+            # Desactivación manual con tecla X (disparado por flanco, omitir activación del mismo fotograma)
             if x_key and not self._prev_x_key and self.domain_timer < DOMAIN_DURATION - 1:
 
                 self.domain_active = False
@@ -2591,7 +2594,7 @@ class Player(pygame.sprite.Sprite):
         self._prev_x_key = x_key
 
 
-        # Ability duration & temporary buffs
+        # Duración de habilidad y buffos temporales
 
         if self.ability_active:
 
@@ -2599,7 +2602,7 @@ class Player(pygame.sprite.Sprite):
 
         self._tick_ability_buffs(enemies, particles)
 
-        # Tick ability animation
+        # Actualizar animación de habilidad
         if self.anim_timer > 0:
             self.anim_timer -= 1
             if not hasattr(self, "_base_image"):
@@ -2625,7 +2628,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Buff timers
+        # Temporizadores de buffos
 
         if self.rebotar_timer > 0:
 
@@ -2663,7 +2666,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Passive income (Vicente)
+        # Ingreso pasivo (Vicente)
 
         if self.passive_bytes > 0 and random.random() < 0.01:
 
@@ -2671,7 +2674,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Bomb usage (edge-triggered)
+        # Uso de bombas (disparado por flanco)
 
         bomb_key = keys[pygame.K_g]
 
@@ -2703,7 +2706,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Update minions
+        # Actualizar esbirros
 
         for br in self.active_brainrots[:]:
 
@@ -2717,7 +2720,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Update import snippets
+        # Actualizar fragmentos importados
 
         for s in self.active_snippets[:]:
 
@@ -2727,7 +2730,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Update Billie
+        # Actualizar Billie
 
         if self.billie_npc is not None and enemies is not None and not self.billie_npc.update(enemies, grid):
 
@@ -2735,7 +2738,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Update walls
+        # Actualizar muros
 
         for w in self.walls[:]:
 
@@ -2745,7 +2748,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Update tornado
+        # Actualizar tornado
 
         if self.tornado is not None:
 
@@ -2757,13 +2760,13 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Update display HP
+        # Actualizar HP mostrado
 
         self._update_display_hp()
 
 
 
-        # Clamp position
+        # Limitar posición
 
         self.pos.x = max(self.radius, min(self.map_w - self.radius, self.pos.x))
 
@@ -2771,7 +2774,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-        # Update sprite
+        # Actualizar sprite
         cd = self.char_data
         if self.char_id == "vicente":
             cd = {**cd, "color": self.vicente_mode_colors[self.vicente_mode]}
@@ -2855,7 +2858,7 @@ class Player(pygame.sprite.Sprite):
 
         self.beam_start = self.pos.copy()
 
-        # Follow mouse direction while beam is active (no aimbot)
+        # Sigue la dirección del ratón mientras el rayo está activo (sin aimbot)
         self.ult_laser_angle = self.angle
 
         self.beam_end = laser_ray_end(
@@ -3195,7 +3198,7 @@ class Player(pygame.sprite.Sprite):
 
             if self.char_id == "vicente" and self.vicente_mode == 1:
 
-                # COMPILE: Compile Error wave
+                # COMPILE: Ola de error de compilación
 
                 self._ability_hit_enemies(enemies, 250, 150, particles, (255, 80, 80))
 
@@ -3217,7 +3220,7 @@ class Player(pygame.sprite.Sprite):
 
             elif self.char_id == "vicente" and self.vicente_mode == 2:
 
-                # DEBUG: Breakpoint — slow enemies in radius
+                # DEBUG: Punto de interrupción — ralentiza enemigos en radio
 
                 if enemies:
 
@@ -3249,7 +3252,7 @@ class Player(pygame.sprite.Sprite):
 
             else:
 
-                # IMPORT: 3 ImportSnippets (default)
+                # IMPORT: 3 ImportSnippets (predeterminado)
 
                 for _ in range(3):
 
@@ -3632,7 +3635,7 @@ class Player(pygame.sprite.Sprite):
 
             if self.char_id == "vicente" and self.vicente_mode == 1:
 
-                # COMPILE: Runtime Error — massive damage + stun all enemies near
+                # COMPILE: Error de ejecución — daño masivo + aturde a todos los enemigos cercanos
 
                 self._ability_hit_enemies(enemies, 350, 200, particles, (255, 80, 80), stun=120)
 
@@ -3682,7 +3685,7 @@ class Player(pygame.sprite.Sprite):
 
             else:
 
-                # IMPORT: LIMPIADOR (default)
+                # IMPORT: LIMPIADOR (predeterminado)
 
                 killed = 0
 
@@ -4048,7 +4051,7 @@ class ShopTerminal:
 class AirdropCrate(pygame.sprite.Sprite):
     def __init__(self, pos, map_w=MAP_W, map_h=MAP_H):
         super().__init__()
-        self.pos = pygame.Vector2(pos[0], -40)  # start above screen
+        self.pos = pygame.Vector2(pos[0], -40)  # comienza arriba de la pantalla
         self.target_y = pos[1]
         self.map_w = map_w
         self.map_h = map_h
@@ -4068,11 +4071,11 @@ class AirdropCrate(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, (120, 90, 50), (2, 2, r * 2 - 4, r * 2 - 4), border_radius=2)
         pygame.draw.line(self.image, (180, 150, 80), (r, 0), (r, r * 2), 2)
         pygame.draw.line(self.image, (180, 150, 80), (0, r), (r * 2, r), 2)
-        # Parachute lines
+        # Líneas del paracaídas
         if not self.landed:
             pygame.draw.line(self.image, (200, 200, 200), (r, 0), (r - 10, -8), 2)
             pygame.draw.line(self.image, (200, 200, 200), (r, 0), (r + 10, -8), 2)
-            # Chute (arc)
+            # Paracaídas (arco)
             pygame.draw.arc(self.image, (255, 200, 100), (r - 14, -16, 28, 16), math.pi, 2 * math.pi, 3)
 
     def update(self):
@@ -4081,7 +4084,7 @@ class AirdropCrate(pygame.sprite.Sprite):
             if self.pos.y >= self.target_y:
                 self.pos.y = self.target_y
                 self.landed = True
-                self.land_timer = 600  # 10 seconds to collect
+                self.land_timer = 600  # 10 segundos para recoger
             self._redraw()
         else:
             self.land_timer -= 1
@@ -4100,7 +4103,7 @@ class AirdropCrate(pygame.sprite.Sprite):
                 a = int(max(20, 80 - d * 0.5))
                 pygame.draw.circle(gs, (255, 210, 55, a), (glow_r, glow_r), glow_r)
                 surf.blit(gs, (px - glow_r, py - glow_r))
-                # Label
+                # Etiqueta
                 from src.ui import _f
                 lbl = _f(11).render("F=Recibir", True, (255, 210, 55))
                 lbl.set_alpha(int(min(255, 500 - d * 3)))
@@ -4137,7 +4140,7 @@ class Ally(pygame.sprite.Sprite):
         pygame.draw.circle(self.image, c, (r, r), r - 2)
         pygame.draw.circle(self.image, RED, (r - 4, r - 4), 2)
         pygame.draw.circle(self.image, RED, (r + 4, r - 4), 2)
-        # Shield/role mark
+        # Marca de escudo/rol
         if self.aid == "zaid":
             pygame.draw.circle(self.image, (200, 150, 50), (r, r), r, 3)
         elif self.aid == "irvin_sis":
@@ -4171,7 +4174,7 @@ class Ally(pygame.sprite.Sprite):
             else:
                 self.pos.x = nx; self.pos.y = ny
 
-        # Find target
+        # Encontrar objetivo
         target = None
         target_dist = self.attack_range + 20
         for e in enemies:
@@ -4180,7 +4183,7 @@ class Ally(pygame.sprite.Sprite):
             if ed < target_dist:
                 target = e
                 target_dist = ed
-        # Attack
+        # Atacar
         self.shoot_timer += 1
         if target and self.shoot_timer >= self.fr:
             self.shoot_timer = 0

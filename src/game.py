@@ -39,7 +39,7 @@ class SpatialHash:
         cell_y = int(pos.y // self.cell_size)
         nearby = []
 
-        # Check surrounding cells
+        # Revisar celdas circundantes
         for dx in [-1, 0, 1]:
             for dy in [-1, 0, 1]:
                 cell_key = (cell_x + dx, cell_y + dy)
@@ -199,7 +199,7 @@ class Game:
     # Coloca los NPCs de tienda Vicente y Oscar cerca del laboratorio
     def _spawn_shop_terminals(self):
         pp = self.player.pos
-        # Fixed spawn near Laboratorio entrance (tile 49,61 → path leading to lab door)
+        # Spawn fijo cerca de la entrada del Laboratorio (tile 49,61 → camino que lleva a la puerta del lab)
         lab_pos = pygame.Vector2(2460, 1980)
         col, row = int(lab_pos.x // TILE), int(lab_pos.y // TILE)
         if not is_wall(self.grid, col, row):
@@ -226,7 +226,7 @@ class Game:
                 vi["cost"] = self.shop_costs[vi["id"]]
         self.vicente_near = False
 
-        # Spawn Oscar nearby (slightly offset from Vicente)
+        # Spawn de Oscar cerca (ligeramente desplazado de Vicente)
         oscar_offset = pygame.Vector2(120, 80)
         oscar_pos = pos + oscar_offset
         oscar_pos.x = max(100, min(MAP_W - 100, oscar_pos.x))
@@ -298,7 +298,7 @@ class Game:
                 self.all_sprites.add(e2); self.enemies.add(e2)
         if SFX:
             SFX["kill"].play()
-        # Death animation
+        # Animación de muerte
         e._death_surf = e.image.copy()
         e.dying = True
         e.death_timer = 15
@@ -308,7 +308,7 @@ class Game:
         if e.explode_r > 0:
             self.shockwaves.append({"pos": pygame.Vector2(e.pos), "timer": 30, "max_r": 0, "color": e.color})
 
-        # Kill combo system
+        # Sistema de combo por asesinato
         current_time = pygame.time.get_ticks()
         if hasattr(self.player, "_last_combo_time") and current_time - self.player._last_combo_time > 1000:
             self.player.combo_counter = 0
@@ -412,7 +412,7 @@ class Game:
         _ent.ENEMY_REACHABLE = compute_reachable(self.grid, sc, sr)
         self.player = Player(self.selected_char, spawn_pos, MAP_W, MAP_H)
         self.all_sprites.add(self.player)
-        self._check_evolution()  # check on load in case save has all items
+        self._check_evolution()  # verificar al cargar por si la partida guardada tiene todos los items
         self.cam = Camera(MAP_W, MAP_H)
         self.transition_alpha = 0
         self.flash_alpha = 0
@@ -641,7 +641,7 @@ class Game:
             if SFX:
                 SFX["click"].play()
             return
-        # Vicente item handling
+        # Manejo de items de Vicente
         cost = item["base_cost"]
         if item["id"] in self.shop_costs:
             cost = self.shop_costs[item["id"]]
@@ -765,7 +765,7 @@ class Game:
             p.ability_max_cd = max(1, int(p.ability_max_cd * 0.9))
             p.ability_cd = p.ability_max_cd
         elif uniq == "obed":
-            pass  # Billie double duration handled in handle()
+            pass  # Duración doble de Billie manejada en handle()
         elif uniq == "eder":
             p.ability_damage_mult = max(p.ability_damage_mult, 1.5)
         elif uniq == "ian":
@@ -834,7 +834,7 @@ class Game:
         elif typ == "evo_item":
             cid = self.selected_char
             needed = EVOLUTION_ITEMS.get(cid, [])
-            # Pick a random needed item the player doesn't have yet
+            # Elegir un item necesario aleatorio que el jugador aún no tenga
             missing = [it for it in needed if p.evolution_items.get(it, 0) < 1]
             if missing:
                 item = random.choice(missing)
@@ -843,7 +843,7 @@ class Game:
                 self.notifs.append(Notif(f"Gacha: {emoji} {item} obtenido!", (255, 215, 0), 120))
                 self._check_evolution()
             else:
-                # Already have all items, give bytes instead
+                # Ya tiene todos los items, dar bytes en su lugar
                 p.bytes += 75
                 self.notifs.append(Notif("Gacha: Ya tienes todos los items! +75 Bytes", GOLD, 90))
         elif typ == "chaos":
@@ -863,7 +863,7 @@ class Game:
         for it in needed:
             if p.evolution_items.get(it, 0) < 1:
                 return
-        # All items collected - evolve!
+        # Todos los items recolectados - ¡evolucionar!
         p.evolved = True
         p.max_hp += 30
         p.hp = min(p.hp + 30, p.max_hp)
@@ -1010,7 +1010,7 @@ class Game:
                 elif self.wave_spawned >= self.wave_total:
                     self.wave_state = "clear"
 
-        # Fase clear: todos los enemigos eliminados, avanza a la siguiente oleada
+        # Fase de limpieza: todos los enemigos eliminados, avanza a la siguiente oleada
         if self.wave_state == "clear" and len(self.enemies) == 0:
             stop_boss_music()  # Detiene música de jefe al limpiar la wave
             if SFX:
@@ -1091,7 +1091,7 @@ class Game:
                 self.brainrots.remove(m)
                 continue
             m.update(enemies_list, pp, grid=self.grid)
-            # Minion death
+            # Muerte de esbirro
             if m.hp <= 0:
                 m.kill()
                 self.brainrots.remove(m)
@@ -1292,7 +1292,7 @@ class Game:
                 b.kill()
                 self.player.bombs.remove(b)
                 continue
-            # Napalm pool per-frame
+            # Piscina de napalm por frame
             if b.btype == "napalm" and b.pool_life > 0:
                 b.pool_life -= 1
                 for e in list(self.enemies):
@@ -1435,7 +1435,7 @@ class Game:
                     self.particles.append(Particle(pu.pos, pygame.Vector2(math.cos(a), math.sin(a)) * sp,
                         pu.colors.get(pu.ptype, (255, 255, 255)), random.uniform(2, 3), random.randint(8, 16)))
 
-        # Pickup lifetime update
+        # Actualización de vida útil de pickups
         self.pickups.update()
 
         # Efectos de Domain Expansion por frame (efecto único por personaje)
@@ -1537,6 +1537,15 @@ class Game:
                                     (180, 50, 255), random.uniform(1.5, 3), random.randint(5, 12)))
                             if died:
                                 self._reward_enemy_death(e)
+                                bm = BrainrotMinion(e.pos, self.player, MAP_W, MAP_H)
+                                self.all_sprites.add(bm)
+                                self.brainrots.add(bm)
+                                for _ in range(8):
+                                    a = random.uniform(0, math.tau)
+                                    sp = random.uniform(2, 5)
+                                    self.particles.append(Particle(e.pos, pygame.Vector2(math.cos(a), math.sin(a)) * sp,
+                                        (180, 50, 255), random.uniform(2, 5), random.randint(10, 25)))
+                                e.kill()
                     elif domain_effect == "billie":
                         if random.random() < 0.02 and (self.player.billie_npc is None or self.player.billie_npc.hp <= 0):
                             bpos = e.pos + pygame.Vector2(random.uniform(-20, 20), random.uniform(-20, 20))
@@ -1588,7 +1597,7 @@ class Game:
                                     (100, 255, 100), random.uniform(2, 3), random.randint(5, 12)))
                             if died:
                                 self._reward_enemy_death(e)
-            # Domain ambient particles
+            # Partículas ambientales del dominio
             if len(self.particles) < 100 and random.random() < 0.3:
                 a = random.uniform(0, math.tau)
                 r = random.uniform(0, DOMAIN_RADIUS)
@@ -1633,7 +1642,7 @@ class Game:
             for e in col:
                 e.last_damage_time = now
             self.flash_alpha = 80
-            # Vampiric modifier: enemies heal 10% on hit
+            # Modificador vampírico: los enemigos se curan 10% al golpear
             if self.wave_modifier == "vampirica":
                 for e in col:
                     e.hp = min(e.max_hp, e.hp + int(e.damage * 0.1))
@@ -1756,7 +1765,7 @@ class Game:
                     self.airdrops.append(crate)
                     break
 
-        # Airdrop update
+        # Actualización de airdrop
         for c in self.airdrops[:]:
             c.update()
             if not c.alive():
@@ -1769,7 +1778,7 @@ class Game:
                 self.gacha_spinning = False
                 self._apply_gacha_reward()
 
-        # Transfer shake to camera + smooth HP
+        # Transferir vibración a la cámara + HP suave
         if self.player.shake > 0:
             self.cam.add_shake(self.player.shake)
             self.player.shake = 0
@@ -1783,7 +1792,7 @@ class Game:
         sr = max(0, int(cy // TILE))
         er = min(ROWS, int((cy + HEIGHT) // TILE) + 1)
 
-        # ── Pre-rendered tile cache (lazy init) ──
+        # ── Caché de tiles pre-renderizados (inicialización diferida) ──
         if not hasattr(self, "_tile_cache"):
             self._tile_cache = {}
             self._floor_noise = pygame.Surface((TILE, TILE), pygame.SRCALPHA)
@@ -1850,7 +1859,7 @@ class Game:
                         tile_surf = _load_tile(v)
                     surf.blit(tile_surf, (px, py))
 
-        # ── Light pools from lamp posts ──
+        # ── Zonas de luz de faroles ──
         if not hasattr(self, "_light_pool_surf") or self._light_pool_surf.get_width() != WIDTH:
             self._light_pool_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         self._light_pool_surf.fill((0, 0, 0, 0))
@@ -1865,7 +1874,7 @@ class Game:
                     pygame.draw.circle(self._light_pool_surf, (255, 220, 100, max(0, pulse)), (lx, ly), TILE * 2)
         surf.blit(self._light_pool_surf, (0, 0))
 
-        # Entity shadows on floor (cached surface)
+        # Sombras de entidades en el suelo (superficie en caché)
         if not hasattr(self, "_shadow_surf"):
             self._shadow_surf = pygame.Surface((64, 10), pygame.SRCALPHA)
             pygame.draw.ellipse(self._shadow_surf, (0, 0, 0, 50), self._shadow_surf.get_rect())
@@ -1882,24 +1891,24 @@ class Game:
             sy = e.pos.y - cy + e.radius - 5
             surf.blit(shadow_s, (sx, sy), (0, 0, sw, 10))
 
-        # Tornado drawing
+        # Dibujo de tornado
         if hasattr(self.player, "tornado") and self.player.tornado is not None:
             self.player.tornado.draw(surf, cx, cy)
 
         for w in self.player.walls:
             w.draw(surf, cx, cy)
 
-        # Laser beam drawing
+        # Dibujo de rayo láser
         for b in self.player.lasers:
             if b.alive():
                 b.draw(surf, cx, cy)
 
-        # Ally drawing
+        # Dibujo de aliados
         for a in self.aliados:
             if abs(a.pos.x - cx) < WIDTH + 60 and abs(a.pos.y - cy) < HEIGHT + 60:
                 surf.blit(a.image, (int(a.pos.x - cx - a.radius), int(a.pos.y - cy - a.radius)))
                 a.draw_hp(surf, cx, cy)
-                # Name label
+                # Etiqueta de nombre
                 from src.ui import _f
                 ns = _f(10).render(a.name, True, a.color)
                 ns.set_alpha(180)
@@ -1908,7 +1917,7 @@ class Game:
         for d in self.decals:
             if abs(d.pos.x - cx) < WIDTH + 40 and abs(d.pos.y - cy) < HEIGHT + 40:
                 d.draw(surf, cx, cy)
-        # Bomb custom drawing (napalm pools, mine indicators)
+        # Dibujo personalizado de bombas (piscinas de napalm, indicadores de mina)
         for b in self.player.bombs:
             if b.alive():
                 b.draw(surf, cx, cy)
@@ -1947,13 +1956,13 @@ class Game:
         if self.oscar:
             self.oscar.draw(surf, cx, cy, self.oscar_near)
 
-        # Airdrop crates
+        # Contenedores airdrop
         for c in self.airdrops:
             if abs(c.pos.x - cx) < WIDTH + 60 and abs(c.pos.y - cy) < HEIGHT + 60:
                 surf.blit(c.image, (int(c.pos.x - cx - c.radius), int(c.pos.y - cy - c.radius)))
                 c.draw_glow(surf, cx, cy, self.player.pos)
 
-        # Shockwave rings (cached per radius)
+        # Anillos de onda expansiva (en caché por radio)
         if not hasattr(self, "_sw_cache"): self._sw_cache = {}
         for sw in self.shockwaves:
             t = max(0, sw["timer"] / 30)
@@ -1990,24 +1999,24 @@ class Game:
                 if len(self._decoy_ring_cache) < 40:
                     self._decoy_ring_cache[ring_key] = s
             surf.blit(s, (px - r, py - r))
-            # Waifu NPC character (glow pre-cached)
+            # Personaje NPC Waifu (brillo pre-cacheado)
             surf.blit(self._waifu_glow, (px - 25, py - 25))
-            # Body/dress
+            # Cuerpo/vestido
             pygame.draw.ellipse(surf, (255, 100, 200), (px - 7, py + 3, 14, 16))
-            # Head
+            # Cabeza
             pygame.draw.circle(surf, (255, 220, 220), (px, py - 5), 8)
-            # Hair
+            # Cabello
             pygame.draw.arc(surf, (255, 50, 150), (px - 8, py - 13, 16, 12), math.pi, 2*math.pi, 3)
-            # Eyes
+            # Ojos
             eye_y = py - 6
             pygame.draw.circle(surf, (0, 0, 0), (px - 3, eye_y), 2)
             pygame.draw.circle(surf, (0, 0, 0), (px + 3, eye_y), 2)
             pygame.draw.circle(surf, (255, 255, 255), (px - 2, eye_y - 1), 1)
             pygame.draw.circle(surf, (255, 255, 255), (px + 4, eye_y - 1), 1)
-            # Smile
+            # Sonrisa
             pygame.draw.arc(surf, (255, 80, 150), (px - 3, py - 4, 6, 5), 0, math.pi, 1)
 
-        # Eder/Ian ultimate laser (charged Z) — bounded surface
+        # Láser definitivo de Eder/Ian (Z cargada) — superficie limitada
         if self.player.alive() and getattr(self.player, "ult_laser_active", False):
             is_ian = getattr(self.player, "char_id", "") == "ian"
             if is_ian:
@@ -2040,7 +2049,7 @@ class Game:
                 pygame.draw.line(bsurf, core, (lsx, lsy), (lex, ley), max(2, bw // 3))
                 surf.blit(bsurf, (min_x, min_y))
 
-        # Character beam visuals (Ian buffer Q) — bounded surface
+        # Visuales de rayo del personaje (Ian buffer Q) — superficie limitada
         elif (hasattr(self.player, "beam_start") and self.player.alive()
             and self.player.ability_active):
             ab = self.player.char_data["ability"]
@@ -2068,7 +2077,7 @@ class Game:
                     pygame.draw.line(bsurf, beam_clr2, (lsx, lsy), (lex, ley), bw)
                     pygame.draw.line(bsurf, (255, 255, 255), (lsx, lsy), (lex, ley), max(1, bw // 4))
                     surf.blit(bsurf, (min_x, min_y))
-        # Ian pink aura — bounded surface
+        # Aura rosa de Ian — superficie limitada
         if (self.player.alive() and self.player.ability_active
             and self.player.char_data["ability"] == "buffer" and self.player.ian_phase == 1):
             bcx = int(self.cam.x); bcy = int(self.cam.y)
@@ -2105,7 +2114,7 @@ class Game:
             o.fill(GOLD)
             surf.blit(o, (0, 0))
 
-        # Directional damage indicator
+        # Indicador direccional de daño
         if self.dmg_dir_alpha > 0:
             self.dmg_dir_alpha = max(0, self.dmg_dir_alpha - 3)
             o = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
@@ -2123,7 +2132,7 @@ class Game:
                 pygame.draw.rect(o, (255, 0, 0, a), (0, 0, WIDTH, 16))
             surf.blit(o, (0, 0))
 
-        # Zone label
+        # Etiqueta de zona
         if self.zone_name and self.zone_timer > 0:
             from src.ui import _f
             zs = _f(18).render(self.zone_name, True, (0, 180, 50))
@@ -2131,7 +2140,7 @@ class Game:
             surf.blit(zs, (WIDTH // 2 - zs.get_width() // 2, HEIGHT - 55))
             self.zone_timer -= 1
 
-        # Power-up tooltips
+        # Información de power-ups
         for pu in self.powerups:
             if self.player.pos.distance_to(pu.pos) < 80:
                 tip_text = {"turbo":"Fire rate x2","shield":"Escudo 30s","byte_magnet":"Bytes x2 10s","explosive":"Balas explosivas 6s"}
@@ -2143,7 +2152,7 @@ class Game:
                     ts.set_alpha(200)
                     surf.blit(ts, (px - ts.get_width() // 2, py))
 
-        # ── Domain Expansion barrier (JJK style) ──
+        # ── Barrera de Domain Expansion (estilo JJK) ──
         if self.player.alive() and self.player.domain_active:
             de = DOMAIN_EXPANSION.get(self.player.char_id, {})
             de_color = de.get("color", (255, 255, 255))
@@ -2151,25 +2160,25 @@ class Game:
             px = int(self.player.pos.x - cx); py = int(self.player.pos.y - cy)
             now = pygame.time.get_ticks()
 
-            # Pre-render static barrier wall once per color
+            # Pre-renderizar barrera estática una vez por color
             bsz = DOMAIN_RADIUS * 2 + 60
             bh = bsz // 2
             cache_key = de_color
             if not hasattr(self, "_domain_cache") or self._domain_cache.get("key") != cache_key:
                 ds = pygame.Surface((bsz, bsz), pygame.SRCALPHA)
-                # Dark/tinted overlay
+                # Superposición oscura/teñida
                 pygame.draw.circle(ds, (*de_color[:3], 25), (bh, bh), DOMAIN_RADIUS)
                 pygame.draw.circle(ds, (0, 0, 0, 50), (bh, bh), DOMAIN_RADIUS)
-                # Barrier outer thick ring
+                # Anillo exterior grueso de barrera
                 pygame.draw.circle(ds, (*de_color[:3], 50), (bh, bh), DOMAIN_RADIUS, 14)
                 pygame.draw.circle(ds, (*de_color[:3], 30), (bh, bh), DOMAIN_RADIUS + 8, 2)
                 pygame.draw.circle(ds, (*de_color[:3], 18), (bh, bh), DOMAIN_RADIUS - 12, 1)
-                # Inner glow rings
+                # Anillos de brillo interiores
                 for i in range(3):
                     r = DOMAIN_RADIUS - 30 - i * 25
                     if r > 0:
                         pygame.draw.circle(ds, (*de_color[:3], max(4, 12 - i * 4)), (bh, bh), r, 1)
-                # Radial lines (like JJK inner markings)
+                # Líneas radiales (como marcas internas de JJK)
                 for i in range(16):
                     a = i * (2 * math.pi / 16)
                     sx = bh + int(math.cos(a) * 25)
@@ -2177,7 +2186,7 @@ class Game:
                     ex = bh + int(math.cos(a) * (DOMAIN_RADIUS - 18))
                     ey = bh + int(math.sin(a) * (DOMAIN_RADIUS - 18))
                     pygame.draw.line(ds, (*de_color[:3], 12), (sx, sy), (ex, ey), 1)
-                # Runes (static symbols on barrier edge)
+                # Runas (símbolos estáticos en el borde de la barrera)
                 rune_chars = "✦✧⬡⬢◈◇◎●◆◉○◌◍◎◉"
                 for i in range(10):
                     a = i * (2 * math.pi / 10) + 0.3
@@ -2189,7 +2198,7 @@ class Game:
                     ds.blit(rs, (rx - rs.get_width() // 2, ry - rs.get_height() // 2))
                 self._domain_cache = {"surface": ds, "key": cache_key}
 
-            # Clip domain to screen
+            # Recortar dominio a la pantalla
             min_dx = max(0, px - bh); max_dx = min(WIDTH, px + bh)
             min_dy = max(0, py - bh); max_dy = min(HEIGHT, py + bh)
             if max_dx > min_dx and max_dy > min_dy:
@@ -2197,7 +2206,7 @@ class Game:
                 src_w = max_dx - min_dx; src_h = max_dy - min_dy
                 surf.blit(self._domain_cache["surface"], (min_dx, min_dy), (src_x, src_y, src_w, src_h))
 
-            # Animated pulse ring (bounded)
+            # Anillo de pulso animado (limitado)
             pulse_r = int(math.sin(now * 0.005) * 6 + DOMAIN_RADIUS)
             ring_sz = (pulse_r + 20) * 2
             min_rx = max(0, px - ring_sz // 2); max_rx = min(WIDTH, px + ring_sz // 2)
@@ -2209,7 +2218,7 @@ class Game:
                 pygame.draw.circle(rs, (*de_color[:3], 25), (rh, rh), pulse_r + 5, 1)
                 surf.blit(rs, (px - rh, py - rh), (min_rx - (px - rh), min_ry - (py - rh), max_rx - min_rx, max_ry - min_ry))
 
-            # Orbiting runes (animated)
+            # Runas orbitales (animadas)
             orbiting = getattr(self, "_domain_orbiting", [])
             if not orbiting:
                 self._domain_orbiting = orbiting = [
@@ -2224,10 +2233,10 @@ class Game:
                     pygame.draw.circle(surf, (*de_color[:3], 80), (ox, oy), 3)
                     pygame.draw.circle(surf, (*de_color[:3], 30), (ox, oy), 5, 1)
 
-            # Domain name with glow
+            # Nombre del dominio con brillo
             name_surf = pygame.font.Font(None, 30).render(f"DOMINIO: {dom_name}", True, (*de_color[:3], 255))
             nr = name_surf.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 120))
-            # Glow behind name
+            # Brillo detrás del nombre
             for i in range(4, 0, -1):
                 gs = pygame.Surface((nr.width + i * 12, nr.height + i * 6), pygame.SRCALPHA)
                 pygame.draw.rect(gs, (*de_color[:3], 15 - i * 2), gs.get_rect(), border_radius=4)
@@ -2236,7 +2245,7 @@ class Game:
             name_surf.set_alpha(200)
             surf.blit(name_surf, nr)
 
-            # Python code for Vicente domain
+            # Código Python para el dominio de Vicente
             if de.get("effect") == "python":
                 code_text = random.choice(["import this", "print('hello')", "while True:", "for x in y:", "class Vicente:", "self.lealtad()", "def dominio():"])
                 code_surf = pygame.font.Font(None, 22).render(code_text, True, (150, 200, 255))
@@ -2250,7 +2259,7 @@ class Game:
                             ly = py + (ey - py) * j / 5 + random.randint(-10, 10)
                             pygame.draw.circle(surf, (150, 200, 255, 150), (int(lx), int(ly)), 3)
 
-        # ── Lighting system (half-res for performance) ──
+        # ── Sistema de iluminación (media resolución por rendimiento) ──
         if self.state == "play" and self.player.alive():
             hw, hh = WIDTH // 2, HEIGHT // 2
             if not hasattr(self, "_fl_dark") or self._fl_dark.get_width() != hw:
@@ -2270,7 +2279,7 @@ class Game:
             scaled = pygame.transform.smoothscale(self._fl_dark, (WIDTH, HEIGHT))
             surf.blit(scaled, (0, 0))
 
-        # Light flash from shooting (half-res)
+        # Destello de luz al disparar (media resolución)
         if self.player.alive() and self.player.light_flash_timer > 0:
             hw, hh = WIDTH // 2, HEIGHT // 2
             if not hasattr(self, "_flash_surf") or self._flash_surf.get_width() != hw:
@@ -2281,14 +2290,14 @@ class Game:
             scaled = pygame.transform.smoothscale(self._flash_surf, (WIDTH, HEIGHT))
             surf.blit(scaled, (0, 0))
 
-        # Scanlines during gameplay (cached fullscreen)
+        # Líneas de barrido durante el juego (pantalla completa en caché)
         if not hasattr(self, "_scanline_surf") or self._scanline_surf.get_width() != WIDTH:
             self._scanline_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
             for y in range(0, HEIGHT, 4):
                 self._scanline_surf.fill((0, 255, 65, 18), (0, y, WIDTH, 2))
         surf.blit(self._scanline_surf, (0, 0))
 
-        # CRT vignette
+        # Viñeta CRT
         if not hasattr(self, "_vignette_surf") or self._vignette_surf.get_width() != WIDTH:
             self._vignette_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
             for i in range(6, 0, -1):
@@ -2299,7 +2308,7 @@ class Game:
                 self._vignette_surf.blit(s, (WIDTH // 2 - r, HEIGHT // 2 - r))
         surf.blit(self._vignette_surf, (0, 0))
 
-        # Red border when HP < 25% (cached per pulse)
+        # Borde rojo cuando HP < 25% (en caché por pulso)
         if self.player.alive() and self.player.hp < self.player.max_hp * 0.25:
             pulse = int(math.sin(pygame.time.get_ticks() * 0.008) * 20 + 35)
             if not hasattr(self, "_lowhp_surf") or self._lowhp_a != pulse:
@@ -2311,7 +2320,7 @@ class Game:
                 pygame.draw.rect(self._lowhp_surf, (255, 0, 0, pulse), (WIDTH - 8, 0, 8, HEIGHT))
             surf.blit(self._lowhp_surf, (0, 0))
 
-        # Gacha roulette overlay
+        # Superposición de ruleta gacha
         if self.gacha_open:
             from src.ui import draw_gacha
             draw_gacha(surf, self)
