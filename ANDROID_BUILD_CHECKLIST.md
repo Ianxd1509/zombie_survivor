@@ -70,7 +70,7 @@ jobs:
             libffi-dev libssl-dev
           pip3 install --user buildozer cython
 
-      - name: Download and Setup Android SDK
+      - name: Setup Android SDK
         run: |
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
@@ -78,7 +78,7 @@ jobs:
           # Download Android SDK Command-line Tools
           mkdir -p ~/android-sdk
           cd ~/android-sdk
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip
+          wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip
           unzip -q commandlinetools-linux-10406996_latest.zip
           
           # Restructure for sdkmanager
@@ -86,17 +86,11 @@ jobs:
           mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
           
           # Set environment variables
-          echo "ANDROID_SDK_ROOT=~/android-sdk" >> $GITHUB_ENV
-          echo "ANDROID_HOME=~/android-sdk" >> $GITHUB_ENV
-          echo "~/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
-
-      - name: Install Android SDK Components
-        run: |
           export ANDROID_SDK_ROOT=~/android-sdk
-          export PATH=$PATH:~/android-sdk/cmdline-tools/latest/bin
+          export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin
           
           # Accept licenses and install required components
-          yes | sdkmanager --licenses 2>/dev/null || true
+          yes | sdkmanager --licenses
           sdkmanager "build-tools;34.0.0" "platforms;android-34" "ndk;25.2.9519653"
 
       - name: Build APK with Buildozer
@@ -113,78 +107,67 @@ jobs:
           path: bin/*.apk
 ```
 
----
+📋 Checklist Precompilación
+buildozer.spec
 
-## 📋 Checklist Precompilación
+    android.api coincide con platforms en workflow (ej: api 34 → platforms;android-34)
+    android.build_tools coincide con build-tools en workflow (ej: build-tools;34.0.0)
+    android.ndk coincide con ndk en workflow (formato: 25c → ndk;25.2.9519653)
+    android.minapi es >= 21 (requerido para pygame)
+    requirements incluye todas las librerías (pygame, hostpython3, etc.)
+    android.permissions cubre necesidades de la app (INTERNET, STORAGE, etc.)
+    android.archs especifica arquitectura (arm64-v8a es estándar)
 
-### buildozer.spec
-- [ ] `android.api` coincide con `platforms` en workflow (ej: api 34 → `platforms;android-34`)
-- [ ] `android.build_tools` coincide con `build-tools` en workflow (ej: `build-tools;34.0.0`)
-- [ ] `android.ndk` coincide con `ndk` en workflow (formato: `25c` → `ndk;25.2.9519653`)
-- [ ] `android.minapi` es >= 21 (requerido para pygame)
-- [ ] `requirements` incluye todas las librerías (pygame, hostpython3, etc.)
-- [ ] `android.permissions` cubre necesidades de la app (INTERNET, STORAGE, etc.)
-- [ ] `android.archs` especifica arquitectura (arm64-v8a es estándar)
+GitHub Actions Workflow
 
-### GitHub Actions Workflow
-- [ ] NO ejecutar `buildozer android clean` en setup (solo después de compilación exitosa)
-- [ ] Descargar SDK Command-line Tools explícitamente
-- [ ] Instalar componentes específicos con `sdkmanager`
-- [ ] Ejecutar `yes | sdkmanager --licenses` ANTES de instalar componentes
-- [ ] Exportar variables de entorno:
-  - `ANDROID_SDK_ROOT=~/android-sdk`
-  - `ANDROID_HOME=~/android-sdk` (alternativa)
-  - Agregar al `PATH`
-- [ ] No usar `android.sdk` deprecated (algunos sistemas lo ignoran)
+    NO ejecutar buildozer android clean en setup (solo después de compilación exitosa)
+    Descargar SDK Command-line Tools explícitamente
+    Instalar componentes específicos con sdkmanager
+    Ejecutar yes | sdkmanager --licenses ANTES de instalar componentes
+    Exportar variables de entorno:
+        ANDROID_SDK_ROOT=~/android-sdk
+        ANDROID_HOME=~/android-sdk (alternativa)
+        Agregar al PATH
+    No usar android.sdk deprecated (algunos sistemas lo ignoran)
 
-### Código Python
-- [ ] Detectar plataforma Android: `sys.platform == "android"`
-- [ ] Rutas de almacenamiento usando `os.environ.get('ANDROID_PRIVATE')`
-- [ ] Pantalla sin SCALED flag en Android (usar `(0, 0), pygame.FULLSCREEN`)
-- [ ] Controles táctiles (FINGERDOWN, FINGERMOTION, FINGERUP)
-- [ ] No asumir mouse.set_visible() disponible en Android
+Código Python
 
-### src/touch_input.py
-- [ ] Zonas táctiles dentro de límites de pantalla
-- [ ] Conversión de coordenadas normalizadas (0.0-1.0) a píxeles
-- [ ] Manejo de múltiples dedos simultáneos (`fingers` dict)
-- [ ] Iconos dibujados con offset relativo a rect position
+    Detectar plataforma Android: sys.platform == "android"
+    Rutas de almacenamiento usando os.environ.get('ANDROID_PRIVATE')
+    Pantalla sin SCALED flag en Android (usar (0, 0), pygame.FULLSCREEN)
+    Controles táctiles (FINGERDOWN, FINGERMOTION, FINGERUP)
+    No asumir mouse.set_visible() disponible en Android
 
----
+src/touch_input.py
 
-## 🚨 Errores Comunes a Evitar
+    Zonas táctiles dentro de límites de pantalla
+    Conversión de coordenadas normalizadas (0.0-1.0) a píxeles
+    Manejo de múltiples dedos simultáneos (fingers dict)
+    Iconos dibujados con offset relativo a rect position
 
-| Error | Causa | Prevención |
-|-------|-------|-----------|
-| Python-for-android no encontrado | `buildozer android clean` prematuramente | No limpiar en setup; dejar que buildozer inicialice |
-| Build-tools no instaladas | SDK no descargado | Descargar Command-line Tools y usar `sdkmanager` |
-| Licencias no aceptadas | No ejecutar `sdkmanager --licenses` | Ejecutar `yes \| sdkmanager --licenses` PRIMERO |
-| NDK versión mismatch | `android.ndk` en spec no coincide con instalado | Verificar versión en workflow; descargar específica |
-| Crash en Android sin permisos | Falta de permisos en spec | Agregar a `android.permissions` según necesidades |
-| Crash al guardar datos | Ruta de almacenamiento incorrecta | Usar `ANDROID_PRIVATE` env var |
-| Pantalla no se ve correctamente | Flag pygame.SCALED en Android | Usar `(0, 0), pygame.FULLSCREEN` en Android |
-| Crash por falta de dependencias | `requirements` incompleto | Incluir todas: pygame, hostpython3, etc. |
+🚨 Errores Comunes a Evitar
+Error	Causa	Prevención
+Python-for-android no encontrado	buildozer android clean prematuramente	No limpiar en setup; dejar que buildozer inicialice
+Build-tools no instaladas	SDK no descargado	Descargar Command-line Tools y usar sdkmanager
+Licencias no aceptadas	No ejecutar sdkmanager --licenses	Ejecutar yes | sdkmanager --licenses PRIMERO
+NDK versión mismatch	android.ndk en spec no coincide con instalado	Verificar versión en workflow; descargar específica
+Crash en Android sin permisos	Falta de permisos en spec	Agregar a android.permissions según necesidades
+Crash al guardar datos	Ruta de almacenamiento incorrecta	Usar ANDROID_PRIVATE env var
+Pantalla no se ve correctamente	Flag pygame.SCALED en Android	Usar (0, 0), pygame.FULLSCREEN en Android
+Crash por falta de dependencias	requirements incompleto	Incluir todas: pygame, hostpython3, etc.
+📚 Recursos
 
----
+    Buildozer Documentation
+    Python-for-Android
+    Android SDK Command-line Tools
+    Pygame Android Support
 
-## 📚 Recursos
+🔄 Próximos Pasos
 
-- [Buildozer Documentation](https://buildozer.readthedocs.io/)
-- [Python-for-Android](https://python-for-android.readthedocs.io/)
-- [Android SDK Command-line Tools](https://developer.android.com/studio/command-line)
-- [Pygame Android Support](https://pygame.readthedocs.io/en/latest/ref/pygame_android.html)
+    ✅ Reemplazar workflow con versión correcta
+    ✅ Verificar buildozer.spec contra checklist
+    ✅ Ejecutar compilación en local antes de push (si es posible)
+    ✅ Mergear PR #1 después de validación
+    📌 Crear rama de CI/CD stale para reparaciones futuras
 
----
-
-## 🔄 Próximos Pasos
-
-1. ✅ Reemplazar workflow con versión correcta
-2. ✅ Verificar buildozer.spec contra checklist
-3. ✅ Ejecutar compilación en local antes de push (si es posible)
-4. ✅ Mergear PR #1 después de validación
-5. 📌 Crear rama de CI/CD stale para reparaciones futuras
-
----
-
-**Última actualización**: 2026-06-13
-**Estado**: Documento de referencia activo
+Última actualización: 2026-06-13 Estado: Documento de referencia activo
