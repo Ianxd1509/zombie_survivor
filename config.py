@@ -1,9 +1,14 @@
 # Configuración global del juego: define constantes de pantalla, colores,
 # personajes, armas, objetos, mapas, y parámetros de gameplay.
+import os
+import sys
+
 import pygame
 
 pygame.init()
 pygame.mixer.init(frequency=22050, size=-16, channels=2)
+
+_ANDROID = sys.platform == "android"
 
 WIDTH, HEIGHT = 1280, 720
 FONT_SCALE = HEIGHT / 600  # ~1.2 para 720p
@@ -161,7 +166,8 @@ CODE_SNIPPETS = [
 
 POWERUP_TYPES = ["turbo", "shield", "byte_magnet", "explosive"]
 WAVE_MODIFIERS = ["normal", "normal", "horda", "vampirica", "elite", "toxica", "veloz", "blindaje", "explosivo"]
-SAVE_FILE = "save_data.json"
+_STORAGE = os.environ.get('ANDROID_PRIVATE', '.') if _ANDROID else '.'
+SAVE_FILE = os.path.join(_STORAGE, "save_data.json")
 
 # Evolución de personaje: objetos necesarios para evolucionar
 CHAOS_ITEMS = ["🖥️", "💿", "🔌", "📡", "⚡", "🧠", "🔥", "💎"]

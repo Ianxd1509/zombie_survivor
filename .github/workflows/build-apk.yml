@@ -1,0 +1,54 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ "main", "apk-android" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system deps
+        run: |
+          sudo apt update
+          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
+          pip3 install --user buildozer cython
+
+      - name: Setup Android SDK
+        run: |
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          export PATH=$PATH:~/.local/bin/
+          # Download and setup Android SDK Manager
+          mkdir -p ~/android-sdk
+          cd ~/android-sdk
+          wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip
+          unzip -q commandlinetools-linux-10406996_latest.zip
+          mkdir -p cmdline-tools/latest
+          mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
+          export ANDROID_SDK_ROOT=~/android-sdk
+          export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin
+          # Accept licenses and install build-tools and platform
+          yes | sdkmanager --licenses
+          sdkmanager "build-tools;34.0.0" "platforms;android-34" "ndk;25.2.9519653"
+
+      - name: Build APK with Buildozer
+        run: |
+          export PATH=$PATH:~/.local/bin/
+          export ANDROID_SDK_ROOT=~/android-sdk
+          export ANDROID_NDK_HOME=~/.buildozer/android/platform/android-ndk-r25c
+          buildozer android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: virus-apk
+          path: bin/*.apk

@@ -1,11 +1,15 @@
+import os
 import sys
 import traceback
 from datetime import datetime
 
 import pygame
 
+_ANDROID = sys.platform == "android"
+
 # Ruta del archivo donde se guardan los registros de fallos
-CRASH_LOG = "docs/crash_log.txt"
+_CRASH_DIR = os.environ.get('ANDROID_PRIVATE', 'docs') if _ANDROID else 'docs'
+CRASH_LOG = os.path.join(_CRASH_DIR, "crash_log.txt")
 
 
 # Guarda trazas de errores graves en un archivo de texto
@@ -109,7 +113,10 @@ _SAVE_ALLOWLIST = {
 def main():
     # Inicializa Pygame en pantalla completa y oculta el cursor
     pygame.init()
-    pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN | pygame.SCALED)
+    if _ANDROID:
+        pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    else:
+        pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN | pygame.SCALED)
     pygame.display.set_caption("VIRUS")
     pygame.mouse.set_visible(False)
     screen = pygame.display.get_surface()
@@ -132,16 +139,45 @@ def main():
     _prev_state = None  # Para detectar transiciones de estado y gestionar música
     running = True
 
+    if _ANDROID:
+        from src.touch_input import TouchControls
+        touch = TouchControls()
+    else:
+        touch = None
+
     # Bucle principal del juego
     while running:
         # Control de FPS (modo lento si admin activó slowmo) y estado del ratón
         clock.tick(FPS if not getattr(game, 'admin_slowmo', False) else max(15, FPS // 2))
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_btn = pygame.mouse.get_pressed()[0]
-        pygame.mouse.set_visible(game.state in ("menu", "mapsel", "credits"))
+        if touch:
+            touch_keys, touch_btn, touch_pos = touch.get_state()
+            mouse_pos = touch_pos
+            mouse_btn = touch_btn
+        else:
+            mouse_pos = pygame.mouse.get_pos()
+            mouse_btn = pygame.mouse.get_pressed()[0]
+        if not _ANDROID:
+            pygame.mouse.set_visible(game.state in ("menu", "mapsel", "credits"))
 
         # --- Bucle de eventos ---
         for event in pygame.event.get():
+            # En Android, pasa eventos táctiles al TouchControls y genera equivalencias de ratón
+            if touch:
+                touch.handle_event(event)
+                if event.type in (pygame.FINGERDOWN, pygame.FINGERMOTION):
+                    mouse_pos = (int(event.x * WIDTH), int(event.y * HEIGHT))
+                if event.type == pygame.FINGERDOWN:
+                    event.type = pygame.MOUSEBUTTONDOWN
+                    event.button = 1
+                    event.pos = mouse_pos
+                elif event.type == pygame.FINGERUP:
+                    event.type = pygame.MOUSEBUTTONUP
+                    event.button = 1
+                    event.pos = mouse_pos
+                elif event.type == pygame.FINGERMOTION:
+                    event.type = pygame.MOUSEMOTION
+                    event.pos = mouse_pos
+
             # Cierra el juego y guarda si hay partida activa
             if event.type == pygame.QUIT:
                 if game.state in ("play", "shop_prep", "pause"):
@@ -322,8 +358,8 @@ def main():
                     charsel.reset_animation()
                     game.state = "charsel"
 
-                # F11: alternar pantalla completa
-                if k == pygame.K_F11:
+                # F11: alternar pantalla completa (solo PC)
+                if k == pygame.K_F11 and not _ANDROID:
                     pygame.display.toggle_fullscreen()
 
                 # Admin: tecla "," abre campo de contraseña
@@ -486,7 +522,10 @@ def main():
                             running = False
 
         # Entrada del jugador (teclado + ratón)
-        keys = pygame.key.get_pressed()
+        if touch:
+            keys = touch_keys
+        else:
+            keys = pygame.key.get_pressed()
         if game.state in ("play", "shop_prep") and not game.admin_inputting:
             mouse_active = mouse_btn and game.state == "play"
             game.player.handle(keys, mouse_active, mouse_pos, game.grid, game.all_sprites, game.bullets, game.particles, game.cam.x, game.cam.y, game.notifs, enemy_bullets=game.enemy_bullets, enemies=list(game.enemies), brainrots=game.brainrots)
@@ -557,7 +596,7 @@ def main():
             draw_hud(screen, game.player, game.wave, game.wave_state, game.wave_has_boss,
                      game.wave_announce, len(game.enemies), game.notifs, game.prep_timer,
                      game.vicente_near, game.shop_open, game=game, oscar_near=game.oscar_near,
-                     fps=int(clock.get_fps()))
+                     fps=int(clock.get_fps()), crosshair_pos=mouse_pos if touch else None)
             if game.state == "pause":
                 pause_screen.draw(screen, game)
             if game.state == "over":
@@ -570,6 +609,10 @@ def main():
                 result_screen.draw(screen)
             if game.shop_open and game.state in ("shop_prep", "play"):
                 draw_shop(screen, game.player, shop_sel, game.shop_items, game=game)
+
+        # En Android, dibuja overlay táctil sobre todo
+        if touch:
+            touch.draw(screen)
 
         _prev_state = game.state
         pygame.display.flip()

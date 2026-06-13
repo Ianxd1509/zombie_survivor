@@ -1,11 +1,8 @@
-__pycache__/
 *.pyc
-*.bak
-save_data.json
-docs/stderr.txt
-docs/stdout.txt
-docs/*.log
-*.exe
-dist/
-build/
+__pycache__
+.ruff_cache
+bin/
+.buildozer/
 *.spec
+save_data.json
+docs/crash_log.txt

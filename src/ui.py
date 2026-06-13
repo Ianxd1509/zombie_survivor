@@ -134,7 +134,7 @@ def _draw_minimap(surf, game):
 
 
 # Dibuja todo el HUD en pantalla: stats, barras, minimapa, notificaciones, crosshair, etc
-def draw_hud(surf, player, wave, wave_state, wave_has_boss, wave_announce, enemies_count, notifs, prep_timer=0, vicente_near=False, shop_open=False, game=None, oscar_near=False, fps=0):
+def draw_hud(surf, player, wave, wave_state, wave_has_boss, wave_announce, enemies_count, notifs, prep_timer=0, vicente_near=False, shop_open=False, game=None, oscar_near=False, fps=0, crosshair_pos=None):
     char = player.char_data
     c = tuple(char["color"])
     bx, bw = 10, 220
@@ -445,7 +445,10 @@ def draw_hud(surf, player, wave, wave_state, wave_has_boss, wave_announce, enemi
             break
 
     # ═══ MIRA (CROSSHAIR) ═══
-    mx, my = pygame.mouse.get_pos()
+    if crosshair_pos is not None:
+        mx, my = crosshair_pos
+    else:
+        mx, my = pygame.mouse.get_pos()
     c2 = GREEN
     pygame.draw.line(surf, c2, (mx - 10, my), (mx - 4, my), 2)
     pygame.draw.line(surf, c2, (mx + 4, my), (mx + 10, my), 2)
