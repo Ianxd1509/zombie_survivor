@@ -44,6 +44,7 @@ jobs:
         run: |
           export PATH=$PATH:~/.local/bin/
           export ANDROID_SDK_ROOT=~/android-sdk
+          export ANDROID_NDK_HOME=~/.buildozer/android/platform/android-ndk-r25c
           buildozer android debug
 
       - name: Upload APK
