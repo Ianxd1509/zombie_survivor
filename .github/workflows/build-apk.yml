@@ -22,19 +22,17 @@ jobs:
           sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
           pip3 install --user buildozer cython
 
-      - name: Setup Android SDK
+      - name: Setup Android SDK and Buildozer
         run: |
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
-          # buildozer descargará las herramientas automáticamente si se ejecuta adecuadamente,
-          # pero aseguramos el entorno:
           export PATH=$PATH:~/.local/bin/
-          buildozer android clean
+          # Forzamos la inicialización de la estructura de buildozer sin borrar nada
+          buildozer --version
 
       - name: Build APK with Buildozer
         run: |
           export PATH=$PATH:~/.local/bin/
-          # Intentamos la compilación
           buildozer android debug
 
       - name: Upload APK
